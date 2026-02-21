@@ -194,6 +194,7 @@ p.subtitle { color: var(--text-mute); font-size: 14px; margin-bottom: 30px; line
 }
 .select-card i { font-size: 32px; color: var(--text-mute); margin-bottom: 10px; transition: 0.3s; }
 .select-card .title { font-weight: 600; font-size: 16px; color: white; }
+#ob-step-9 .select-card .title { font-size: 14px; }
 .select-card .desc { font-size: 12px; color: var(--text-mute); margin-top: 5px; }
 .select-card.active { border-color: var(--primary); background: rgba(0, 128, 128, 0.1); }
 .select-card.active i { color: var(--primary); }
