@@ -29,7 +29,7 @@ function renderProgressBar() {
     const trackContainer = document.querySelector('.progress-tracks');
     if(!trackContainer) return;
     const structure = [
-        { label: "Körper", steps: 4 },
+        { label: "KÃ¶rper", steps: 4 },
         { label: "Level", steps: 2 },
         { label: "Training", steps: 2 },
         { label: "Planung", steps: 2 }
@@ -87,7 +87,7 @@ function updateProgressUI() {
     }
     if(currentStep === 10) { 
         const sub = document.getElementById('days-subtitle');
-        if(sub && obData.freq) sub.innerText = `Wähle genau ${obData.freq} Tage aus.`;
+        if(sub && obData.freq) sub.innerText = `WÃ¤hle genau ${obData.freq} Tage aus.`;
     }
 }
 function handleLogin(e) {
@@ -111,12 +111,12 @@ function selectOption(key, value, element) {
         if (value === 'ppl') {
             if (obData.freq < 3) {
                 enabled = false;
-                reason = "Push/Pull/Legs benötigt mindestens 3 Trainingstage pro Woche.";
+                reason = "Push/Pull/Legs benÃ¶tigt mindestens 3 Trainingstage pro Woche.";
             }
         } else if (value === 'ul') {
             if (obData.freq !== 2 && obData.freq !== 4) {
                 enabled = false;
-                reason = "Upper/Lower Splits sind ideal für 2 oder 4 Trainingstage.";
+                reason = "Upper/Lower Splits sind ideal fÃ¼r 2 oder 4 Trainingstage.";
             }
         } else if (value === 'bro') {
              if (obData.freq < 4) {
@@ -131,14 +131,14 @@ function selectOption(key, value, element) {
                 box.classList.add('active');
                 const t = document.getElementById('info-box-title');
                 const d = document.getElementById('info-box-desc');
-                if(t) { t.innerText = "Nicht verfügbar"; t.style.color = '#ff4444'; }
+                if(t) { t.innerText = "Nicht verfÃ¼gbar"; t.style.color = '#ff4444'; }
                 if(d) { d.innerText = reason; }
             }
             return;
         } else {
             const box = document.getElementById('split-info-box');
             const t = document.getElementById('info-box-title');
-            if(box && t && t.innerText === "Nicht verfügbar") {
+            if(box && t && t.innerText === "Nicht verfÃ¼gbar") {
                 box.classList.remove('active');
                 t.style.color = 'var(--primary)';
             }
@@ -202,17 +202,17 @@ function showRejectionInfo(type) {
     
     if(!box || !titleEl || !descEl) return;
 
-    let reason = "Diese Option ist mit deiner gewählten Trainingshäufigkeit nicht optimal.";
+    let reason = "Diese Option ist mit deiner gewÃ¤hlten TrainingshÃ¤ufigkeit nicht optimal.";
     
     if(type === 'ppl') {
-        reason = "Push/Pull/Legs benötigt mindestens 3 Trainingstage pro Woche (besser 6), um effektiv zu sein.";
+        reason = "Push/Pull/Legs benÃ¶tigt mindestens 3 Trainingstage pro Woche (besser 6), um effektiv zu sein.";
     } else if (type === 'ul') {
-        reason = "Upper/Lower Splits sind ideal für 2 oder 4 Tage (Oberkörper/Unterkörper).";
+        reason = "Upper/Lower Splits sind ideal fÃ¼r 2 oder 4 Tage (OberkÃ¶rper/UnterkÃ¶rper).";
     } else if (type === 'bro') {
         reason = "Ein Bro-Split (1 Muskelgruppe pro Tag) macht erst ab 4 Trainingstagen Sinn, um alle Muskeln abzudecken.";
     }
 
-    titleEl.innerText = "Nicht verfügbar";
+    titleEl.innerText = "Nicht verfÃ¼gbar";
     titleEl.style.color = '#ff4444';
     descEl.innerText = reason;
     box.classList.add('active');
@@ -226,7 +226,7 @@ function syncInputs(key, val) {
 
 function toggleDay(element, dayId) {
     if (!obData.freq) {
-        alert("Bitte wähle zuerst eine Frequenz.");
+        alert("Bitte wÃ¤hle zuerst eine Frequenz.");
         return;
     }
 
@@ -312,23 +312,23 @@ function finishOnboarding() {
 const splitInfos = {
     'ppl': {
         title: 'Push / Pull / Legs',
-        desc: 'Ein Klassiker für Fortgeschrittene. Du trainierst Druckübungen (Brust/Schulter/Trizeps), Zugübungen (Rücken/Bizeps) und Beine an separaten Tagen. Ideal bei 3x oder 6x Training pro Woche.'
+        desc: 'Ein Klassiker fÃ¼r Fortgeschrittene. Du trainierst DruckÃ¼bungen (Brust/Schulter/Trizeps), ZugÃ¼bungen (RÃ¼cken/Bizeps) und Beine an separaten Tagen. Ideal bei 3x oder 6x Training pro Woche.'
     },
     'pp': {
         title: 'Push / Pull',
-        desc: 'Unterteilt das Training in Druck- (Push) und Zugbewegungen (Pull). Beine werden oft integriert. Sehr flexibel und gut geeignet für 2, 4 oder 6 Trainingstage.'
+        desc: 'Unterteilt das Training in Druck- (Push) und Zugbewegungen (Pull). Beine werden oft integriert. Sehr flexibel und gut geeignet fÃ¼r 2, 4 oder 6 Trainingstage.'
     },
     'ul': {
         title: 'Upper / Lower',
-        desc: 'Teilt den Körper in Oberkörper und Unterkörper auf. Sehr effizient, um jede Muskelgruppe 2x pro Woche zu trainieren (bei 4 Trainingstagen).'
+        desc: 'Teilt den KÃ¶rper in OberkÃ¶rper und UnterkÃ¶rper auf. Sehr effizient, um jede Muskelgruppe 2x pro Woche zu trainieren (bei 4 Trainingstagen).'
     },
     'full': {
-        title: 'Ganzkörper',
-        desc: 'Du trainierst in jeder Einheit den kompletten Körper. Perfekt für Einsteiger oder wenn du 2-3x pro Woche trainierst, um maximale Frequenz zu haben.'
+        title: 'GanzkÃ¶rper',
+        desc: 'Du trainierst in jeder Einheit den kompletten KÃ¶rper. Perfekt fÃ¼r Einsteiger oder wenn du 2-3x pro Woche trainierst, um maximale Frequenz zu haben.'
     },
     'bro': {
         title: 'Bro Split',
-        desc: 'Jeden Tag eine andere Muskelgruppe (z.B. Brust-Tag, Rücken-Tag). Hohes Volumen pro Muskel, aber geringere Frequenz. Beliebt im Oldschool-Bodybuilding.'
+        desc: 'Jeden Tag eine andere Muskelgruppe (z.B. Brust-Tag, RÃ¼cken-Tag). Hohes Volumen pro Muskel, aber geringere Frequenz. Beliebt im Oldschool-Bodybuilding.'
     }
 };
 
