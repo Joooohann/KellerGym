@@ -250,6 +250,11 @@ function toggleDay(element, dayId) {
     }
 }
 function showStep(step) {
+    // Reset Scroll & Zoom attempt
+    const viewport = document.getElementById('app-viewport');
+    if(viewport) viewport.scrollTop = 0;
+    window.scrollTo(0, 0);
+
     document.querySelectorAll('.ob-content').forEach(el => el.classList.remove('active-step'));
     const nextStepEl = document.getElementById(`ob-step-${step}`);
     if(nextStepEl) {
@@ -257,7 +262,7 @@ function showStep(step) {
     }
     updateProgressUI();
     if(step === 9) {
-        checkSplitAvailability();
+        checkSplitAvailability(); // Ensure availability is checked when showing step 9
     }
 }
 
