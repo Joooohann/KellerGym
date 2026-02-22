@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KellerGym - Onboarding</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Hidden by default if test mode */
+        html.test-mode-active #screen-onboarding { display: none !important; }
+        
+        /* Ensure generating screen is visible in test mode */
+        html.test-mode-active #screen-generating { 
+            display: block !important; 
+            opacity: 1 !important; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: 10000; 
+            background: var(--bg-body);
+        }
+    </style>
+    <script>
+        // Check for test mode immediately to prevent flash
+        if(window.location.search.includes('test=true')) {
+            document.documentElement.classList.add('test-mode-active');
+        }
+    </script>
+</head>
+<body class="">
+
+    <div id="app-viewport">
+        
+        <!-- ONBOARDING SCREEN -->
+        <div id="screen-onboarding" class="screen active">
+            
+            <div class="carbon-card" style="padding: 20px; margin-bottom: 30px;">
+                <div class="progress-wrapper" style="margin-bottom: 0; padding: 0;">
+
+                    <div class="progress-number-box">
+                        <span id="ob-step-num">01</span>
+                    </div>
+                    <div class="progress-tracks">
+                        <!-- JS renders tracks -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 1: AGE -->
+            <div id="ob-step-1" class="ob-content active-step">
+                <h1>Dein Alter</h1>
+                <p class="subtitle">Wichtig für die Berechnung deines Stoffwechsels.</p>
+                <div class="slider-container">
+                    <div class="value-display"><span id="val-age">20</span> <span class="unit">Jahre</span></div>
+                    <input type="range" id="range-age" min="14" max="80" value="20" step="1" class="slider" oninput="syncInputs('age', this.value)">
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" disabled style="opacity:0;">Zurück</button>
+                    <button class="btn" onclick="nextOnboarding()">Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 2: GENDER -->
+            <div id="ob-step-2" class="ob-content">
+                <h1>Dein Geschlecht</h1>
+                <p class="subtitle">Hilft uns bei der Berechnung deines Kalorienbedarfs.</p>
+                <div class="select-grid">
+                    <div class="select-card" onclick="selectOption('gender', 'male', this)">
+                        <i class="fa-solid fa-mars"></i>
+                        <div class="title">Männlich</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('gender', 'female', this)">
+                        <i class="fa-solid fa-venus"></i>
+                        <div class="title">Weiblich</div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" id="btn-next-2" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 3: WEIGHT -->
+            <div id="ob-step-3" class="ob-content">
+                <h1>Dein Gewicht</h1>
+                <p class="subtitle">Aktuelles Körpergewicht in kg.</p>
+                <div class="slider-container">
+                    <div class="value-display"><span id="val-weight">75</span> <span class="unit">kg</span></div>
+                    <input type="range" id="range-weight" min="40" max="150" value="75" step="0.5" class="slider" oninput="syncInputs('weight', this.value)">
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" onclick="nextOnboarding()">Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 4: HEIGHT -->
+            <div id="ob-step-4" class="ob-content">
+                <h1>Deine Größe</h1>
+                <p class="subtitle">Körpergröße in cm.</p>
+                <div class="slider-container">
+                    <div class="value-display"><span id="val-height">180</span> <span class="unit">cm</span></div>
+                    <input type="range" id="range-height" min="140" max="220" value="180" step="1" class="slider" oninput="syncInputs('height', this.value)">
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" onclick="nextOnboarding()">Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 5: BODYFAT -->
+            <div id="ob-step-5" class="ob-content">
+                <h1>Körperfettanteil</h1>
+                <p class="subtitle">Eine Schätzung genügt. <br>(Männer ~15%, Frauen ~25%)</p>
+                <div class="slider-container">
+                    <div class="value-display"><span id="val-bodyfat">15</span> <span class="unit">%</span></div>
+                    <input type="range" id="range-bodyfat" min="5" max="50" value="15" step="1" class="slider" oninput="syncInputs('bodyfat', this.value)">
+                </div>
+                 <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" onclick="nextOnboarding()">Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 6: ACTIVITY -->
+            <div id="ob-step-6" class="ob-content">
+                <h1>Alltagsaktivität</h1>
+                <p class="subtitle">Wie aktiv bist du außerhalb des Trainings?</p>
+                <div class="select-grid col-1">
+                    <div class="select-card" onclick="selectOption('activity', 'low', this)">
+                        <div class="title">Sitzend</div>
+                        <div class="desc">Bürojob, wenig Bewegung im Alltag</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('activity', 'somewhat', this)">
+                        <div class="title">Wenig Aktiv</div>
+                        <div class="desc">Gelegentliche Bewegung, kurze Spaziergänge</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('activity', 'med', this)">
+                        <div class="title">Leicht Aktiv</div>
+                        <div class="desc">Viel auf den Beinen, z.B. Verkäufer</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('activity', 'high', this)">
+                        <div class="title">Sehr Aktiv</div>
+                        <div class="desc">Körperlich anstrengende Arbeit</div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" id="btn-next-6" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div style="height: 100px;"></div>
+            </div>
+
+            <!-- STEP 7: EXPERIENCE -->
+            <div id="ob-step-7" class="ob-content">
+                <h1>Deine Erfahrung</h1>
+                <p class="subtitle">Wie lange trainierst du schon?</p>
+                <div class="select-grid col-1">
+                    <div class="select-card" onclick="selectOption('exp', 'beginner', this)">
+                        <div class="title">Anfänger</div>
+                        <div class="desc">0 - 1 Jahr Erfahrung</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('exp', 'intermediate', this)">
+                        <div class="title">Fortgeschritten</div>
+                        <div class="desc">1 - 3 Jahre Erfahrung</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('exp', 'pro', this)">
+                        <div class="title">Profi</div>
+                        <div class="desc">über 3 Jahre Erfahrung</div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" id="btn-next-7" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 8: GOAL -->
+            <div id="ob-step-8" class="ob-content">
+                <h1>Dein Ziel</h1>
+                <p class="subtitle">Was möchtest du erreichen?</p>
+                <div class="select-grid col-1">
+                    <div class="select-card" onclick="selectOption('goal', 'lose_build', this)">
+                        <div class="title">Abnehmen & Aufbauen</div>
+                        <div class="desc">Körperfett reduzieren und Muskeln aufbauen</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('goal', 'maintain_build', this)">
+                        <div class="title">Gewicht halten & Aufbauen</div>
+                        <div class="desc">Gewicht halten und Muskeln aufbauen (Recomp)</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('goal', 'gain_build', this)">
+                        <div class="title">Zunehmen & Aufbauen</div>
+                        <div class="desc">Gewicht zunehmen und Muskeln aufbauen (Bulk)</div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" id="btn-next-8" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div style="height: 60px;"></div>
+            </div>
+
+            <!-- STEP 9: LOCATION -->
+            <div id="ob-step-9" class="ob-content">
+                <h1>Trainingsort</h1>
+                <p class="subtitle">Wo trainierst du?</p>
+                <div class="select-grid col-1">
+                    <div class="select-card" onclick="selectOption('location', 'home', this)">
+                        <i class="fa-solid fa-house"></i>
+                        <div class="title">Zu Hause</div>
+                        <div class="desc">Bodyweight & Kurzhanteln</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('location', 'keller', this)">
+                        <i class="fa-solid fa-dungeon"></i>
+                        <div class="title">KellerGym</div>
+                        <div class="desc">Homegym Setup</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('location', 'gym', this)">
+                        <i class="fa-solid fa-dumbbell" style="transform: rotate(-45deg);"></i>
+                        <div class="title">Fitness-Studio</div>
+                        <div class="desc">Volles Equipment</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('location', 'mixed', this)">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <div class="title">Wechselnd</div>
+                        <div class="desc">Verschiedene Orte</div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" id="btn-next-9" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 10: FREQUENCY -->
+            <div id="ob-step-10" class="ob-content">
+                <h1>Wie oft pro Woche?</h1>
+                <div class="select-grid">
+                    <div class="select-card" onclick="selectOption('freq', '2', this)">
+                        <div class="title">2x</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('freq', '3', this)">
+                        <div class="title">3x</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('freq', '4', this)">
+                        <div class="title">4x</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('freq', '5', this)">
+                        <div class="title">5x</div>
+                    </div>
+                    <div class="select-card" onclick="selectOption('freq', '6', this)">
+                        <div class="title">6x</div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" id="btn-next-10" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 11: SPLIT -->
+            <div id="ob-step-11" class="ob-content">
+                <h1>Trainings-Split</h1>
+                <p class="subtitle">Wie möchtest du dein Training aufteilen?</p>
+                
+                <div class="select-grid" id="split-grid">
+                    <!-- Push / Pull / Legs -->
+                    <div class="select-card split-opt" data-val="ppl" onclick="handleSplitClick('ppl', this)">
+                        <span class="title">Push / Pull / Legs</span>
+                        <i class="fa-solid fa-info-circle info-icon" onclick="showSplitInfo(event, 'ppl')"></i>
+                    </div>
+
+                    <!-- Push / Pull -->
+                    <div class="select-card split-opt" data-val="pp" onclick="handleSplitClick('pp', this)">
+                        <span class="title">Push / Pull</span>
+                        <i class="fa-solid fa-info-circle info-icon" onclick="showSplitInfo(event, 'pp')"></i>
+                    </div>
+                
+                    <!-- Upper / Lower -->
+                    <div class="select-card split-opt" data-val="ul" onclick="handleSplitClick('ul', this)">
+                        <span class="title">Upper / Lower</span>
+                        <i class="fa-solid fa-info-circle info-icon" onclick="showSplitInfo(event, 'ul')"></i>
+                    </div>
+
+                    <!-- Ganzkörper -->
+                    <div class="select-card split-opt" data-val="full" onclick="handleSplitClick('full', this)">
+                        <span class="title">Ganzkörper</span>
+                        <i class="fa-solid fa-info-circle info-icon" onclick="showSplitInfo(event, 'full')"></i>
+                    </div>
+
+                    <!-- Bro Split -->
+                    <div class="select-card split-opt" data-val="bro" onclick="handleSplitClick('bro', this)">
+                        <span class="title">Bro Split</span>
+                        <i class="fa-solid fa-info-circle info-icon" onclick="showSplitInfo(event, 'bro')"></i>
+                    </div>
+                </div>
+
+
+                <!-- Info Box (Inline) -->
+                <div id="split-info-box" style="display:none; background: #1c1e24; border-radius: 16px; padding: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                        <h3 style="color:var(--primary); margin:0; font-size: 16px;" id="info-box-title">Info</h3>
+                        <i class="fa-solid fa-xmark" onclick="closeInfoBox()" style="font-size:16px; padding:5px; cursor:pointer; color:#666;"></i>
+                    </div>
+                     <p style="font-size:13px; color:#aaa; line-height:1.5; margin:0;" id="info-box-desc">Beschreibung...</p>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" id="btn-next-11" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <!-- Space buffer -->
+                <div style="height: 50px;"></div>
+            </div>
+
+            <!-- STEP 12: DAYS -->
+            <div id="ob-step-12" class="ob-content">
+                <h1>Wann trainierst du?</h1>
+                <p class="subtitle" id="days-subtitle">Wähle deine Trainingstage.</p>
+                <div class="week-grid">
+                    <div class="day-card" onclick="toggleDay(this, 'Mo')">MO</div>
+                    <div class="day-card" onclick="toggleDay(this, 'Di')">DI</div>
+                    <div class="day-card" onclick="toggleDay(this, 'Mi')">MI</div>
+                    <div class="day-card" onclick="toggleDay(this, 'Do')">DO</div>
+                    <div class="day-card" onclick="toggleDay(this, 'Fr')">FR</div>
+                    <div class="day-card" onclick="toggleDay(this, 'Sa')">SA</div>
+                    <div class="day-card" onclick="toggleDay(this, 'So')">SO</div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" id="btn-finish-ob" onclick="nextOnboarding()" disabled>Fertigstellen <i class="fa-solid fa-check"></i></button>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- GENERATING SCREEN (Animation) -->
+         <div id="screen-generating" class="screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: var(--bg-body);">
+            <div class="carbon-card" style="background: transparent; box-shadow: none; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                
+                <div class="breathing-loader">
+                    <!-- 16 dots (360 / 16 = 22.5 deg) -->
+                    <div class="b-dot" style="--i:0"></div>
+                    <div class="b-dot" style="--i:1"></div>
+                    <div class="b-dot" style="--i:2"></div>
+                    <div class="b-dot" style="--i:3"></div>
+                    <div class="b-dot" style="--i:4"></div>
+                    <div class="b-dot" style="--i:5"></div>
+                    <div class="b-dot" style="--i:6"></div>
+                    <div class="b-dot" style="--i:7"></div>
+                    <div class="b-dot" style="--i:8"></div>
+                    <div class="b-dot" style="--i:9"></div>
+                    <div class="b-dot" style="--i:10"></div>
+                    <div class="b-dot" style="--i:11"></div>
+                    <div class="b-dot" style="--i:12"></div>
+                    <div class="b-dot" style="--i:13"></div>
+                    <div class="b-dot" style="--i:14"></div>
+                    <div class="b-dot" style="--i:15"></div>
+                </div>
+
+                <h2 style="color: var(--primary); margin-top: 40px; font-size: 18px; font-weight: 600; letter-spacing: 1px;" id="gen-text">Analysiere Daten...</h2>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

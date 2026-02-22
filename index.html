@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KellerGym</title>
+    <title>KellerGym - Login</title>
     
-    <!-- iOS / Android Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
@@ -15,429 +14,54 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="style_modal.css">
+    
+    <style>
+        /* Specific adjustments for login screen to center it */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #08090c;
+        }
+        #app-viewport {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body class="no-nav">
 
     <div id="app-viewport">
-        
-        
+        <!-- LOGIN SCREEN -->
         <div id="screen-login" class="screen active">
             <div style="text-align: center; margin-bottom: 40px;">
                 <i class="fa-solid fa-dungeon" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
                 <h1 style="font-size: 36px;">Keller<span style="color: var(--primary);">Gym</span></h1>
-                <p class="subtitle">Wo Ausreden keinen Empfang haben 1.0</p>
+                <p class="subtitle">Wo Ausreden keinen Empfang haben 0.2</p>
             </div>
 
             <div class="carbon-card">
                 <div class="input-group">
                     <label>Benutzername</label>
-                    <input type="text" id="login-user" class="input-field" placeholder="admin">
+                    <input type="text" id="login-user" class="input-field" placeholder="Benutzername eingeben">
                 </div>
                 <div class="input-group">
                     <label>Passwort</label>
-                    <input type="password" id="login-pass" class="input-field" placeholder="admin">
+                    <input type="password" id="login-pass" class="input-field" placeholder="Passwort eingeben">
                 </div>
+                <!-- Button triggers navigation via script.js -->
                 <button class="btn" id="btn-login-action">Login <i class="fa-solid fa-arrow-right"></i></button>
+                <button class="btn btn-secondary" id="btn-test-gen" style="margin-top: 15px;">
+                    Test Animation <i class="fa-solid fa-eye"></i>
+                </button>
             </div>
         </div>
-
-        
-        <div id="screen-onboarding" class="screen">
-            
-            
-            <div class="carbon-card" style="padding: 20px; margin-bottom: 30px;">
-                <div class="progress-wrapper" style="margin-bottom: 0; padding: 0;">
-                    <div class="progress-number-box" id="ob-step-num">01</div>
-                    <div class="progress-tracks">
-                        
-                    </div>
-                </div>
-            </div>
-
-            
-            <div id="ob-step-1" class="ob-content active-step">
-                <h1>Dein Geschlecht</h1>
-                <p class="subtitle">Hilft uns bei der Berechnung deines Kalorienbedarfs.</p>
-                <div class="select-grid">
-                    <div class="select-card" onclick="selectOption('gender', 'male', this)">
-                        <i class="fa-solid fa-mars"></i>
-                        <div class="title">Männlich</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('gender', 'female', this)">
-                        <i class="fa-solid fa-venus"></i>
-                        <div class="title">Weiblich</div>
-                    </div>
-                </div>
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" disabled style="opacity:0;">Zurück</button>
-                    <button class="btn" id="btn-next-1" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-            </div>
-
-            
-            <div id="ob-step-2" class="ob-content">
-                <h1>Dein Gewicht</h1>
-                <p class="subtitle">Schiebe den Regler oder tippe den Wert ein.</p>
-                <div class="slider-container">
-                    <div class="value-display"><span id="val-weight">75</span> <span class="unit">kg</span></div>
-                    <input type="range" id="range-weight" min="40" max="150" value="75" step="0.5" class="slider" oninput="syncInputs('weight', this.value)">
-                </div>
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
-                    <button class="btn" onclick="nextOnboarding()">Weiter <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-            </div>
-
-            
-            <div id="ob-step-3" class="ob-content">
-                <h1>Deine Größe</h1>
-                <p class="subtitle">Wichtig für deinen BMI Score.</p>
-                <div class="slider-container">
-                    <div class="value-display"><span id="val-height">180</span> <span class="unit">cm</span></div>
-                    <input type="range" id="range-height" min="140" max="220" value="180" step="1" class="slider" oninput="syncInputs('height', this.value)">
-                </div>
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
-                    <button class="btn" onclick="nextOnboarding()">Weiter <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-            </div>
-
-            
-            <div id="ob-step-4" class="ob-content">
-                <h1>Körperfettanteil</h1>
-                <p class="subtitle">Schätzung reicht aus.</p>
-                <div class="slider-container">
-                    <div class="value-display"><span id="val-bodyfat">15</span> <span class="unit">%</span></div>
-                    <input type="range" id="range-bodyfat" min="5" max="50" value="15" step="1" class="slider" oninput="syncInputs('bodyfat', this.value)">
-                </div>
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
-                    <button class="btn" onclick="nextOnboarding()">Weiter <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-            </div>
-
-            
-            <div id="ob-step-5" class="ob-content">
-                <h1>Alltagsaktivität</h1>
-                <p class="subtitle">Wie aktiv bist du außerhalb des Trainings?</p>
-                <div class="select-grid col-1">
-                    <div class="select-card" onclick="selectOption('activity', 'low', this)">
-                        <div class="title">Sitzend</div>
-                        <div class="desc">Bürojob, wenig Bewegung im Alltag</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('activity', 'somewhat', this)">
-                        <div class="title">Wenig Aktiv</div>
-                        <div class="desc">Gelegentliche Bewegung, kurze Spaziergänge</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('activity', 'med', this)">
-                        <div class="title">Leicht Aktiv</div>
-                        <div class="desc">Viel auf den Beinen, z.B. Verkäufer</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('activity', 'high', this)">
-                        <div class="title">Sehr Aktiv</div>
-                        <div class="desc">Körperlich anstrengende Arbeit</div>
-                    </div>
-                </div>
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
-                    <button class="btn" id="btn-next-5" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-                <div style="height: 80px;"></div>
-            </div>
-
-            
-            <div id="ob-step-6" class="ob-content">
-                <h1>Deine Erfahrung</h1>
-                <p class="subtitle">Wie lange trainierst du schon?</p>
-                <div class="select-grid col-1">
-                    <div class="select-card" onclick="selectOption('exp', 'beginner', this)">
-                        <div class="title">Anfänger</div>
-                        <div class="desc">0 - 1 Jahr Erfahrung</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('exp', 'intermediate', this)">
-                        <div class="title">Fortgeschritten</div>
-                        <div class="desc">1 - 3 Jahre Erfahrung</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('exp', 'pro', this)">
-                        <div class="title">Profi</div>
-                        <div class="desc">über 3 Jahre Erfahrung</div>
-                    </div>
-                </div>
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
-                    <button class="btn" id="btn-next-6" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-            </div>
-
-            
-            <div id="ob-step-7" class="ob-content">
-                <h1>Trainingsort</h1>
-                <p class="subtitle">Wo trainierst du?</p>
-                <div class="select-grid col-1">
-                    <div class="select-card" onclick="selectOption('location', 'home', this)">
-                        <i class="fa-solid fa-house"></i>
-                        <div class="title">Zu Hause</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('location', 'keller', this)">
-                        <i class="fa-solid fa-dungeon"></i>
-                        <div class="title">Kellergym</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('location', 'gym', this)">
-                        <i class="fa-solid fa-dumbbell"></i>
-                        <div class="title">Fitnessstudio</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('location', 'mixed', this)">
-                        <i class="fa-solid fa-shuffle"></i>
-                        <div class="title">Wechselnd</div>
-                    </div>
-                </div>
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
-                    <button class="btn" id="btn-next-7" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-                <div style="height: 100px;"></div>
-            </div>
-
-            
-            <div id="ob-step-8" class="ob-content">
-                 <h1>Häufigkeit</h1>
-                <p class="subtitle">Wie oft pro Woche willst du trainieren?</p>
-                <div class="select-grid">
-                    <div class="select-card" onclick="selectOption('freq', '2', this)">
-                        <div class="title">2x</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('freq', '3', this)">
-                        <div class="title">3x</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('freq', '4', this)">
-                        <div class="title">4x</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('freq', '5', this)">
-                        <div class="title">5x</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('freq', '6', this)">
-                        <div class="title">6x</div>
-                    </div>
-                </div>
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
-                    <button class="btn" id="btn-next-8" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-            </div>
-
-            
-            <div id="ob-step-9" class="ob-content">
-                <h1>Trainings-Split</h1>
-                <p class="subtitle">Wie möchtest du dein Training aufteilen?</p>
-                <div class="select-grid">
-                    <div class="select-card" onclick="selectOption('split', 'ppl', this)">
-                        <div class="title">Push / Pull / Legs</div>
-                        <div class="info-icon" onclick="showSplitInfo(event, 'ppl')"><i class="fa-solid fa-info"></i></div>
-                    </div>
-                    
-                    <div class="select-card" onclick="selectOption('split', 'pp', this)">
-                        <div class="title">Push / Pull</div>
-                        <div class="info-icon" onclick="showSplitInfo(event, 'pp')"><i class="fa-solid fa-info"></i></div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('split', 'ul', this)">
-                        <div class="title">Upper / Lower</div>
-                        <div class="info-icon" onclick="showSplitInfo(event, 'ul')"><i class="fa-solid fa-info"></i></div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('split', 'full', this)">
-                        <div class="title">Ganzkörper</div>
-                        <div class="info-icon" onclick="showSplitInfo(event, 'full')"><i class="fa-solid fa-info"></i></div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('split', 'bro', this)">
-                        <div class="title">Bro Split</div>
-                        <div class="info-icon" onclick="showSplitInfo(event, 'bro')"><i class="fa-solid fa-info"></i></div>
-                    </div>
-                </div>
-                
-                <div id="split-info-box" class="inline-info-box">
-                    <i class="fa-solid fa-xmark close-info" onclick="closeInfoBox()"></i>
-                    <h3 id="info-box-title"></h3>
-                    <p id="info-box-desc"></p>
-                </div>
-
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
-                    <button class="btn" id="btn-next-9" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-            </div>
-
-            
-            <div id="ob-step-10" class="ob-content">
-                <h1>Deine Tage</h1>
-                <p class="subtitle" id="days-subtitle">Wähle genau X Tage aus.</p>
-                <div class="week-grid">
-                    <div class="day-card" onclick="toggleDay(this, 'Mo')">Mo</div>
-                    <div class="day-card" onclick="toggleDay(this, 'Di')">Di</div>
-                    <div class="day-card" onclick="toggleDay(this, 'Mi')">Mi</div>
-                    <div class="day-card" onclick="toggleDay(this, 'Do')">Do</div>
-                    <div class="day-card" onclick="toggleDay(this, 'Fr')">Fr</div>
-                    <div class="day-card" onclick="toggleDay(this, 'Sa')">Sa</div>
-                    <div class="day-card" onclick="toggleDay(this, 'So')">So</div>
-                </div>
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
-                    <button class="btn" id="btn-finish-ob" onclick="nextOnboarding()" disabled>Abschließen <i class="fa-solid fa-check"></i></button>
-                </div>
-            </div>
-            </div>
-
-        
-        <div id="screen-home" class="screen">
-            <div class="header-row">
-                <div>
-                    <div style="font-size: 14px; color: var(--text-mute); font-weight: 600;">DON. 21. FEB</div>
-                    <h1 style="font-size: 24px;">Guten Morgen, Admin</h1>
-                </div>
-                
-                <div style="display:flex; gap:15px; align-items:center;">
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #1c1e24; display:flex; align-items:center; justify-content:center; border: 1px solid #333;">
-                        <i class="fa-regular fa-bell" style="color:white;"></i>
-                    </div>
-                    <div class="avatar" style="width:40px; height:40px; border-radius:50%; background: grey; background-image: url('https://i.pravatar.cc/150?img=11'); background-size: cover;"></div>
-                </div>
-            </div>
-
-            
-            <div class="carbon-card" style="background: repeating-linear-gradient(45deg, #15161A, #15161A 10px, #1c1e24 10px, #1c1e24 20px);">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                    <div style="font-size:10px; font-weight:700; color:#888; letter-spacing:1px; margin-bottom:5px;">TÄGLICHER HEALTH SCORE</div>
-                        <div style="display:flex; align-items:baseline; gap:5px;">
-                            <span style="font-size:48px; font-weight:800; line-height:1; color:white;">86</span>
-                            <span style="font-size:14px; color:#666; font-weight:600;">/ 100</span>
-                        </div>
-                        <div class="tag-row" style="margin-top:15px;">
-                            <div class="tag" style="color:#aaa;"><div class="dot" style="background:#ccff00;"></div> Schlaf +3</div>
-                            <div class="tag" style="color:#aaa;"><div class="dot" style="background:#ccff00;"></div> Erholung +1</div>
-                        </div>
-                    </div>
-                    
-                    <div style="position:relative; width:80px; height:80px;">
-                        <svg width="80" height="80" viewBox="0 0 100 100">
-                            
-                            <circle cx="50" cy="50" r="40" fill="none" stroke="#222" stroke-width="10" />
-                            
-                            <circle cx="50" cy="50" r="40" fill="none" stroke="#ccff00" stroke-width="10" 
-                                    stroke-dasharray="251.2" stroke-dashoffset="35" stroke-linecap="round"
-                                    transform="rotate(-90 50 50)" />
-                        </svg>
-                        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;">
-                            <div style="font-size:16px; font-weight:bold; color:white;">86</div>
-                            <div style="font-size:8px; color:#888; text-transform:uppercase;">Heute</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div style="font-size:10px; font-weight:700; color:#888; letter-spacing:1px; margin-bottom:15px; text-transform:uppercase;">Vitalwerte</div>
-            
-            <div class="grid-2">
-                
-                <div class="mini-card" style="height: auto; padding: 20px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <span class="mini-label">Puls</span>
-                        <span style="font-size:12px; color:#888;">? +2</span>
-                    </div>
-                    <div class="mini-val" style="font-size:32px;">62 <span style="font-size:14px; color:#888; font-weight:500;">bpm</span></div>
-                </div>
-                
-                <div class="mini-card" style="height: auto; padding: 20px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <span class="mini-label">Schritte</span>
-                        <span style="font-size:12px; color:#888;">? +8%</span>
-                    </div>
-                    <div class="mini-val" style="font-size:32px;">7,840</div>
-                    <div style="font-size:12px; color:#666; font-weight:500;">heute</div>
-                </div>
-            </div>
-            
-            
-            <div class="card" style="padding: 20px;">
-                <div style="display:flex; justify-content:space-between; align-items:end; margin-bottom:15px;">
-                    <div>
-                        <div class="mini-label" style="margin-bottom:5px;">SCHLAF</div>
-                        <div style="font-size:32px; font-weight:700;">7h 24m</div>
-                        <span style="font-size:12px; color:#666;">letzte Nacht</span>
-                    </div>
-                    <div style="text-align:right;">
-                        <div class="mini-label" style="margin-bottom:5px;">QUALITÄT</div>
-                        <div style="font-size:24px; font-weight:700;">82 <span style="font-size:14px; color:#666;">/100</span></div>
-                    </div>
-                </div>
-                
-                <div style="margin-bottom:15px;">
-                    <div class="mini-label" style="margin-bottom:10px;">PHASEN</div>
-                    
-                    <div style="display:flex; height:8px; border-radius:4px; overflow:hidden; width:100%; margin-bottom:15px;">
-                        <div style="width:20%; background:#3b2a5a;"></div>
-                        <div style="width:55%; background:#5d4b85;"></div>
-                        <div style="width:25%; background:#9b5De5;"></div>
-                    </div>
-                    
-                    
-                    <div style="display:flex; justify-content:space-between; gap:5px;">
-                        <div style="background:#15161A; border:1px solid #333; border-radius:10px; padding:8px 12px; flex:1; text-align:center;">
-                            <div style="font-size:10px; color:#888; font-weight:bold; margin-bottom:2px;">TIEF</div>
-                            <div style="font-size:12px; font-weight:bold;">1h 38</div>
-                        </div>
-                        <div style="background:#15161A; border:1px solid #333; border-radius:10px; padding:8px 12px; flex:1; text-align:center;">
-                            <div style="font-size:10px; color:#888; font-weight:bold; margin-bottom:2px;">LEICHT</div>
-                            <div style="font-size:12px; font-weight:bold;">4h 08</div>
-                        </div>
-                        <div style="background:#15161A; border:1px solid #333; border-radius:10px; padding:8px 12px; flex:1; text-align:center;">
-                            <div style="font-size:10px; color:#888; font-weight:bold; margin-bottom:2px;">REM</div>
-                            <div style="font-size:12px; font-weight:bold;">1h 38</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            
-            <div class="card" style="padding: 20px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <div>
-                        <div class="mini-label" style="margin-bottom:5px;">WASSER</div>
-                        <div style="font-size:32px; font-weight:700;">1.6 <span style="font-size:18px; color:#666;">/ 2.5 L</span></div>
-                    </div>
-                    <button style="background:var(--accent-blue); border:none; border-radius:20px; padding:8px 16px; color:black; font-weight:bold; font-size:14px;">+ Add</button>
-                </div>
-                
-                <div style="height:6px; background:#333; border-radius:3px; margin-bottom:20px; overflow:hidden;">
-                    <div style="width:60%; height:100%; background:var(--accent-blue);"></div>
-                </div>
-                
-                <div style="display:flex; justify-content:space-between;">
-                    
-                    <div style="display:flex; gap:5px;">
-                       <div style="width:20px; height:30px; background:var(--accent-blue); border-radius:10px;"></div>
-                       <div style="width:20px; height:30px; background:var(--accent-blue); border-radius:10px;"></div>
-                       <div style="width:20px; height:30px; background:var(--accent-blue); border-radius:10px;"></div>
-                       <div style="width:20px; height:30px; background:var(--accent-blue); border-radius:10px;"></div>
-                       <div style="width:20px; height:30px; background:var(--accent-blue); border-radius:10px;"></div>
-                       <div style="width:20px; height:30px; background:var(--accent-blue); border-radius:10px;"></div>
-                       <div style="width:20px; height:30px; background:#222; border-radius:10px; border:1px solid #333;"></div>
-                       <div style="width:20px; height:30px; background:#222; border-radius:10px; border:1px solid #333;"></div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
     </div>
 
-    
-    <nav class="bottom-nav">
-        <div class="nav-icon active"><i class="fa-solid fa-house"></i></div>
-        <div class="nav-icon"><i class="fa-solid fa-chart-simple"></i></div>
-        <div class="nav-icon" style="font-size: 24px;"><i class="fa-solid fa-circle-plus"></i></div>
-        <div class="nav-icon"><i class="fa-solid fa-user"></i></div>
-    </nav>
-
-
+    <!-- Load main script -->
     <script src="script.js"></script>
 </body>
 </html>

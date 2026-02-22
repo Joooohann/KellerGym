@@ -305,3 +305,101 @@ body:not(.no-nav) .bottom-nav { display: flex; }
 .mini-card { background: #1c1e24; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; height: 110px; }
 .mini-label { font-size: 11px; color: var(--text-mute); text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
 .mini-val { font-size: 28px; font-weight: 700; }
+
+/* Generating Screen Animation */
+.breathing-loader {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    /* Fade in the whole loader initially over 0.5s */
+    animation: loader-entry 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes loader-entry {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.b-dot {
+    position: absolute;
+    width: 9px; 
+    height: 9px;
+    background: var(--primary);
+    border-radius: 50%;
+    top: 55.5px; /* (120 - 9)/2 */
+    left: 55.5px;
+    
+    /* 360 / 16 = 22.5 degrees per dot */
+    transform: rotate(calc(var(--i) * 22.5deg)) translate(42px);
+    
+    animation: breathe-dots 2s ease-in-out infinite;
+}
+
+/* 16 Dots -> 4 Groups of 4 */
+/* Use negative delays so the animation starts "already running" */
+
+/* Group 0: Indices 0, 4, 8, 12 */
+.b-dot:nth-child(1), .b-dot:nth-child(5), .b-dot:nth-child(9), .b-dot:nth-child(13) {
+    animation-delay: -2s;
+}
+
+/* Group 1: Indices 1, 5, 9, 13 */
+.b-dot:nth-child(2), .b-dot:nth-child(6), .b-dot:nth-child(10), .b-dot:nth-child(14) {
+    animation-delay: -1.5s;
+}
+
+/* Group 2: Indices 2, 6, 10, 14 */
+.b-dot:nth-child(3), .b-dot:nth-child(7), .b-dot:nth-child(11), .b-dot:nth-child(15) {
+    animation-delay: -1.0s;
+}
+
+/* Group 3: Indices 3, 7, 11, 15 */
+.b-dot:nth-child(4), .b-dot:nth-child(8), .b-dot:nth-child(12), .b-dot:nth-child(16) {
+    animation-delay: -0.5s;
+}
+
+
+@keyframes breathe-dots {
+    0% { transform: rotate(calc(var(--i) * 22.5deg)) translate(42px) scale(1); opacity: 0.3; }
+    50% { transform: rotate(calc(var(--i) * 22.5deg)) translate(58px) scale(1.6); opacity: 1; box-shadow: 0 0 12px var(--primary); }
+    100% { transform: rotate(calc(var(--i) * 22.5deg)) translate(42px) scale(1); opacity: 0.3; }
+}
+
+/* SPLIT SELECTION Specific Styles */
+.split-opt {
+    position: relative;
+    padding: 25px 20px; /* More vertical padding */
+}
+
+.split-opt .title {
+    font-weight: 700;
+}
+
+.info-icon {
+    position: absolute !important;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px !important;
+    color: var(--text-mute);
+    padding: 5px;
+    margin: 0 !important;
+    background: rgba(255,255,255,0.05);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.info-icon:hover {
+    color: white;
+    background: rgba(255,255,255,0.1);
+}
+
+/* Info box styles removed as it is now inline style controlled */
+
+.select-card.disabled { opacity: 0.5; filter: grayscale(100%); cursor: not-allowed; }
+.select-card.disabled .title { color: #888; }

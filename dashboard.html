@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KellerGym - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Dashboard specific overrides if needed */
+        body { padding-bottom: 100px; } /* Space for navbar */
+    </style>
+</head>
+<body>
+
+    <div id="app-viewport">
+        
+        <!-- DASHBOARD HOME -->
+        <div id="screen-home" class="screen active" style="display:block !important; opacity:1;">
+            <div class="header-row">
+                <div>
+                    <div style="font-size: 14px; color: var(--text-mute); font-weight: 600;" id="date-display">DON. 21. FEB</div>
+                    <h1 style="font-size: 24px;">Guten Morgen, <span id="user-name">Admin</span></h1>
+                </div>
+                
+                <div style="display:flex; gap:15px; align-items:center;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #1c1e24; display:flex; align-items:center; justify-content:center; border: 1px solid #333;">
+                        <i class="fa-regular fa-bell" style="color:white;"></i>
+                    </div>
+                    <div class="avatar" style="width:40px; height:40px; border-radius:50%; background: grey; background-image: url('https://i.pravatar.cc/150?img=11'); background-size: cover;"></div>
+                </div>
+            </div>
+
+            <!-- Health Score Card -->
+            <div class="carbon-card" style="background: repeating-linear-gradient(45deg, #15161A, #15161A 10px, #1c1e24 10px, #1c1e24 20px);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                    <div style="font-size:10px; font-weight:700; color:#888; letter-spacing:1px; margin-bottom:5px;">TÄGLICHER HEALTH SCORE</div>
+                        <div style="display:flex; align-items:baseline; gap:5px;">
+                            <span style="font-size:48px; font-weight:800; line-height:1; color:white;">86</span>
+                            <span style="font-size:14px; color:#666; font-weight:600;">/ 100</span>
+                        </div>
+                        <div class="tag-row" style="margin-top:15px;">
+                            <div class="tag" style="color:#aaa;"><div class="dot" style="background:#ccff00;"></div> Schlaf +3</div>
+                            <div class="tag" style="color:#aaa;"><div class="dot" style="background:#ccff00;"></div> Erholung +1</div>
+                        </div>
+                    </div>
+                    
+                    <div style="position:relative; width:80px; height:80px;">
+                        <svg width="80" height="80" viewBox="0 0 100 100">
+                            <!-- Background circle -->
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#222" stroke-width="10" />
+                            <!-- Progress circle -->
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#ccff00" stroke-width="10" 
+                                    stroke-dasharray="251.2" stroke-dashoffset="35" stroke-linecap="round"
+                                    transform="rotate(-90 50 50)" />
+                        </svg>
+                        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;">
+                            <div style="font-size:16px; font-weight:bold; color:white;">86</div>
+                            <div style="font-size:8px; color:#888; text-transform:uppercase;">Heute</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-size:10px; font-weight:700; color:#888; letter-spacing:1px; margin-bottom:15px; text-transform:uppercase;">Vitalwerte</div>
+            
+            <div class="grid-2">
+                <!-- Puls -->
+                <div class="mini-card" style="height: auto; padding: 20px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <span class="mini-label">Puls</span>
+                        <span style="font-size:12px; color:#888;">? +2</span>
+                    </div>
+                    <div class="mini-val" style="font-size:32px;">62 <span style="font-size:14px; color:#888; font-weight:500;">bpm</span></div>
+                </div>
+                <!-- Schritte -->
+                <div class="mini-card" style="height: auto; padding: 20px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <span class="mini-label">Schritte</span>
+                        <span style="font-size:12px; color:#888;">? +8%</span>
+                    </div>
+                    <div class="mini-val" style="font-size:32px;">7,840</div>
+                    <div style="font-size:12px; color:#666; font-weight:500;">heute</div>
+                </div>
+            </div>
+
+            <!-- Calorie Goal Card (Calculated & Injected via JS) -->
+            <div class="carbon-card" id="calorie-card" style="display:none; padding: 20px; margin-bottom: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <div class="mini-label" style="margin-bottom:5px;">DEIN TÄGLICHES ZIEL</div>
+                        <div style="font-size:42px; font-weight:800; color:var(--primary); line-height: 1.2;" id="cal-val">--</div>
+                        <div style="font-size:13px; color:var(--text-mute); font-weight: 500;">Kalorien (kcal)</div>
+                    </div>
+                    <div style="width: 50px; height: 50px; background: rgba(0,128,128,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0,128,128,0.2);">
+                        <i class="fa-solid fa-fire" style="color: var(--primary); font-size: 20px;"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sleep Card -->
+            <div class="card" style="padding: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:end; margin-bottom:15px;">
+                    <div>
+                        <div class="mini-label" style="margin-bottom:5px;">SCHLAF</div>
+                        <div style="font-size:32px; font-weight:700;">7h 24m</div>
+                        <span style="font-size:12px; color:#666;">letzte Nacht</span>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="mini-label" style="margin-bottom:5px;">QUALITÄT</div>
+                        <div style="font-size:24px; font-weight:700;">82 <span style="font-size:14px; color:#666;">/100</span></div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom:15px;">
+                    <div class="mini-label" style="margin-bottom:10px;">PHASEN</div>
+                    <div style="display:flex; height:8px; border-radius:4px; overflow:hidden; width:100%; margin-bottom:15px;">
+                        <div style="width:20%; background:#3b2a5a;"></div>
+                        <div style="width:55%; background:#5d4b85;"></div>
+                        <div style="width:25%; background:#9b5De5;"></div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; gap:5px;">
+                        <div style="background:#15161A; border:1px solid #333; border-radius:10px; padding:8px 12px; flex:1; text-align:center;">
+                            <div style="font-size:10px; color:#888; font-weight:bold; margin-bottom:2px;">TIEF</div>
+                            <div style="font-size:14px; font-weight:bold;">1h 20m</div>
+                        </div>
+                        <div style="background:#15161A; border:1px solid #333; border-radius:10px; padding:8px 12px; flex:1; text-align:center;">
+                            <div style="font-size:10px; color:#888; font-weight:bold; margin-bottom:2px;">LEICHT</div>
+                            <div style="font-size:14px; font-weight:bold;">4h 10m</div>
+                        </div>
+                        <div style="background:#15161A; border:1px solid #333; border-radius:10px; padding:8px 12px; flex:1; text-align:center;">
+                            <div style="font-size:10px; color:#888; font-weight:bold; margin-bottom:2px;">REM</div>
+                            <div style="font-size:14px; font-weight:bold;">1h 54m</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Plan Card -->
+            <div class="card" style="padding: 20px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;">
+                <div>
+                     <div class="mini-label" style="margin-bottom:5px;">DEIN PLAN</div>
+                     <div style="font-size:18px; font-weight:700;" id="dash-plan">Lade Plan...</div>
+                </div>
+                <div style="width:40px; height:40px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                    <i class="fa-solid fa-dumbbell" style="color:white;"></i>
+                </div>
+            </div>
+
+        </div> <!-- End Screen Home -->
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav" style="display:flex;">
+        <div class="nav-icon active"><i class="fa-solid fa-house"></i></div>
+        <div class="nav-icon"><i class="fa-solid fa-dumbbell"></i></div>
+        <div class="nav-icon"><i class="fa-solid fa-plus" style="font-size:24px; color:white; background:var(--primary); width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 0 15px var(--primary);"></i></div>
+        <div class="nav-icon"><i class="fa-solid fa-calendar-days"></i></div>
+        <div class="nav-icon"><i class="fa-regular fa-user"></i></div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Inline script to init dashboard specific logic
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if we have data from onboarding
+            const savedData = localStorage.getItem('kellerGymData');
+            if(savedData) {
+                window.obData = JSON.parse(savedData);
+                console.log("Loaded data from storage:", window.obData);
+                
+                // Trigger calculation immediately
+                if(typeof calculateCalories === 'function') {
+                    calculateCalories();
+                } else {
+                    console.error("calculateCalories function not found!");
+                }
+                
+                // Update Plan Text
+                const planText = document.getElementById('dash-plan');
+                if(planText && window.obData.freq) {
+                    planText.innerText = `${window.obData.freq}x Training (${window.obData.split ? window.obData.split.toUpperCase() : 'Custom'})`;
+                }
+            } else {
+                console.log("No data found, using defaults or redirecting?");
+                // Optional: Redirect to onboarding if no data? 
+                // window.location.href = 'onboarding.html';
+                
+                // Init with dummy data for view
+                window.obData = {}; 
+                if(typeof calculateCalories === 'function') calculateCalories();
+            }
+        });
+    </script>
+</body>
+</html>

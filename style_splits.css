@@ -1,0 +1,53 @@
+
+/* SPLIT SELECTION Specific Styles */
+.split-opt {
+    position: relative;
+    padding: 25px 20px; /* More vertical padding */
+}
+
+.split-opt .title {
+    font-weight: 700;
+}
+
+.info-icon {
+    position: absolute !important;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px !important;
+    color: var(--text-mute);
+    padding: 5px;
+    margin: 0 !important;
+    background: rgba(255,255,255,0.05);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.info-icon:hover {
+    color: white;
+    background: rgba(255,255,255,0.1);
+}
+
+.info-box-hidden {
+    position: fixed;
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+    margin: 0;
+    border-radius: 24px 24px 0 0;
+    transform: translateY(120%);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* bouncy pop */
+    z-index: 1000;
+    background: #1c1e24; 
+    padding: 24px;
+    border-top: 2px solid var(--primary);
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
+}
+
+.info-box-hidden.active {
+    transform: translateY(0);
+}
