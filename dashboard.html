@@ -170,11 +170,19 @@
                 window.obData = JSON.parse(savedData);
                 console.log("Loaded data from storage:", window.obData);
                 
-                // Trigger calculation immediately
-                if(typeof calculateCalories === 'function') {
-                    calculateCalories();
+                if(window.obData.username === "Admin") {
+                    // Admin Mode: Force 0 calories
+                    const card = document.getElementById('calorie-card');
+                    const valSpan = document.getElementById('cal-val');
+                    if (card) card.style.display = 'block';
+                    if (valSpan) valSpan.innerText = "0";
                 } else {
-                    console.error("calculateCalories function not found!");
+                    // Normal Mode: Trigger calculation immediately
+                    if(typeof calculateCalories === 'function') {
+                        calculateCalories();
+                    } else {
+                        console.error("calculateCalories function not found!");
+                    }
                 }
                 
                 // Update Plan Text
