@@ -382,19 +382,20 @@ body:not(.no-nav) .bottom-nav { display: flex; }
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 16px !important;
+    font-size: 18px !important; /* Slightly bigger to fill the circle better */
     color: var(--text-mute);
-    padding: 10px; /* Larger hit area */
+    padding: 0; 
+    padding-top: 7px;
     margin: 0 !important;
     background: rgba(255,255,255,0.05);
-    width: 32px; /* Slightly larger */
+    width: 32px; 
     height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    z-index: 50; /* Ensure on top */
-    cursor: pointer; /* Force pointer */
+    z-index: 50; 
+    cursor: pointer; 
 }
 
 .info-icon:hover {
