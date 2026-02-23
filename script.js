@@ -79,7 +79,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         loginBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            // Navigate to Onboarding
+            
+            const userField = document.getElementById('login-user');
+            const passField = document.getElementById('login-pass');
+            
+            if(userField && passField) {
+                const u = userField.value;
+                const p = passField.value;
+                
+                if((u === 'admin' && p === 'admin') || (u === 'a' && p === 'a')) {
+                    // Admin Bypass: Go directly to dashboard with 0 calories
+                    console.log("Admin Login Detected");
+                    const adminData = {
+                        calories: 0,
+                        username: "Admin",
+                        freq: 0,
+                        split: "Test"
+                    };
+                    localStorage.setItem('kellerGymData', JSON.stringify(adminData));
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+            }
+            
+            // Default: Navigate to Onboarding
             window.location.href = 'onboarding.html';
         });
     }
@@ -345,7 +368,22 @@ const splitInfoData = {
     }
 };
 
-function handleSplitClick(key, element) {
+function handleSplitClick(e, key, element) {
+    if(e && (e.target.classList.contains('info-icon') || e.target.closest('.info-icon'))) {
+        return; // Ignore clicking on info icon
+    }
+
+    // Adapt to old calls where e might be missing (just in case)
+    // If called with (key, element) only
+    if(typeof e === 'string') {
+        // e is key, key is element, element is undefined
+        element = key;
+        key = e;
+    }
+    
+    // Safety check
+    if(!element) return;
+    
     const freq = obData.freq || 3; // Default to 3 if missing for safety
     const info = splitInfoData[key];
     
@@ -367,9 +405,18 @@ function handleSplitClick(key, element) {
 }
 
 function showSplitInfo(e, key) {
-    if(e) e.stopPropagation(); // Don't trigger card click
+    if(e) {
+        e.preventDefault();
+        e.stopPropagation(); // Don't trigger card click
+    }
+    console.log("Showing info for:", key);
     
     const info = splitInfoData[key];
+    if(!info) {
+        console.error("No info found for key:", key);
+        return;
+    }
+
     const box = document.getElementById('split-info-box');
     const t = document.getElementById('info-box-title');
     const d = document.getElementById('info-box-desc');
@@ -380,16 +427,12 @@ function showSplitInfo(e, key) {
         d.innerText = info.desc;
         
         box.style.display = 'block';
-        // Ensure scroll to logic if needed, but it pushes buttons down which is desired
-        // If the box was hidden, it now appears and pushes buttons down.
         
-        // Match style of "active" card
-        // .select-card.active { border-color: var(--primary); background: rgba(0, 128, 128, 0.1); }
-        // BUT wait, user said "Farbe zB des Kästchens von Ganzkörper wenn es aktiviert ist"
-        // Active card background is rgba(0, 128, 128, 0.1).
-        // Let's set that.
+        // Reset styles (in case error state persisted)
         box.style.background = 'rgba(0, 128, 128, 0.1)';
         box.style.borderColor = 'var(--primary)';
+    } else {
+        console.error("Info box elements not found!");
     }
 }
 
@@ -713,48 +756,6 @@ function calculateCalories() {
 /* 
   completeSetup removed 
 */
-
-
-const splitInfos = {
-    'ppl': {
-        title: 'Push / Pull / Legs',
-        desc: 'Ein Klassiker für Fortgeschrittene. Du trainierst Druckübungen (Brust/Schulter/Trizeps), Zugübungen (Rücken/Bizeps) und Beine an separaten Tagen. Ideal bei 3x oder 6x Training pro Woche.'
-    },
-    'pp': {
-        title: 'Push / Pull',
-        desc: 'Unterteilt das Training in Druck- (Push) und Zugbewegungen (Pull). Beine werden oft integriert. Sehr flexibel und gut geeignet für 2, 4 oder 6 Trainingstage.'
-    },
-    'ul': {
-        title: 'Upper / Lower',
-        desc: 'Teilt den Körper in Oberkörper und Unterkörper auf. Sehr effizient, um jede Muskelgruppe 2x pro Woche zu trainieren (bei 4 Trainingstagen).'
-    },
-    'full': {
-        title: 'Ganzkörper',
-        desc: 'Du trainierst in jeder Einheit den kompletten Körper. Perfekt für Einsteiger oder wenn du 2-3x pro Woche trainierst, um maximale Frequenz zu haben.'
-    },
-    'bro': {
-        title: 'Bro Split',
-        desc: 'Jeden Tag eine andere Muskelgruppe (z.B. Brust-Tag, Rücken-Tag). Hohes Volumen pro Muskel, aber geringere Frequenz. Beliebt im Oldschool-Bodybuilding.'
-    }
-};
-
-function showSplitInfo(event, type) {
-    if(event) event.stopPropagation();
-    
-    const info = splitInfos[type];
-    if(!info) return;
-    const box = document.getElementById('split-info-box');
-    const title = document.getElementById('info-box-title');
-    const desc = document.getElementById('info-box-desc');
-    if(title) title.innerText = info.title;
-    if(desc) desc.innerText = info.desc;
-    if(box) box.classList.add('active');
-}
-
-function closeInfoBox() {
-    const box = document.getElementById('split-info-box');
-    if(box) box.classList.remove('active');
-}
 
 
 
