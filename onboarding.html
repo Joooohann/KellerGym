@@ -89,7 +89,7 @@
                 <p class="subtitle">Aktuelles Körpergewicht in kg.</p>
                 <div class="slider-container">
                     <div class="value-display"><span id="val-weight">75</span> <span class="unit">kg</span></div>
-                    <input type="range" id="range-weight" min="40" max="150" value="75" step="0.5" class="slider" oninput="syncInputs('weight', this.value)">
+                    <input type="range" id="range-weight" min="40" max="120" value="75" step="0.5" class="slider" oninput="syncInputs('weight', this.value)">
                 </div>
                 <div class="nav-buttons">
                     <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
@@ -103,7 +103,7 @@
                 <p class="subtitle">Körpergröße in cm.</p>
                 <div class="slider-container">
                     <div class="value-display"><span id="val-height">180</span> <span class="unit">cm</span></div>
-                    <input type="range" id="range-height" min="140" max="220" value="180" step="1" class="slider" oninput="syncInputs('height', this.value)">
+                    <input type="range" id="range-height" min="150" max="210" value="180" step="1" class="slider" oninput="syncInputs('height', this.value)">
                 </div>
                 <div class="nav-buttons">
                     <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
@@ -117,7 +117,7 @@
                 <p class="subtitle">Eine Schätzung genügt. <br>(Männer ~15%, Frauen ~25%)</p>
                 <div class="slider-container">
                     <div class="value-display"><span id="val-bodyfat">15</span> <span class="unit">%</span></div>
-                    <input type="range" id="range-bodyfat" min="5" max="50" value="15" step="1" class="slider" oninput="syncInputs('bodyfat', this.value)">
+                    <input type="range" id="range-bodyfat" min="5" max="40" value="15" step="1" class="slider" oninput="syncInputs('bodyfat', this.value)">
                 </div>
                  <div class="nav-buttons">
                     <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
@@ -233,6 +233,7 @@
                     <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
                     <button class="btn" id="btn-next-9" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
+                <div style="height: 100px;"></div>
             </div>
 
             <!-- STEP 10: FREQUENCY -->
@@ -268,31 +269,31 @@
                 
                 <div class="select-grid" id="split-grid">
                     <!-- Push / Pull / Legs -->
-                    <div class="select-card split-opt" data-val="ppl" onclick="handleSplitClick('ppl', this)">
+                    <div class="select-card split-opt" data-val="ppl" onclick="handleSplitClick(event, 'ppl', this)">
                         <span class="title">Push / Pull / Legs</span>
                         <i class="fa-solid fa-info-circle info-icon" onclick="showSplitInfo(event, 'ppl')"></i>
                     </div>
 
                     <!-- Push / Pull -->
-                    <div class="select-card split-opt" data-val="pp" onclick="handleSplitClick('pp', this)">
+                    <div class="select-card split-opt" data-val="pp" onclick="handleSplitClick(event, 'pp', this)">
                         <span class="title">Push / Pull</span>
                         <i class="fa-solid fa-info-circle info-icon" onclick="showSplitInfo(event, 'pp')"></i>
                     </div>
                 
                     <!-- Upper / Lower -->
-                    <div class="select-card split-opt" data-val="ul" onclick="handleSplitClick('ul', this)">
+                    <div class="select-card split-opt" data-val="ul" onclick="handleSplitClick(event, 'ul', this)">
                         <span class="title">Upper / Lower</span>
                         <i class="fa-solid fa-info-circle info-icon" onclick="showSplitInfo(event, 'ul')"></i>
                     </div>
 
                     <!-- Ganzkörper -->
-                    <div class="select-card split-opt" data-val="full" onclick="handleSplitClick('full', this)">
+                    <div class="select-card split-opt" data-val="full" onclick="handleSplitClick(event, 'full', this)">
                         <span class="title">Ganzkörper</span>
                         <i class="fa-solid fa-info-circle info-icon" onclick="showSplitInfo(event, 'full')"></i>
                     </div>
 
                     <!-- Bro Split -->
-                    <div class="select-card split-opt" data-val="bro" onclick="handleSplitClick('bro', this)">
+                    <div class="select-card split-opt" data-val="bro" onclick="handleSplitClick(event, 'bro', this)">
                         <span class="title">Bro Split</span>
                         <i class="fa-solid fa-info-circle info-icon" onclick="showSplitInfo(event, 'bro')"></i>
                     </div>

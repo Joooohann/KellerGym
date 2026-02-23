@@ -374,6 +374,7 @@ body:not(.no-nav) .bottom-nav { display: flex; }
 
 .split-opt .title {
     font-weight: 700;
+    font-size: 14px;
 }
 
 .info-icon {
@@ -383,15 +384,17 @@ body:not(.no-nav) .bottom-nav { display: flex; }
     transform: translateY(-50%);
     font-size: 16px !important;
     color: var(--text-mute);
-    padding: 5px;
+    padding: 10px; /* Larger hit area */
     margin: 0 !important;
     background: rgba(255,255,255,0.05);
-    width: 28px;
-    height: 28px;
+    width: 32px; /* Slightly larger */
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
+    z-index: 50; /* Ensure on top */
+    cursor: pointer; /* Force pointer */
 }
 
 .info-icon:hover {
