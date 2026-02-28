@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KellerGym - Workouts</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { padding-bottom: 100px; }
+    </style>
+</head>
+<body>
+
+    <div id="app-viewport">
+        <div class="header-row">
+            <h1>Workouts</h1>
+        </div>
+
+        <div class="card" style="padding: 20px; text-align: center; color: var(--text-mute);">
+            <i class="fa-solid fa-dumbbell" style="font-size: 48px; margin-bottom: 15px;"></i>
+            <p>Hier findest du bald deine Trainingspläne.</p>
+
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0;">
+            <p style="font-size: 12px; margin-bottom: 20px;">Icon Vorschau:</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; font-size: 24px; color: white;">
+                <div title="Dumbbell"><i class="fa-solid fa-dumbbell"></i></div>
+                <div title="Weight"><i class="fa-solid fa-weight-hanging"></i></div>
+                <div title="Person Lifting"><i class="fa-solid fa-person-lifting-weights"></i></div>
+                
+                <div title="Dumbbell"><i class="fa-solid fa-dumbbell"></i></div>
+                
+                <div title="Arm Flexing (Custom CSS Icon)">
+                    <div class="arm-flex-icon" style="width: 24px; height: 24px; display: inline-block;">
+                        <svg viewBox="0 0 512 512" style="fill:white;">
+                           <path d="M123.6 391.3c12.9-9.4 29.6-11.8 44.6-6.4c26.5 9.6 56.2 15.1 87.8 15.1c124.7 0 208-80.5 208-160s-83.3-160-208-160C130.3 80 50.9 136.6 22.4 243.5c-1.8 6.7-1.7 13.5 .4 20l27 69c4.2 10.6 15.9 16.2 26.8 12.8l10.8-3.4c6.6-2.1 9.7-9.5 7-15.8c-1.3-3.1-2.9-5.9-4.8-8.5c-3.1-4.3-3.4-10-.7-14.6l5.7-9.5c4.7-8 15.4-9.8 22.6-3.8l11.4 9.5c6.6 5.5 16.3 5.4 22.8- .2l4.8-4.2c6.9-6 17.5-5.5 23.9 1.1l7.6 7.9c5.6 5.9 5.2 15.3-.9 20.7l-9.1 8c-7 6.1-9 16.2-4.9 24.5l5.2 10.6c4.5 9.1 1.7 20.2-6.7 26.2zM256 0C114.6 0 0 107.5 0 240c0 42.4 11.8 82 32.5 116.3l-1.8 4.6c-5.7 14.7-2.7 31.6 8 43.1l69 74.4c17.1 18.5 45.8 20.4 65.3 4.3l12.6-10.4c16.3-13.4 20.6-36.6 10.1-55.2l-5.6-9.8c-5.5-9.6-3.4-21.7 4.9-28.9l6.5-5.6c11.3-9.8 28.2-8.6 38.3 2.7l3 3.4c10.8 12 29.5 12.3 40.7 .6L378 355c17.3-18.1 16.8-46.7-.8-64.2l-3-3C450.3 273.9 496 211.9 496 144C496 64.5 388.5 0 256 0z"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div title="Hand Fist"><i class="fa-solid fa-hand-fist"></i></div>
+                <div title="Running"><i class="fa-solid fa-person-running"></i></div>
+                
+                <div title="Stopwatch"><i class="fa-solid fa-stopwatch"></i></div>
+                <div title="Bolt"><i class="fa-solid fa-bolt"></i></div>
+                <div title="Heart Pulse"><i class="fa-solid fa-heart-pulse"></i></div>
+                <div title="List Check"><i class="fa-solid fa-list-check"></i></div>
+
+                <div title="Medal"><i class="fa-solid fa-medal"></i></div>
+                <div title="Trophy"><i class="fa-solid fa-trophy"></i></div>
+                <div title="Fire"><i class="fa-solid fa-fire"></i></div>
+                <div title="Calendar"><i class="fa-solid fa-calendar-days"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-icon"><i class="fa-solid fa-house"></i></a>
+        <a href="workouts.html" class="nav-icon active"><i class="fa-solid fa-dumbbell"></i></a>
+        <a href="nutrition.html" class="nav-icon"><i class="fa-solid fa-utensils"></i></a>
+        <a href="profile.html" class="nav-icon"><i class="fa-regular fa-user"></i></a>
+    </div>
+
+</body>
+</html>

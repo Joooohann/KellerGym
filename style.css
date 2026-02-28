@@ -285,6 +285,7 @@ p.subtitle { color: var(--text-mute); font-size: 14px; margin-bottom: 30px; line
 }
 body:not(.no-nav) .bottom-nav { display: flex; }
 .nav-icon {
+    text-decoration: none; /* Ensure no underline for links */
     color: var(--text-mute); font-size: 20px; width: 45px; height: 45px;
     display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.3s;
 }
