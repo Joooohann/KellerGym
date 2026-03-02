@@ -1,0 +1,59 @@
+/* New Dashboard Styles */
+
+/* Week Overview Circles */
+.week-day-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-width: 40px;
+}
+
+.week-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2a2d35; /* Default grey bg */
+    border: 2px solid transparent;
+    transition: 0.3s;
+}
+
+.week-circle.active {
+    border-color: var(--primary);
+}
+
+.week-circle i, .week-circle svg {
+    color: #666;
+    font-size: 16px;
+    width: 18px; /* For SVG */
+}
+
+.week-circle.active i, .week-circle.active svg {
+    color: var(--primary); /* Icon color matching border? Or white? Sketch says "Turquoise" */
+    fill: var(--primary); /* For SVG */
+}
+
+/* Day Label */
+.week-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+}
+
+.week-label.active {
+    color: var(--primary);
+}
+
+/* Nutrition Dots */
+.n-dot {
+    width: 6px; 
+    height: 6px; 
+    border-radius: 50%; 
+    background: #333;
+}
+.n-dot.active {
+    background: var(--primary);
+}
