@@ -20,7 +20,7 @@
         /* History Dots Grid */
         .history-grid {
             display: grid;
-            grid-template-columns: repeat(7, 14px); /* 7 cols to fit week */
+            grid-template-columns: repeat(7, 12px); /* Slightly smaller dots */
             justify-content: center; /* Horizontally centered */
             gap: 8px 10px; /* adj gap to fit 7 cols */
             margin-top: 15px;
@@ -286,10 +286,10 @@
                 col.style.alignItems = 'center';
                 col.style.gap = '5px';
 
-                // Circle (40x40)
+                // Circle (30x30)
                 const circle = document.createElement('div');
-                circle.style.width = '32px';
-                circle.style.height = '32px';
+                circle.style.width = '30px';
+                circle.style.height = '30px';
                 circle.style.borderRadius = '50%';
                 circle.style.display = 'flex';
                 circle.style.alignItems = 'center';
