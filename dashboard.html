@@ -110,7 +110,7 @@
                     </div>
                     
                     <!-- Rig Image -->
-                    <img src="img/rig.png" class="rig-image">
+                    <img src="img/lower_body.png" class="rig-image" id="training-img" onclick="toggleTrainingImage(event)">
                 </div>
             </div>
 
@@ -135,7 +135,7 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
                 
                 <!-- Quote (Tagesspruch) -->
-                <div class="simple-card" style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; height: 160px;">
+                <div id="section-quote" class="simple-card" style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; height: 160px;">
                     <div>
                         <div style="font-size:17px; font-weight:700; margin-bottom:10px;">Tagesspruch</div>
                         <div id="quote-content" style="font-size:20px; font-weight: 600; line-height: 1.3; color: var(--primary);">
@@ -203,7 +203,7 @@
              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
                 
                 <!-- Wasser -->
-                <div class="simple-card" style="padding: 10px; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px; background: #15161A;"> 
+                <div id="section-water" class="simple-card" style="padding: 10px; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px; background: #15161A;"> 
                     <div style="font-size:16px; font-weight:700; margin-bottom:2px;">Wasser</div>
                     
                     <!-- Glass Visual & Total -->
@@ -264,7 +264,7 @@
             </div>
 
             <!-- Sleep Section -->
-            <div class="simple-card" style="padding: 15px; margin-bottom: 30px; position: relative;">
+            <div id="section-sleep" class="simple-card" style="padding: 15px; margin-bottom: 30px; position: relative;">
                 <div style="font-size:18px; font-weight:700; margin-bottom:5px;">Schlaf</div>
                 
                 <!-- Link Arrow -->
@@ -599,6 +599,19 @@
              }
         }
         
+        function toggleTrainingImage(event) {
+            if(event) event.stopPropagation();
+            const img = document.getElementById('training-img');
+            if(img) {
+                // Toggle src
+                if(img.src.indexOf('lower_body.png') > -1) {
+                    img.src = 'img/upper_body.png';
+                } else {
+                    img.src = 'img/lower_body.png';
+                }
+            }
+        }
+
         function updateWater(direction) {
             waterAmount += (direction * waterIncrement);
             if(waterAmount < 0) waterAmount = 0;
@@ -621,7 +634,7 @@
 
         // Inline script to init dashboard specific logic
         document.addEventListener('DOMContentLoaded', () => {
-            // Check if we have data from onboarding
+            // 1. Load Profile Data
             const savedData = localStorage.getItem('kellerGymData');
             if(savedData) {
                 try {
@@ -632,6 +645,23 @@
                 }
             } else {
                 window.obData = {}; 
+            }
+
+            // 2. Load Settings
+            const savedSettings = localStorage.getItem('kellerGymSettings');
+            if (savedSettings) {
+                try {
+                    const settings = JSON.parse(savedSettings);
+                    
+                    // Sleep
+                    if (settings.sleepTracking === false) {
+                        const sleepSection = document.getElementById('section-sleep');
+                        if (sleepSection) sleepSection.style.display = 'none';
+                    }
+                    
+                } catch (e) {
+                    console.error("Error parsing settings", e);
+                }
             }
             
             // Render

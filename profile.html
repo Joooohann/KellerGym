@@ -6,21 +6,242 @@
     <title>KellerGym - Profil</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         body { padding-bottom: 100px; }
+        
+        .section-header {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #fff;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        .input-row {
+            margin-bottom: 15px;
+        }
+        .input-row label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-mute);
+            margin-bottom: 5px;
+        }
+        .input-row input, .input-row select {
+            width: 100%;
+            background: #15161A;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .input-row input:focus, .input-row select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        /* Toggle Switch */
+        .switch-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #15161A;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 34px;
+            border: none;
+            height: 28px; /* Override global slider height */
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        
+        .nav-card {
+            background: #15161A;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: white;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
 
     <div id="app-viewport">
         <div class="header-row">
-            <h1>Dein Profil</h1>
+            <h1>Profil</h1>
+             <!-- Avatar Edit -->
+             <div style="width:40px; height:40px; border-radius:50%; overflow: hidden; border: 1px solid #333; position:relative;">
+                <img id="prof-img-preview" src="img/profile.jpg" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+           </div>
         </div>
 
-        <div class="card" style="padding: 20px; text-align: center; color: var(--text-mute);">
-            <i class="fa-regular fa-user" style="font-size: 48px; margin-bottom: 15px;"></i>
-            <p>Hier kannst du deine Einstellungen bearbeiten.</p>
+        <!-- Private Daten -->
+        <div class="section-header">Private Daten</div>
+        <div class="card" style="padding: 20px;">
+            
+            <div style="display:flex; justify-content:center; margin-bottom:20px; position:relative;">
+                <div style="width:80px; height:80px; border-radius:50%; overflow: hidden; border: 2px solid var(--primary);">
+                    <img id="prof-img-large" src="img/profile.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div style="position:absolute; bottom:0; padding: 4px 10px; background:var(--primary); border-radius:12px; font-size:10px; font-weight:bold; color:black; cursor:pointer;">
+                    Bearbeiten
+                </div>
+            </div>
+
+            <div class="input-row">
+                <label>Geschlecht</label>
+                <select id="inp-gender">
+                    <option value="male">Männlich</option>
+                    <option value="female">Weiblich</option>
+                    <option value="other">Divers</option>
+                </select>
+            </div>
+            
+             <div class="input-row">
+                <label>Alter</label>
+                <input type="number" id="inp-age" placeholder="Jahre">
+            </div>
+            
+             <div class="input-row">
+                <label>Größe (cm)</label>
+                <input type="number" id="inp-height" placeholder="cm">
+            </div>
+            
+             <div class="input-row">
+                <label>Gewicht (kg)</label>
+                <input type="number" id="inp-weight" placeholder="kg">
+            </div>
+            
+             <div class="input-row">
+                <label>Körperfettanteil (%)</label>
+                <input type="number" id="inp-bodyfat" placeholder="%">
+            </div>
+
+             <div class="input-row">
+                <label>Aktivität</label>
+                <select id="inp-activity">
+                    <option value="low">Sitzend</option>
+                    <option value="somewhat">Wenig Aktiv</option>
+                    <option value="med">Leicht Aktiv</option>
+                    <option value="high">Sehr Aktiv</option>
+                </select>
+            </div>
+
+             <div class="input-row">
+                <label>Erfahrung</label>
+                <select id="inp-exp">
+                    <option value="beginner">Anfänger</option>
+                    <option value="intermediate">Fortgeschritten</option>
+                    <option value="pro">Profi</option>
+                </select>
+            </div>
+
+             <div class="input-row">
+                <label>Ziel</label>
+                <select id="inp-goal">
+                    <option value="lose_build">Abnehmen & Aufbauen</option>
+                    <option value="maintain_build">Gewicht halten & Aufbauen</option>
+                    <option value="gain_build">Zunehmen & Aufbauen</option>
+                </select>
+            </div>
+
+             <div class="input-row">
+                <label>Trainingsort</label>
+                <select id="inp-location">
+                    <option value="home">Zu Hause</option>
+                    <option value="keller">KellerGym</option>
+                    <option value="gym">Fitness-Studio</option>
+                    <option value="mixed">Wechselnd</option>
+                </select>
+            </div>
+
+             <div class="input-row">
+                <label>Trainingstage pro Woche</label>
+                <select id="inp-freq">
+                    <option value="2">2x</option>
+                    <option value="3">3x</option>
+                    <option value="4">4x</option>
+                    <option value="5">5x</option>
+                    <option value="6">6x</option>
+                </select>
+            </div>
+
+             <div class="input-row">
+                <label>Split</label>
+                <select id="inp-split">
+                    <option value="ppl">Push / Pull / Legs</option>
+                    <option value="pp">Push / Pull</option>
+                    <option value="ul">Upper / Lower</option>
+                    <option value="full">Ganzkörper</option>
+                    <option value="bro">Bro Split</option>
+                </select>
+            </div>
+
+             <button class="btn" onclick="saveProfileData()">Speichern</button>
         </div>
+
+        <!-- Einstellungen -->
+        <div class="section-header">Einstellungen</div>
+        
+        <div class="switch-row">
+            <span style="font-weight:600;">Schlaf tracken</span>
+            <label class="switch">
+                <input type="checkbox" id="toggle-sleep" onchange="saveSettings()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div style="font-size:12px; color: var(--text-mute); padding: 0 10px 10px;">
+            Wenn deaktiviert, wird der Schlafbereich auf dem Dashboard ausgeblendet.
+        </div>
+
+        <!-- Sonstiges -->
+        <div class="section-header">Sonstiges</div>
+        
+        <a href="archive.html" class="nav-card">
+            <div>
+                <div style="font-weight: 700;">Archiv</div>
+                <div style="font-size: 12px; color: var(--text-mute);">Entwickler-Vorschau</div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: var(--text-mute);"></i>
+        </a>
+
     </div>
 
     <!-- Bottom Navigation -->
@@ -31,5 +252,83 @@
         <a href="profile.html" class="nav-icon active"><i class="fa-regular fa-user"></i></a>
     </div>
 
+    <script>
+        // Init Data
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfile();
+            loadSettings();
+        });
+
+        function loadProfile() {
+            const dataStr = localStorage.getItem('kellerGymData');
+            if(dataStr) {
+                const data = JSON.parse(dataStr);
+                
+                // Populate inputs
+                if(data.gender) document.getElementById('inp-gender').value = data.gender;
+                if(data.age) document.getElementById('inp-age').value = data.age;
+                if(data.height) document.getElementById('inp-height').value = data.height;
+                if(data.weight) document.getElementById('inp-weight').value = data.weight;
+                if(data.bodyfat) document.getElementById('inp-bodyfat').value = data.bodyfat;
+                if(data.activity) document.getElementById('inp-activity').value = data.activity;
+                if(data.exp) document.getElementById('inp-exp').value = data.exp;
+                if(data.goal) document.getElementById('inp-goal').value = data.goal;
+                if(data.location) document.getElementById('inp-location').value = data.location;
+                if(data.freq) document.getElementById('inp-freq').value = data.freq;
+                if(data.split) document.getElementById('inp-split').value = data.split;
+            }
+        }
+
+        function saveProfileData() {
+            const dataStr = localStorage.getItem('kellerGymData');
+            let data = {};
+            if(dataStr) data = JSON.parse(dataStr);
+            
+            data.gender = document.getElementById('inp-gender').value;
+            data.age = document.getElementById('inp-age').value;
+            data.height = document.getElementById('inp-height').value;
+            data.weight = document.getElementById('inp-weight').value;
+            data.bodyfat = document.getElementById('inp-bodyfat').value;
+            data.activity = document.getElementById('inp-activity').value;
+            data.exp = document.getElementById('inp-exp').value;
+            data.goal = document.getElementById('inp-goal').value;
+            data.location = document.getElementById('inp-location').value;
+            data.freq = document.getElementById('inp-freq').value;
+            data.split = document.getElementById('inp-split').value;
+            
+            localStorage.setItem('kellerGymData', JSON.stringify(data));
+            alert('Daten gespeichert!');
+        }
+
+        function loadSettings() {
+            const settingsStr = localStorage.getItem('kellerGymSettings');
+            let settings = { 
+                sleepTracking: true 
+            }; // Default All On
+            
+            if(settingsStr) {
+                try {
+                    const loaded = JSON.parse(settingsStr);
+                    // Merge with defaults
+                    settings = { ...settings, ...loaded };
+                } catch(e) { console.error(e);}
+            }
+            
+            // Only sleep remains
+            if(document.getElementById('toggle-sleep')) {
+                document.getElementById('toggle-sleep').checked = settings.sleepTracking;
+            }
+        }
+
+        function saveSettings() {
+            const sleep = document.getElementById('toggle-sleep').checked;
+            
+            const settings = {
+                sleepTracking: sleep
+            };
+            
+            localStorage.setItem('kellerGymSettings', JSON.stringify(settings));
+        }
+    </script>
 </body>
 </html>
