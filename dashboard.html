@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
     <style>
         /* Dashboard specific overrides if needed */
-        body { padding-bottom: 180px; } /* Space for navbar + extra scroll */
+        #app-viewport { padding-bottom: 120px !important; } /* Space for navbar + extra scroll */
         
         .simple-card {
             background-color: #15161A;
@@ -202,25 +202,25 @@
              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
                 
                 <!-- Wasser -->
-                <div class="simple-card" style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px; background: #15161A;"> 
-                    <div style="font-size:16px; font-weight:700; margin-bottom:5px;">Wasser</div>
+                <div class="simple-card" style="padding: 10px; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px; background: #15161A;"> 
+                    <div style="font-size:16px; font-weight:700; margin-bottom:2px;">Wasser</div>
                     
                     <!-- Glass Visual & Total -->
-                    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; position:relative;">
+                    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; position:relative;">
                         <div style="font-size:14px; font-weight:800; color:#fff;" id="water-total">0.0 L</div>
                         
                         <!-- Example Glass -->
-                        <div style="width:30px; height:50px; border:2px solid rgba(255,255,255,0.3); border-top:none; border-radius:0 0 8px 8px; position:relative; overflow:hidden; background:rgba(255,255,255,0.05);">
+                        <div style="width:30px; height:45px; border:2px solid rgba(255,255,255,0.3); border-top:none; border-radius:0 0 8px 8px; position:relative; overflow:hidden; background:rgba(255,255,255,0.05);">
                             <div id="water-fill" style="position:absolute; bottom:0; left:0; right:0; height:0%; background:rgb(69, 163, 226); transition: height 0.3s ease;"></div>
                         </div>
                     </div>
 
                     <!-- Controls -->
-                    <div style="position: relative; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:10px; background:#222; border-radius:12px; padding:4px 6px; align-self: center; width: fit-content;">
-                        <button onclick="updateWater(-1)" style="width:32px; height:32px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer; font-size:18px;">-</button>
+                    <div style="position: relative; display:flex; align-items:center; justify-content:center; gap:4px; margin-top:4px; background:#222; border-radius:12px; padding:2px; align-self: center; width: 100%; box-sizing: border-box;">
+                        <button onclick="updateWater(-1)" style="width:32px; height:32px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer; font-size:18px; flex-shrink: 0;">-</button>
                         
                         <!-- Dropdown Selector -->
-                         <div onclick="toggleWaterMenu()" style="font-size:14px; font-weight:700; color:#fff; cursor:pointer; display:flex; align-items:center; gap:4px; min-width: 60px; justify-content: center; user-select: none;">
+                         <div onclick="toggleWaterMenu()" style="font-size:16px; font-weight:700; color:#fff; cursor:pointer; display:flex; align-items:center; gap:2px; justify-content: center; user-select: none; flex-grow: 1;">
                             <span id="water-increment-val">100ml</span>
                             <i class="fa-solid fa-chevron-down" style="font-size:10px; color:#aaa;"></i>
                         </div>
@@ -234,7 +234,7 @@
                              <div onclick="setWaterIncrement(500)" style="padding:8px; text-align:center; font-size:14px; color:#ddd; cursor:pointer;">500ml</div>
                         </div>
 
-                        <button onclick="updateWater(1)" style="width:32px; height:32px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer; font-size:18px;">+</button>
+                        <button onclick="updateWater(1)" style="width:32px; height:32px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer; font-size:18px; flex-shrink: 0;">+</button>
                     </div>
                 </div>
 

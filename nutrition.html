@@ -6,8 +6,54 @@
     <title>KellerGym - Ernährung</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts Imports (50+) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Amatic+SC:wght@700&family=Anton&family=Arvo:wght@700&family=Audiowide&family=Bangers&family=Bebas+Neue&family=Black+Ops+One&family=Cabin:wght@700&family=Cairo:wght@900&family=Comfortaa:wght@700&family=Creepster&family=Crimson+Text:wght@700&family=Dancing+Script:wght@700&family=Dosis:wght@800&family=Exo+2:wght@900&family=Fjalla+One&family=Fredoka+One&family=Hind:wght@700&family=Inconsolata:wght@900&family=Indie+Flower&family=Josefin+Sans:wght@700&family=Lato:wght@900&family=Libre+Baskerville:wght@700&family=Lobster&family=Lora:wght@700&family=Luckiest+Guy&family=Merriweather:wght@900&family=Monoton&family=Montserrat:wght@900&family=Mukta:wght@800&family=Noto+Sans:wght@900&family=Nunito:wght@900&family=Open+Sans:wght@800&family=Orbitron:wght@900&family=Oswald:wght@700&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:wght@900&family=Poppins:wght@900&family=Press+Start+2P&family=PT+Sans:wght@700&family=Quicksand:wght@700&family=Raleway:wght@900&family=Righteous&family=Roboto:wght@900&family=Roboto+Condensed:wght@700&family=Roboto+Mono:wght@700&family=Russo+One&family=Shadows+Into+Light&family=Special+Elite&family=Syncopate:wght@700&family=Teko:wght@700&family=Titillium+Web:wght@900&family=Ubuntu:wght@700&family=Ultra&family=Unica+One&family=Varela+Round&family=Bruno+Ace&family=Bruno+Ace+SC&family=Chakra+Petch:wght@700&family=Electrolize&family=Gruppo&family=Iceland&family=Jura:wght@700&family=Michroma&family=Nova+Square&family=Oxanium:wght@700&family=Quantico:wght@700&family=Rationale&family=Share+Tech&family=Wallpoet&family=Zen+Dots&display=swap" rel="stylesheet">
+
     <style>
         body { padding-bottom: 100px; }
+        
+        .font-showcase {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 30px;
+            padding-bottom: 40px;
+        }
+        
+        .font-item {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        
+        .font-name {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 10px;
+            font-family: sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .font-preview {
+            font-size: 38px;
+            color: #fff;
+            line-height: 1.2;
+        }
+        
+        .font-preview span {
+            color: var(--primary);
+        }
+
+        /* Adjustments for specific fonts specific styling */
+        .font-preview[style*="Press Start 2P"] { font-size: 20px; margin-top: 10px; }
+        .font-preview[style*="Monoton"] { font-size: 32px; letter-spacing: 2px; }
+        .font-preview[style*="Audiowide"] { letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -17,9 +63,18 @@
             <h1>Ernährung</h1>
         </div>
 
-        <div class="card" style="padding: 20px; text-align: center; color: var(--text-mute);">
+        <div class="card" style="padding: 20px; text-align: center; color: var(--text-mute); margin-bottom: 20px;">
             <i class="fa-solid fa-utensils" style="font-size: 48px; margin-bottom: 15px;"></i>
             <p>Hier geht es bald um deine Ernährung.</p>
+        </div>
+
+        <div style="border-top: 1px solid #333; margin: 30px 0;"></div>
+        
+        <div class="section-title" style="text-align:center; color:#888; margin-bottom: 5px;">Font Inspiration</div>
+        <div style="text-align:center; font-size: 12px; color: #555; margin-bottom: 20px;">Wähle deinen Favoriten</div>
+        
+        <div class="font-showcase" id="font-list">
+            <!-- Filled by JS -->
         </div>
     </div>
 
@@ -31,5 +86,37 @@
         <a href="profile.html" class="nav-icon"><i class="fa-regular fa-user"></i></a>
     </div>
 
+    <script>
+        const fonts = [
+            'Abril Fatface', 'Amatic SC', 'Anton', 'Arvo', 'Audiowide', 'Bangers', 'Bebas Neue', 
+            'Black Ops One', 'Cabin', 'Cairo', 'Comfortaa', 'Creepster', 'Crimson Text', 'Dancing Script', 
+            'Dosis', 'Exo 2', 'Fjalla One', 'Fredoka One', 'Hind', 'Inconsolata', 'Indie Flower', 
+            'Josefin Sans', 'Lato', 'Libre Baskerville', 'Lobster', 'Lora', 'Luckiest Guy', 'Merriweather', 
+            'Monoton', 'Montserrat', 'Mukta', 'Noto Sans', 'Nunito', 'Open Sans', 'Orbitron', 'Oswald', 
+            'Pacifico', 'Permanent Marker', 'Playfair Display', 'Poppins', 'Press Start 2P', 'PT Sans', 
+            'Quicksand', 'Raleway', 'Righteous', 'Roboto', 'Roboto Condensed', 'Roboto Mono', 'Russo One', 
+            'Shadows Into Light', 'Special Elite', 'Syncopate', 'Teko', 'Titillium Web', 'Ubuntu', 'Ultra', 
+            'Unica One', 'Varela Round', 'Bruno Ace', 'Bruno Ace SC', 'Chakra Petch', 'Electrolize',
+            'Gruppo', 'Iceland', 'Jura', 'Michroma', 'Nova Square', 'Oxanium', 'Quantico', 
+            'Rationale', 'Share Tech', 'Wallpoet', 'Zen Dots'
+        ];
+
+        const container = document.getElementById('font-list');
+        fonts.forEach(font => {
+            const el = document.createElement('div');
+            el.className = 'font-item';
+            
+            // Allow clicking to log font name (optional dev helper)
+            el.onclick = () => { console.log('Selected Font:', font); alert('Font: ' + font); };
+            
+            el.innerHTML = `
+                <div class="font-name">${font}</div>
+                <div class="font-preview" style="font-family: '${font}', cursive, display;">
+                    Keller<span style="color: var(--primary);">Gym</span>
+                </div>
+            `;
+            container.appendChild(el);
+        });
+    </script>
 </body>
 </html>
