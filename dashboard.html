@@ -56,6 +56,22 @@
             animation: shimmer 3s infinite; /* 3s cycle */
             pointer-events: none;
         }
+
+        /* Responsive Rig Image */
+        .rig-image {
+            position: absolute; 
+            right: 130px; 
+            bottom: 8px; 
+            height: 110px; 
+            width: auto; 
+            object-fit: contain;
+        }
+        
+        @media (max-width: 600px) {
+            .rig-image {
+                right: 20px; /* Closer to edge on mobile */
+            }
+        }
     </style>
 </head>
 <body>
@@ -92,7 +108,7 @@
                     </div>
                     
                     <!-- Rig Image -->
-                    <img src="img/rig.png" style="position: absolute; right: 80px; bottom: 8px; height: 110px; width: auto; object-fit: contain;">
+                    <img src="img/rig.png" class="rig-image">
                 </div>
             </div>
 
