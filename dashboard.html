@@ -35,6 +35,27 @@
         .h-dot.orange { background-color: #ffaa00; }
         .h-dot.black { background-color: #252525; border: 1px solid #333; }
         .h-dot.grey { background-color: #444; }
+
+        /* Day Active Shimmer */
+        @keyframes shimmer {
+            0% { transform: translateX(-150%) skewX(-20deg); }
+            100% { transform: translateX(200%) skewX(-20deg); } /* Move across quickly */
+        }
+        .day-active {
+            border-color: var(--primary) !important;
+            background-color: rgba(0, 255, 204, 0.1);
+            position: relative;
+            overflow: hidden !important; /* Keep simmer inside */
+        }
+        .day-active::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-20deg) translateX(-150%);
+            animation: shimmer 3s infinite; /* 3s cycle */
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -70,15 +91,8 @@
                         <div style="font-size: 15px; color: var(--text-mute);">1:10h, 6 Übungen</div>
                     </div>
                     
-                    <div style="display: flex; gap: 5px;">
-                        <!-- Stick figures placeholders -->
-                        <div style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fa-solid fa-person-running" style="font-size: 24px; color: var(--primary);"></i>
-                        </div>
-                        <div style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fa-solid fa-person-running" style="font-size: 24px; color: var(--primary); transform: scaleX(-1);"></i>
-                        </div>
-                    </div>
+                    <!-- Rig Image -->
+                    <img src="img/rig.png" style="position: absolute; right: 80px; bottom: 8px; height: 110px; width: auto; object-fit: contain;">
                 </div>
             </div>
 
@@ -167,36 +181,116 @@
 
             </div>
 
-             <!-- NEW SECTION: Gewicht / Training History -->
+             <!-- NEW SECTION: Gewicht / Training History & Wasser -->
              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
                 
-                <!-- Gewicht (Weight) -->
-                <div class="simple-card" style="padding: 15px; display: flex; flex-direction: column; justify-content: flex-start; min-height: 120px;">
-                    <div style="font-size:16px; font-weight:700;">Gewicht</div>
-                    <div style="font-size:12px; color: var(--text-mute); margin-bottom: 5px;">Letzte 30 Tage</div>
+                <!-- Wasser -->
+                <div class="simple-card" style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px; background: #15161A;"> 
+                    <div style="font-size:16px; font-weight:700; margin-bottom:5px;">Wasser</div>
                     
-                    <!-- Grid Container -->
-                    <div class="history-grid" id="grid-weight">
-                        <!-- JS generated -->
+                    <!-- Glass Visual & Total -->
+                    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; position:relative;">
+                        <div style="font-size:14px; font-weight:800; color:#fff;" id="water-total">0.0 L</div>
+                        
+                        <!-- Example Glass -->
+                        <div style="width:30px; height:50px; border:2px solid rgba(255,255,255,0.3); border-top:none; border-radius:0 0 8px 8px; position:relative; overflow:hidden; background:rgba(255,255,255,0.05);">
+                            <div id="water-fill" style="position:absolute; bottom:0; left:0; right:0; height:0%; background:rgb(69, 163, 226); transition: height 0.3s ease;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div style="display:flex; align-items:center; justify-content:center; gap:5px; margin-top:10px; background:#222; border-radius:12px; padding:2px; align-self: center; width: fit-content;">
+                        <button onclick="updateWater(-1)" style="width:24px; height:24px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer;">-</button>
+                        
+                        <!-- Horizontal Scroll Selector -->
+                        <div id="water-scroller" style="width:60px; overflow-x:auto; white-space:nowrap; font-size:10px; text-align:center; scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x mandatory; padding:4px 0;">
+                            <span style="display:inline-block; width:60px; scroll-snap-align: center;">50ml</span>
+                            <span style="display:inline-block; width:60px; scroll-snap-align: center;">100ml</span>
+                            <span style="display:inline-block; width:60px; scroll-snap-align: center;">150ml</span>
+                            <span style="display:inline-block; width:60px; scroll-snap-align: center;">200ml</span>
+                            <span style="display:inline-block; width:60px; scroll-snap-align: center;">250ml</span>
+                        </div>
+
+                        <button onclick="updateWater(1)" style="width:24px; height:24px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer;">+</button>
                     </div>
                 </div>
 
-                <!-- Training -->
-                <div class="simple-card" style="padding: 15px; display: flex; flex-direction: column; justify-content: flex-start; min-height: 120px; position:relative;">
-                    <div style="font-size:16px; font-weight:700;">Training</div>
+                <!-- History Card (Weight & Training) -->
+                <div class="simple-card" id="hist-card" onclick="toggleHistoryView()" style="padding: 15px; display: flex; flex-direction: column; justify-content: flex-start; min-height: 120px; position:relative; cursor:pointer;">
+                    <div id="hist-title" style="font-size:16px; font-weight:700;">Gewicht</div>
                     <div style="font-size:12px; color: var(--text-mute); margin-bottom: 5px;">Letzte 30 Tage</div>
                     
-                    <!-- Link Arrow -->
-                    <a href="workouts.html" onclick="event.stopPropagation();" style="position: absolute; top: 15px; right: 15px; color: var(--text-mute); font-size: 14px; text-decoration: none;">
+                    <!-- Link Arrow (Hidden by default for Weight) -->
+                    <a id="hist-arrow" href="workouts.html" onclick="event.stopPropagation();" style="display:none; position: absolute; top: 15px; right: 15px; color: var(--text-mute); font-size: 14px; text-decoration: none;">
                         <i class="fa-solid fa-chevron-right"></i>
                     </a>
 
                     <!-- Grid Container -->
-                    <div class="history-grid" id="grid-training">
+                    <div class="history-grid" id="hist-grid">
                         <!-- JS generated -->
+                    </div>
+                    
+                    <!-- Dots -->
+                    <div style="display: flex; gap: 5px; margin-top: auto; justify-content: center; padding-top:10px;">
+                        <div class="n-dot active" id="hd-1"></div>
+                        <div class="n-dot" id="hd-2"></div>
                     </div>
                 </div>
 
+            </div>
+
+            <!-- Sleep Section -->
+            <div class="simple-card" style="padding: 15px; margin-bottom: 30px; position: relative;">
+                <div style="font-size:18px; font-weight:700; margin-bottom:5px;">Schlaf</div>
+                
+                <!-- Link Arrow -->
+                <a href="#" style="position: absolute; top: 15px; right: 15px; color: var(--text-mute); font-size: 14px; text-decoration: none;">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:15px;">
+                    <div style="font-size:28px; font-weight: 800; color: #fff;">
+                        9<span style="font-size:16px; color:var(--text-mute);">h</span> 
+                        20<span style="font-size:16px; color:var(--text-mute);">min</span>
+                    </div>
+                    <div style="font-size:12px; font-weight:600; color: #666; background:#222; padding:4px 8px; border-radius:6px;">
+                        Heutiger Schlaf
+                    </div>
+                </div>
+                
+                <div style="font-size:12px; color: var(--text-mute); margin-bottom: 5px;">Letzte 7 Tage</div>
+
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; height: 50px; gap: 4px;">
+                    <!-- 7 Bars -->
+                    <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; height: 100%; justify-content: flex-end;">
+                        <div style="width: 14px; height: 40%; background: #2a2d35; border-radius: 4px;"></div>
+                        <div style="font-size:9px; color:#555;">Mo</div>
+                    </div>
+                    <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; height: 100%; justify-content: flex-end;">
+                        <div style="width: 14px; height: 70%; background: #3a3d45; border-radius: 4px;"></div>
+                        <div style="font-size:9px; color:#555;">Di</div>
+                    </div>
+                     <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; height: 100%; justify-content: flex-end;">
+                        <div style="width: 14px; height: 60%; background: #2a2d35; border-radius: 4px;"></div>
+                        <div style="font-size:9px; color:#555;">Mi</div>
+                    </div>
+                     <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; height: 100%; justify-content: flex-end;">
+                        <div style="width: 14px; height: 90%; background: linear-gradient(to top, var(--primary), #88ffcc); border-radius: 4px; box-shadow: 0 0 10px rgba(0,255,180,0.3);"></div>
+                        <div style="font-size:9px; color:var(--primary); font-weight:bold;">Do</div>
+                    </div>
+                     <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; height: 100%; justify-content: flex-end;">
+                        <div style="width: 14px; height: 40%; background: #2a2d35; border-radius: 4px;"></div>
+                        <div style="font-size:9px; color:#555;">Fr</div>
+                    </div>
+                     <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; height: 100%; justify-content: flex-end;">
+                        <div style="width: 14px; height: 75%; background: #3a3d45; border-radius: 4px;"></div>
+                        <div style="font-size:9px; color:#555;">Sa</div>
+                    </div>
+                     <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; height: 100%; justify-content: flex-end;">
+                        <div style="width: 14px; height: 50%; background: #2a2d35; border-radius: 4px;"></div>
+                        <div style="font-size:9px; color:#555;">So</div>
+                    </div>
+                </div>
             </div>
 
         </div> <!-- End Screen Home -->
@@ -285,6 +379,16 @@
                 col.style.flexDirection = 'column';
                 col.style.alignItems = 'center';
                 col.style.gap = '5px';
+                
+                col.style.border = '2px solid transparent'; // base border
+                col.style.borderRadius = '16px';
+                col.style.padding = '4px'; 
+                col.style.transition = '0.3s';
+                col.style.minWidth = '40px'; 
+
+                if(isToday) {
+                    col.classList.add('day-active'); // Use class for shimmer
+                }
 
                 // Circle (30x30)
                 const circle = document.createElement('div');
@@ -298,8 +402,8 @@
                 if(isWorkout) {
                     circle.style.border = '2px solid var(--primary)';
                     circle.style.background = 'rgba(0, 255, 204, 0.1)';
-                    // Dumbbell Icon
-                    circle.innerHTML = `<i class="fa-solid fa-dumbbell" style="color:var(--primary); font-size:14px;"></i>`;
+                    // Biceps Image
+                    circle.innerHTML = `<img src="img/biceps_2.png" style="width: 18px; height: 18px; object-fit: contain;">`;
                 } else {
                     circle.style.border = '1px solid transparent';
                     circle.style.background = '#2a2d35';
@@ -325,42 +429,91 @@
         }
 
         function renderHistory() {
-            // Weight Grid: Green = recorded, Grey = missing (not training day? no, just missing data)
-            // Training Grid: Orange=Trained, Grey=Rest, Black=Missed
+            const container = document.getElementById('hist-grid');
+            const titleEl = document.getElementById('hist-title');
+            const arrowEl = document.getElementById('hist-arrow');
+            const d1 = document.getElementById('hd-1');
+            const d2 = document.getElementById('hd-2');
             
-            const wContainer = document.getElementById('grid-weight');
-            const tContainer = document.getElementById('grid-training');
-            if(!wContainer || !tContainer) return;
+            if(!container) return;
+            container.innerHTML = '';
             
-            wContainer.innerHTML = '';
-            tContainer.innerHTML = '';
+            // Mode 0 = Weight, 1 = Training
+            if(currentHistoryMode === 0) {
+                if(titleEl) titleEl.textContent = 'Gewicht';
+                if(arrowEl) arrowEl.style.display = 'none';
+                if(d1) d1.classList.add('active');
+                if(d2) d2.classList.remove('active');
+            } else {
+                if(titleEl) titleEl.textContent = 'Training';
+                if(arrowEl) arrowEl.style.display = 'block';
+                if(d1) d1.classList.remove('active');
+                if(d2) d2.classList.add('active');
+            }
 
             // Generate 30 days dummy data
             for(let i=0; i<30; i++) {
-                // Weight: Mostly filled (green), some missed (grey/black)
-                const wDot = document.createElement('div');
-                wDot.className = 'h-dot';
-                // Randomly decide status
-                if(Math.random() > 0.3) {
-                    wDot.classList.add('green'); // Recorded
+                const dot = document.createElement('div');
+                dot.className = 'h-dot';
+                
+                if(currentHistoryMode === 0) {
+                   // Weight Logic
+                   if(Math.random() > 0.3) dot.classList.add('green');
+                   else dot.classList.add('grey');
                 } else {
-                    wDot.classList.add('grey'); // Not recorded
+                   // Training Logic
+                   const r = Math.random();
+                   if(r > 0.6) dot.classList.add('orange');
+                   else if (r > 0.3) dot.classList.add('grey');
+                   else dot.classList.add('black');
                 }
-                wContainer.appendChild(wDot);
-
-                // Training: 
-                const tDot = document.createElement('div');
-                tDot.className = 'h-dot';
-                const r = Math.random();
-                if(r > 0.6) {
-                    tDot.classList.add('orange'); // Trained
-                } else if (r > 0.3) {
-                     tDot.classList.add('grey'); // Rest
-                } else {
-                    tDot.classList.add('black'); // Missed
-                }
-                tContainer.appendChild(tDot);
+                container.appendChild(dot);
             }
+        }
+        
+        let currentHistoryMode = 0;
+        function toggleHistoryView() {
+            currentHistoryMode = (currentHistoryMode + 1) % 2;
+            renderHistory();
+        }
+        
+        // Water Logic
+        let waterAmount = 0; // ml
+        let waterGoal = 1800; // ml
+        
+        function updateWater(direction) {
+            // Determine increment from scroller
+            const scroller = document.getElementById('water-scroller');
+            let increment = 200; // default
+            
+            if(scroller) {
+                // Approximate index based on scroll position
+                // Each item is 60px wide
+                const index = Math.round(scroller.scrollLeft / 60);
+                const values = [50, 100, 150, 200, 250];
+                if(index >= 0 && index < values.length) {
+                    increment = values[index];
+                }
+            }
+            
+            waterAmount += (direction * increment);
+            if(waterAmount < 0) waterAmount = 0;
+            
+            renderWater();
+        }
+
+        function renderWater() {
+             const totalEl = document.getElementById('water-total');
+             const fillEl = document.getElementById('water-fill');
+             if(!totalEl || !fillEl) return;
+             
+             // Convert to L
+             totalEl.textContent = (waterAmount / 1000).toFixed(1) + ' L';
+             
+             // Fill height % (max at goal)
+             let pct = (waterAmount / waterGoal) * 100;
+             if(pct > 100) pct = 100;
+             fillEl.style.height = pct + '%';
         }
 
         // Inline script to init dashboard specific logic
@@ -382,6 +535,10 @@
             renderWeek();
             renderNutrition();
             renderHistory();
+
+            // Init Water Scroller to 100ml
+            const ws = document.getElementById('water-scroller');
+            if(ws) ws.scrollLeft = 60;
         });
     </script>
 </body>
