@@ -10,7 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
     <style>
         /* Dashboard specific overrides if needed */
-        #app-viewport { padding-bottom: 250px !important; } /* Space for navbar + extra scroll */
+        body { height: 100dvh; } /* Fix mobile viewports */
+        #app-viewport { padding-bottom: 0 !important; } /* Let screen-home padding handle it */
         
         .simple-card {
             background-color: #15161A;
@@ -80,7 +81,7 @@
     <div id="app-viewport">
         
         <!-- DASHBOARD HOME -->
-        <div id="screen-home" class="screen active" style="display:block !important; opacity:1;">
+        <div id="screen-home" class="screen active" style="display:block !important; opacity:1; height: auto !important; min-height: 100%; padding-bottom: 150px;">
             <div class="header-row" style="position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; margin-top: 10px;">
                 <!-- KELLERGYM Title (Centered) -->
                 <h1 style="font-size: 32px; margin: 0; line-height: 1; font-weight: 400; font-family: 'Black Ops One', cursive;">Keller<span style="color: var(--primary);">Gym</span></h1>
@@ -341,9 +342,56 @@
             document.getElementById('gauge-path').style.strokeDashoffset = newOffset;
 
             // Knob Rotation (-90deg to 90deg)
-            // 0% -> -90, 100% -> 90
             const rotation = -90 + (180 * percentage);
             document.getElementById('gauge-knob-group').style.transform = `rotate(${rotation}deg)`;
+
+            // Update Knob Color (based on static gradient Red->Yellow->Green)
+            const knobCircle = document.querySelector('#gauge-knob-group circle');
+            if(knobCircle) {
+                // Background Gradient Colors
+                const c1 = "#ff4444";
+                const c2 = "#ffcc00";
+                const c3 = "#66ff66";
+                
+                let currentColor;
+                if(percentage < 0.5) {
+                    // Interpolate 1 -> 2
+                    // 0.0 -> 0.0, 0.5 -> 1.0
+                    currentColor = interpolateColor(c1, c2, percentage * 2);
+                } else {
+                    // Interpolate 2 -> 3
+                    // 0.5 -> 0.0, 1.0 -> 1.0
+                    currentColor = interpolateColor(c2, c3, (percentage - 0.5) * 2);
+                }
+
+                knobCircle.setAttribute('fill', currentColor);
+                knobCircle.setAttribute('stroke', '#333'); // Grey border
+                knobCircle.setAttribute('stroke-width', '3'); 
+            }
+        }
+        
+        // Helper for colors
+        function interpolateColor(color1, color2, factor) {
+             function hexToRgb(hex) {
+                var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : {r:0, g:0, b:0};
+            }
+             
+             if (factor > 1) factor = 1;
+             if (factor < 0) factor = 0;
+            
+             const c1 = hexToRgb(color1);
+             const c2 = hexToRgb(color2);
+
+             const r = Math.round(c1.r + factor * (c2.r - c1.r));
+             const g = Math.round(c1.g + factor * (c2.g - c1.g));
+             const b = Math.round(c1.b + factor * (c2.b - c1.b));
+             
+             return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
         }
 
         function renderWeek() {
