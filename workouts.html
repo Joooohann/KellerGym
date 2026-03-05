@@ -62,7 +62,7 @@
         .rig-image {
             position: absolute;
             right: 20px;
-            bottom: 8px;
+            bottom: 21px; /* Moved up slightly */
             height: 110px;
             width: auto;
             object-fit: contain;
@@ -141,6 +141,73 @@
             </div>
         </div>
         
+        <!-- Adjust Schedule Section -->
+        <div class="simple-card" style="padding: 15px; margin-top: 25px; margin-bottom: 25px;">
+            <div onclick="toggleScheduleEdit()" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+                <div style="font-size:16px; font-weight:700;">Trainingswoche anpassen</div>
+                <i id="sched-arrow" class="fa-solid fa-chevron-right" style="transition:0.3s; color:var(--text-mute);"></i>
+            </div>
+            
+            <div id="sched-content" style="display:none; margin-top:15px; animation: fadeEffect 0.3s;">
+                <div style="background:rgba(0, 128, 128, 0.1); border-left: 3px solid var(--primary); padding:10px; border-radius:4px; margin-bottom:15px; font-size:13px; color:#ddd; line-height:1.4;">
+                    <i class="fa-solid fa-circle-info" style="color:var(--primary); margin-right:5px;"></i>
+                    Die vorgegebene Reihenfolge der Workouts folgt einem biologischen Algorithmus für optimale Regeneration und maximalem Trainingserfolg.
+                </div>
+
+                <div id="sched-list" style="display:flex; flex-direction:column; gap:10px;">
+                    <!-- JS Generated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Training anpassen (Placeholder) -->
+        <div class="simple-card" style="padding: 15px; margin-bottom: 25px;">
+            <div onclick="toggleTrainingEdit()" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+                <div style="font-size:16px; font-weight:700;">Training anpassen</div>
+                <i id="train-arrow" class="fa-solid fa-chevron-right" style="transition:0.3s; color:var(--text-mute);"></i>
+            </div>
+            <div id="train-content" style="display:none; margin-top:15px; animation: fadeEffect 0.3s; color: var(--text-mute); font-size: 14px;">
+                Funktion folgt in Kürze...
+            </div>
+        </div>
+
+        <!-- Übung anpassen (Placeholder) -->
+        <div class="simple-card" style="padding: 15px; margin-bottom: 25px;">
+            <div onclick="toggleExerciseEdit()" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+                <div style="font-size:16px; font-weight:700;">Übung anpassen</div>
+                <i id="ex-arrow" class="fa-solid fa-chevron-right" style="transition:0.3s; color:var(--text-mute);"></i>
+            </div>
+            <div id="ex-content" style="display:none; margin-top:15px; animation: fadeEffect 0.3s; color: var(--text-mute); font-size: 14px;">
+                Funktion folgt in Kürze...
+            </div>
+        </div>
+
+        <!-- Auszeit hinzufügen -->
+        <div class="simple-card" style="padding: 15px; margin-bottom: 25px;">
+            <div onclick="toggleTimeOff()" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+                <div style="font-size:16px; font-weight:700;">Auszeit hinzufügen</div>
+                <i id="off-arrow" class="fa-solid fa-chevron-right" style="transition:0.3s; color:var(--text-mute);"></i>
+            </div>
+            
+            <div id="off-content" style="display:none; margin-top:15px; animation: fadeEffect 0.3s;">
+                <div style="margin-bottom: 15px; font-size: 14px; color: var(--text-mute);">
+                    Trage eine Krankheit oder Pause ein. Dein Trainingsplan wird entsprechend pausiert.
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div class="input-group" style="margin-bottom:0;">
+                        <label style="margin-bottom: 5px;">Wochen</label>
+                        <input type="number" id="off-weeks" class="input-field" value="0" min="0" style="padding: 10px;">
+                    </div>
+                    <div class="input-group" style="margin-bottom:0;">
+                        <label style="margin-bottom: 5px;">Tage</label>
+                        <input type="number" id="off-days" class="input-field" value="0" min="0" max="6" style="padding: 10px;">
+                    </div>
+                </div>
+
+                <button class="btn" style="padding: 12px; font-size: 14px;">Pause eintragen</button>
+            </div>
+        </div>
     </div>
 
     <!-- Bottom Navigation -->
@@ -158,21 +225,60 @@
         let selectedDayIndex = -1; // 0-6 (Mon-Sun)
         let todayIndex = -1;
 
-        // Mock Data Schedule
-        // 0=Mon, 1=Tue, ...
-        const SCHEDULE = [
-            { type: 'lower', title: 'Lower Body', desc: '1:10h, 6 Übungen', img: 'img/lower_body.png' }, // Mo
-            { type: 'upper', title: 'Upper Body', desc: '1:15h, 7 Übungen', img: 'img/upper_body.png' }, // Di
-            { type: 'off', title: 'Offday', desc: 'Regeneriere dich', img: 'img/rest.png' },            // Mi
-            { type: 'lower', title: 'Lower Body', desc: '1:10h, 6 Übungen', img: 'img/lower_body.png' }, // Do
-            { type: 'full', title: 'Ganzkörper', desc: '1:20h, 9 Übungen', img: 'img/full_body.png' },  // Fr
-            { type: 'off', title: 'Offday', desc: 'Aktive Erholung', img: 'img/rest.png' },             // Sa
-            { type: 'off', title: 'Offday', desc: 'Regeneriere dich', img: 'img/rest.png' }             // So
-        ];
+        // Available Workouts
+        const WORKOUT_TYPES = {
+            'lower': { title: 'Lower Body', desc: '1:10h, 6 Übungen', img: 'img/lower_body.png' },
+            'upper': { title: 'Upper Body', desc: '1:15h, 7 Übungen', img: 'img/upper_body.png' },
+            'full':  { title: 'Ganzkörper', desc: '1:20h, 9 Übungen', img: 'img/full_body.png' },
+            'off':   { title: 'Offday', desc: 'Regeneriere dich', img: 'img/rest.png' }
+        };
+
+        // Default Plan
+        const DEFAULT_PLAN = ['lower', 'upper', 'off', 'lower', 'full', 'off', 'off'];
+        
+        // Current Schedule (Array of Objects)
+        let SCHEDULE = [];
 
         document.addEventListener('DOMContentLoaded', () => {
+            loadSchedule();
             initWeek();
+            renderScheduleEditList();
         });
+
+        function loadSchedule() {
+            try {
+                const stored = localStorage.getItem('kellerGymPlan');
+                if(stored) {
+                    const plan = JSON.parse(stored);
+                    SCHEDULE = plan.map(type => ({ type, ...WORKOUT_TYPES[type] }));
+                } else {
+                    SCHEDULE = DEFAULT_PLAN.map(type => ({ type, ...WORKOUT_TYPES[type] }));
+                }
+            } catch(e) {
+                SCHEDULE = DEFAULT_PLAN.map(type => ({ type, ...WORKOUT_TYPES[type] }));
+            }
+        }
+
+        function saveSchedule() {
+            const plan = SCHEDULE.map(s => s.type);
+            localStorage.setItem('kellerGymPlan', JSON.stringify(plan));
+            
+            // update global 'days' for dashboard visualization
+            // We need to update kellerGymData.days
+             try {
+                const stored = localStorage.getItem('kellerGymData');
+                let data = stored ? JSON.parse(stored) : {};
+                
+                // Which days are workout days? (not off)
+                const workoutDays = [];
+                SCHEDULE.forEach((s, idx) => {
+                    if(s.type !== 'off') workoutDays.push(DAYS[idx]);
+                });
+                
+                data.days = workoutDays;
+                localStorage.setItem('kellerGymData', JSON.stringify(data));
+            } catch(e) { console.error(e); }
+        }
 
         function initWeek() {
             // Determine Today (Mon=0...Sun=6)
@@ -192,20 +298,11 @@
             if(!container) return;
             container.innerHTML = '';
             
-            // Get workout days settings
-            let workoutDays = ['Mo', 'Mi', 'Fr', 'So']; // Default
-            try {
-                const stored = localStorage.getItem('kellerGymData');
-                if(stored) {
-                    const data = JSON.parse(stored);
-                    if(data.days && data.days.length > 0) workoutDays = data.days;
-                }
-            } catch(e) { console.error(e); }
-
             DAYS.forEach((label, idx) => {
                 const isToday = (idx === todayIndex);
                 const isSelected = (idx === selectedDayIndex);
-                const isWorkout = workoutDays.includes(label);
+                // Determine workout status from CURRENT SCHEDULE
+                const isWorkout = (SCHEDULE[idx].type !== 'off');
 
                 // Create Column Structure
                 const col = document.createElement('div');
@@ -254,6 +351,132 @@
 
                 container.appendChild(col);
             });
+        }
+
+        function toggleScheduleEdit() {
+            const content = document.getElementById('sched-content');
+            const arrow = document.getElementById('sched-arrow');
+            
+            // Close others if open (optional UI improvement)
+            document.getElementById('train-content').style.display = 'none';
+            document.getElementById('train-arrow').style.transform = 'rotate(0deg)';
+            document.getElementById('ex-content').style.display = 'none';
+            document.getElementById('ex-arrow').style.transform = 'rotate(0deg)';
+            document.getElementById('off-content').style.display = 'none';
+            document.getElementById('off-arrow').style.transform = 'rotate(0deg)';
+
+            if(content.style.display === 'none') {
+                content.style.display = 'block';
+                arrow.style.transform = 'rotate(90deg)';
+                renderScheduleEditList();
+            } else {
+                content.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function toggleTrainingEdit() {
+            const content = document.getElementById('train-content');
+            const arrow = document.getElementById('train-arrow');
+            toggleSection(content, arrow);
+        }
+
+        function toggleExerciseEdit() {
+            const content = document.getElementById('ex-content');
+            const arrow = document.getElementById('ex-arrow');
+            toggleSection(content, arrow);
+        }
+
+        function toggleTimeOff() {
+            const content = document.getElementById('off-content');
+            const arrow = document.getElementById('off-arrow');
+            toggleSection(content, arrow);
+        }
+
+        function toggleSection(content, arrow) {
+            // Close others (super simple toggle logic, could be more robust)
+            if(content.style.display === 'none') {
+                 // Close all first
+                document.querySelectorAll('[id$="-content"]').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('[id$="-arrow"]').forEach(el => el.style.transform = 'rotate(0deg)');
+                
+                content.style.display = 'block';
+                arrow.style.transform = 'rotate(90deg)';
+            } else {
+                content.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function renderScheduleEditList() {
+            const container = document.getElementById('sched-list');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            DAYS.forEach((dayLabel, idx) => {
+                const currentType = SCHEDULE[idx].type;
+                
+                const row = document.createElement('div');
+                row.style.display = 'flex';
+                row.style.justifyContent = 'space-between';
+                row.style.alignItems = 'center';
+                row.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+                row.style.paddingBottom = '8px';
+                
+                // Left: Day Label
+                const label = document.createElement('div');
+                label.innerText = FULL_DAYS[idx];
+                label.style.fontWeight = '600';
+                label.style.fontSize = '14px';
+                label.style.color = (idx === todayIndex) ? 'var(--primary)' : '#fff';
+                
+                // Right: Select Box
+                // We create a custom select or native select. Native is easier for now.
+                const select = document.createElement('select');
+                select.style.background = '#2a2d35';
+                select.style.color = '#fff';
+                select.style.border = '1px solid #444';
+                select.style.padding = '5px 10px';
+                select.style.borderRadius = '8px';
+                select.style.fontSize = '12px';
+                select.style.outline = 'none';
+                
+                // Add Options
+                const opts = [
+                    { val: 'lower', text: 'Lower Body' },
+                    { val: 'upper', text: 'Upper Body' },
+                    { val: 'full', text: 'Ganzkörper' },
+                    { val: 'off', text: 'Rest Day' }
+                ];
+                
+                opts.forEach(o => {
+                    const optEx = document.createElement('option');
+                    optEx.value = o.val;
+                    optEx.innerText = o.text;
+                    if(o.val === currentType) optEx.selected = true;
+                    select.appendChild(optEx);
+                });
+                
+                select.onchange = (e) => {
+                    const newType = e.target.value;
+                    updateSchedule(idx, newType);
+                };
+                
+                row.appendChild(label);
+                row.appendChild(select);
+                
+                container.appendChild(row);
+            });
+        }
+        
+        function updateSchedule(dayIndex, newType) {
+            // Update Array
+            SCHEDULE[dayIndex] = { type: newType, ...WORKOUT_TYPES[newType] }; // Merge properties
+            
+            // Save & Re-render
+            saveSchedule();
+            renderWeek();
+            renderWorkout();
         }
 
         function renderWorkout() {
