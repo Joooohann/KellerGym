@@ -13,6 +13,9 @@
         body { height: 100dvh; } /* Fix mobile viewports */
         #app-viewport { padding-bottom: 0 !important; } /* Let screen-home padding handle it */
         
+        /* Dynamic scroll padding value, default 150px set by JS */
+        #screen-home { padding-bottom: var(--dash-pad, 150px) !important; }
+
         .simple-card {
             background-color: #15161A;
             border-radius: 24px;
@@ -95,7 +98,7 @@
             </div>
 
             <!-- Today's Training Card -->
-            <div class="carbon-card" onclick="window.location.href='workouts.html'" style="padding: 20px; margin-bottom: 25px; cursor: pointer; position: relative;">
+            <div class="carbon-card" onclick="toggleTrainingView()" style="padding: 20px; margin-bottom: 25px; cursor: pointer; position: relative;">
                 <div style="font-size:18px; font-weight:700; margin-bottom:15px; letter-spacing:0.5px;">Heutiges Training</div>
                 
                 <!-- Link Arrow -->
@@ -105,12 +108,20 @@
 
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <div style="font-size: 22px; font-weight: 800; margin-bottom: 5px;">Lower Body</div>
-                        <div style="font-size: 15px; color: var(--text-mute);">1:10h, 6 Übungen</div>
+                        <div id="daily-train-title" style="font-size: 22px; font-weight: 800; margin-bottom: 5px;">Lower Body</div>
+                        <div id="daily-train-desc" style="font-size: 15px; color: var(--text-mute);">1:10h, 6 Übungen</div>
                     </div>
                     
                     <!-- Rig Image -->
-                    <img src="img/lower_body.png" class="rig-image" id="training-img" onclick="toggleTrainingImage(event)">
+                    <img src="img/lower_body.png" class="rig-image" id="training-img">
+                </div>
+
+                <!-- Dots -->
+                <div style="display: flex; gap: 5px; margin-top: 15px; justify-content: center;">
+                    <div class="n-dot active" id="td-1"></div>
+                    <div class="n-dot" id="td-2"></div>
+                    <div class="n-dot" id="td-3"></div>
+                    <div class="n-dot" id="td-4"></div>
                 </div>
             </div>
 
@@ -142,7 +153,7 @@
                             &quot;Muss nicht schmecke, muss wirke.&quot;
                         </div>
                     </div>
-                    <div style="text-align: right; font-size: 12px; color: var(--text-mute);">
+                    <div id="quote-author" style="text-align: right; font-size: 12px; color: var(--text-mute);">
                         ~ Rühl, 2025
                     </div>
                 </div>
@@ -228,7 +239,6 @@
 
                          <!-- Dropdown Menu -->
                         <div id="water-menu" style="display:none; position:absolute; bottom:100%; left:50%; transform:translateX(-50%); background:#333; border-radius:8px; padding:5px; z-index:10; box-shadow:0 4px 10px rgba(0,0,0,0.5); min-width: 80px; margin-bottom: 8px;">
-                            <div onclick="setWaterIncrement(50)" style="padding:8px; text-align:center; border-bottom:1px solid #444; font-size:14px; color:#ddd; cursor:pointer;">50ml</div>
                             <div onclick="setWaterIncrement(100)" style="padding:8px; text-align:center; border-bottom:1px solid #444; font-size:14px; color:#ddd; cursor:pointer;">100ml</div>
                             <div onclick="setWaterIncrement(200)" style="padding:8px; text-align:center; border-bottom:1px solid #444; font-size:14px; color:#ddd; cursor:pointer;">200ml</div>
                             <div onclick="setWaterIncrement(250)" style="padding:8px; text-align:center; border-bottom:1px solid #444; font-size:14px; color:#ddd; cursor:pointer;">250ml</div>
@@ -314,6 +324,8 @@
         ];
 
         let nutriData = [...NUTRI_DEFAULTS];
+        let lastGaugePercentage = 0;
+        let gaugeAnimationId = null;
 
         function toggleNutritionView() {
             currentNutriMode = (currentNutriMode + 1) % 3;
@@ -333,41 +345,80 @@
             document.getElementById('nd-2').classList.toggle('active', currentNutriMode === 1);
             document.getElementById('nd-3').classList.toggle('active', currentNutriMode === 2);
 
-            // Gauge Animation
+            // Target Percentage
             const percentage = Math.min(Math.max(mode.current / mode.max, 0), 1); // Clamp 0-1
             
-            // Path Length is approx 125
-            const maxDash = 125;
-            const newOffset = maxDash - (maxDash * percentage);
-            document.getElementById('gauge-path').style.strokeDashoffset = newOffset;
+            // Stop logic: If we are already animating, cancel it
+            if(gaugeAnimationId) cancelAnimationFrame(gaugeAnimationId);
+            
+            // Start Animation from last known pos to new target
+            animateGauge(lastGaugePercentage, percentage, 800);
+            
+            // Update last pos
+            lastGaugePercentage = percentage;
+        }
 
-            // Knob Rotation (-90deg to 90deg)
-            const rotation = -90 + (180 * percentage);
-            document.getElementById('gauge-knob-group').style.transform = `rotate(${rotation}deg)`;
-
-            // Update Knob Color (based on static gradient Red->Yellow->Green)
+        function animateGauge(start, end, duration) {
+            const startTime = performance.now();
+            const range = end - start;
+            
+            // Ensure elements exist
+            const pathEl = document.getElementById('gauge-path');
+            const knobGroup = document.getElementById('gauge-knob-group');
             const knobCircle = document.querySelector('#gauge-knob-group circle');
-            if(knobCircle) {
-                // Background Gradient Colors
+            
+            if(!pathEl || !knobGroup) return;
+
+            // Important: Disable transition during animation to prevent conflict
+            pathEl.style.transition = 'none';
+            knobGroup.style.transition = 'none';
+
+            function step(currentTime) {
+                const elapsed = currentTime - startTime;
+                let progress = Math.min(elapsed / duration, 1);
+                if (duration === 0) progress = 1;
+                
+                // Ease Out Cubic
+                const ease = 1 - Math.pow(1 - progress, 3); 
+                
+                const currentPct = start + (range * ease);
+                
+                // Update DOM
+                const maxDash = 125;
+                const offset = maxDash - (maxDash * currentPct);
+                pathEl.style.strokeDashoffset = offset;
+                
+                const rotation = -90 + (180 * currentPct);
+                knobGroup.style.transform = `rotate(${rotation}deg)`;
+                
+                // Color Interpolation based on currentPct (Position on Bar)
                 const c1 = "#ff4444";
                 const c2 = "#ffcc00";
                 const c3 = "#66ff66";
-                
                 let currentColor;
-                if(percentage < 0.5) {
-                    // Interpolate 1 -> 2
-                    // 0.0 -> 0.0, 0.5 -> 1.0
-                    currentColor = interpolateColor(c1, c2, percentage * 2);
+                
+                let cp = Math.min(Math.max(currentPct, 0), 1);
+                
+                if(cp < 0.5) {
+                    currentColor = interpolateColor(c1, c2, cp * 2);
                 } else {
-                    // Interpolate 2 -> 3
-                    // 0.5 -> 0.0, 1.0 -> 1.0
-                    currentColor = interpolateColor(c2, c3, (percentage - 0.5) * 2);
+                    currentColor = interpolateColor(c2, c3, (cp - 0.5) * 2);
+                }
+                
+                if(knobCircle) {
+                    knobCircle.setAttribute('fill', currentColor);
+                    knobCircle.setAttribute('stroke', '#333'); 
+                    knobCircle.setAttribute('stroke-width', '3'); 
                 }
 
-                knobCircle.setAttribute('fill', currentColor);
-                knobCircle.setAttribute('stroke', '#333'); // Grey border
-                knobCircle.setAttribute('stroke-width', '3'); 
+                if(progress < 1) {
+                    gaugeAnimationId = requestAnimationFrame(step);
+                } else {
+                    gaugeAnimationId = null;
+                }
             }
+            
+            gaugeAnimationId = requestAnimationFrame(step);
         }
         
         // Helper for colors
@@ -599,17 +650,64 @@
              }
         }
         
-        function toggleTrainingImage(event) {
-            if(event) event.stopPropagation();
+        let trainingState = 0; // 0: Lower, 1: Upper, 2: Full, 3: Off
+        function toggleTrainingView() {
+            trainingState = (trainingState + 1) % 4;
+            
+            const title = document.getElementById('daily-train-title');
+            const desc = document.getElementById('daily-train-desc');
             const img = document.getElementById('training-img');
-            if(img) {
-                // Toggle src
-                if(img.src.indexOf('lower_body.png') > -1) {
-                    img.src = 'img/upper_body.png';
-                } else {
-                    img.src = 'img/lower_body.png';
-                }
+            const dot1 = document.getElementById('td-1');
+            const dot2 = document.getElementById('td-2');
+            const dot3 = document.getElementById('td-3');
+            const dot4 = document.getElementById('td-4');
+
+            // Reset dots
+            if(dot1) dot1.classList.remove('active');
+            if(dot2) dot2.classList.remove('active');
+            if(dot3) dot3.classList.remove('active');
+            if(dot4) dot4.classList.remove('active');
+
+            if(trainingState === 0) {
+                // Lower Body
+                if(title) title.innerText = 'Lower Body';
+                if(desc) desc.innerText = '1:10h, 6 Übungen';
+                if(img) img.src = 'img/lower_body.png';
+                if(dot1) dot1.classList.add('active');
+            } else if (trainingState === 1) {
+                 // Upper Body
+                if(title) title.innerText = 'Upper Body';
+                if(desc) desc.innerText = '1:15h, 7 Übungen';
+                if(img) img.src = 'img/upper_body.png';
+                if(dot2) dot2.classList.add('active');
+            } else if (trainingState === 2) {
+                 // Full Body
+                if(title) title.innerText = 'Ganzkörper';
+                if(desc) desc.innerText = '1:20h, 8 Übungen';
+                if(img) img.src = 'img/full_body.png';
+                if(dot3) dot3.classList.add('active');
+            } else {
+                // Offday
+                if(title) title.innerText = 'Offday';
+                if(desc) desc.innerText = 'Regeneriere dich';
+                if(img) img.src = 'img/rest.png';
+                if(dot4) dot4.classList.add('active');
             }
+        }
+
+        function initQuote() {
+             const quotes = [
+                 { text: '"Muss nicht schmecke, muss wirke."', author: "~ Rühl, 2025" },
+                 { text: '"Hauptsache schwer und falsch"', author: "~ Rühl, 2024" }
+             ];
+             const idx = Math.floor(Math.random() * quotes.length);
+             const q = quotes[idx];
+             
+             const qc = document.getElementById('quote-content');
+             const qa = document.getElementById('quote-author');
+             
+             if(qc) qc.innerText = q.text;
+             if(qa) qa.innerText = q.author;
         }
 
         function updateWater(direction) {
@@ -658,6 +756,12 @@
                         const sleepSection = document.getElementById('section-sleep');
                         if (sleepSection) sleepSection.style.display = 'none';
                     }
+
+                    // Scroll Padding (Always apply)
+                    if(settings.scrollPad !== undefined) {
+                        const screen = document.getElementById('screen-home');
+                        if(screen) screen.style.setProperty('--dash-pad', settings.scrollPad + 'px');
+                    }
                     
                 } catch (e) {
                     console.error("Error parsing settings", e);
@@ -669,6 +773,8 @@
             renderNutrition();
             renderHistory();
             renderSleep();
+            initQuote();
+            renderWater(); // Ensure water is rendered
         });
     </script>
 </body>

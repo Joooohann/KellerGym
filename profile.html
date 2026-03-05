@@ -130,7 +130,6 @@
                 <select id="inp-gender">
                     <option value="male">Männlich</option>
                     <option value="female">Weiblich</option>
-                    <option value="other">Divers</option>
                 </select>
             </div>
             
@@ -156,7 +155,7 @@
 
              <div class="input-row">
                 <label>Aktivität</label>
-                <select id="inp-activity">
+                <select id="inp-activity" disabled>
                     <option value="low">Sitzend</option>
                     <option value="somewhat">Wenig Aktiv</option>
                     <option value="med">Leicht Aktiv</option>
@@ -166,7 +165,7 @@
 
              <div class="input-row">
                 <label>Erfahrung</label>
-                <select id="inp-exp">
+                <select id="inp-exp" disabled>
                     <option value="beginner">Anfänger</option>
                     <option value="intermediate">Fortgeschritten</option>
                     <option value="pro">Profi</option>
@@ -175,7 +174,7 @@
 
              <div class="input-row">
                 <label>Ziel</label>
-                <select id="inp-goal">
+                <select id="inp-goal" disabled>
                     <option value="lose_build">Abnehmen & Aufbauen</option>
                     <option value="maintain_build">Gewicht halten & Aufbauen</option>
                     <option value="gain_build">Zunehmen & Aufbauen</option>
@@ -194,7 +193,7 @@
 
              <div class="input-row">
                 <label>Trainingstage pro Woche</label>
-                <select id="inp-freq">
+                <select id="inp-freq" disabled>
                     <option value="2">2x</option>
                     <option value="3">3x</option>
                     <option value="4">4x</option>
@@ -205,7 +204,7 @@
 
              <div class="input-row">
                 <label>Split</label>
-                <select id="inp-split">
+                <select id="inp-split" disabled>
                     <option value="ppl">Push / Pull / Legs</option>
                     <option value="pp">Push / Pull</option>
                     <option value="ul">Upper / Lower</option>
@@ -231,16 +230,38 @@
             Wenn deaktiviert, wird der Schlafbereich auf dem Dashboard ausgeblendet.
         </div>
 
-        <!-- Sonstiges -->
-        <div class="section-header">Sonstiges</div>
-        
-        <a href="archive.html" class="nav-card">
-            <div>
-                <div style="font-weight: 700;">Archiv</div>
-                <div style="font-size: 12px; color: var(--text-mute);">Entwickler-Vorschau</div>
+        <div class="switch-row" style="margin-top:10px;">
+            <span style="font-weight:600;">Entwickler-Modus</span>
+            <label class="switch">
+                <input type="checkbox" id="toggle-dev-mode" checked onchange="saveSettings()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div style="font-size:12px; color: var(--text-mute); padding: 0 10px 10px;">
+            Aktiviert erweiterte Debug-Funktionen und Vorschauen.
+        </div>
+
+        <!-- Sonstiges (Dev Only) -->
+        <div id="section-misc" style="display:none;">
+            <div class="section-header">Sonstiges</div>
+            
+            <a href="archive.html" class="nav-card">
+                <div>
+                    <div style="font-weight: 700;">Archiv</div>
+                    <div style="font-size: 12px; color: var(--text-mute);">Entwickler-Vorschau</div>
+                </div>
+                <i class="fa-solid fa-chevron-right" style="color: var(--text-mute);"></i>
+            </a>
+
+            <!-- Scroll Padding Adjuster -->
+            <div class="nav-card" style="margin-top: 15px;">
+                <div style="font-size: 14px; font-weight: 600;">Scrollweite</div>
+                <input type="range" id="inp-scroll-pad" min="0" max="300" step="10" value="80" style="width: 120px;" oninput="saveSettings()">
             </div>
-            <i class="fa-solid fa-chevron-right" style="color: var(--text-mute);"></i>
-        </a>
+             <div style="font-size:12px; color: var(--text-mute); padding: 5px 10px 0;">
+                Passt den unteren Abstand im Dashboard an.
+            </div>
+        </div>
 
     </div>
 
@@ -251,6 +272,33 @@
         <a href="nutrition.html" class="nav-icon"><i class="fa-solid fa-utensils"></i></a>
         <a href="profile.html" class="nav-icon active"><i class="fa-regular fa-user"></i></a>
     </div>
+
+    <style>
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            margin-top: -5px; /* (16px thumb - 6px track) / 2 */
+            box-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #0a0b0d; /* Darker than container #15161A */
+            border-radius: 3px;
+        }
+    </style>
 
     <script>
         // Init Data
@@ -303,31 +351,53 @@
         function loadSettings() {
             const settingsStr = localStorage.getItem('kellerGymSettings');
             let settings = { 
-                sleepTracking: true 
-            }; // Default All On
+                sleepTracking: true,
+                devMode: true,
+                scrollPad: 80 // Default (~25% of 300)
+            }; 
             
             if(settingsStr) {
                 try {
                     const loaded = JSON.parse(settingsStr);
-                    // Merge with defaults
                     settings = { ...settings, ...loaded };
                 } catch(e) { console.error(e);}
             }
             
-            // Only sleep remains
             if(document.getElementById('toggle-sleep')) {
                 document.getElementById('toggle-sleep').checked = settings.sleepTracking;
+            }
+            if(document.getElementById('toggle-dev-mode')) {
+                document.getElementById('toggle-dev-mode').checked = settings.devMode;
+            }
+            if(document.getElementById('inp-scroll-pad')) {
+                document.getElementById('inp-scroll-pad').value = settings.scrollPad !== undefined ? settings.scrollPad : 80;
+            }
+
+            // Show/Hide Dev Section
+            const miscSec = document.getElementById('section-misc');
+            if(miscSec) {
+                miscSec.style.display = settings.devMode ? 'block' : 'none';
             }
         }
 
         function saveSettings() {
             const sleep = document.getElementById('toggle-sleep').checked;
+            const dev = document.getElementById('toggle-dev-mode').checked;
+            const scrollPad = document.getElementById('inp-scroll-pad').value; // Get scroll value
             
             const settings = {
-                sleepTracking: sleep
+                sleepTracking: sleep,
+                devMode: dev,
+                scrollPad: parseInt(scrollPad)
             };
             
             localStorage.setItem('kellerGymSettings', JSON.stringify(settings));
+
+            // Immediate UI update for Dev Mode
+            const miscSec = document.getElementById('section-misc');
+            if(miscSec) {
+                miscSec.style.display = dev ? 'block' : 'none';
+            }
         }
     </script>
 </body>

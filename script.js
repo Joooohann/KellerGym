@@ -317,14 +317,31 @@ function selectOption(key, value, element) {
     let step = currentStep;
     // Attempt to deduce step if possible, but currentStep var is reliable enough
     
-    // Special check for freq to clear days
+    // Special check for freq to clear days and invalidate incompatible split
     if(key === 'freq') {
         obData.days = [];
         const days = document.querySelectorAll('.day-card');
         days.forEach(d => d.classList.remove('active'));
         
-        // Also clear split selection if it becomes invalid? 
-        // We'll leave it for now.
+        // Disable "Next" button on Step 11 (Split) if previously selected split is now invalid
+        // We do this by checking if the CURRENT split fits the NEW freq
+        if(obData.split) {
+            const info = splitInfoData[obData.split];
+            const newFreq = parseInt(value);
+            if(info && info.validFreq && !info.validFreq.includes(newFreq)) {
+                // Invalid! Clear header, disable button step 11 logic
+                obData.split = null; // Clear selection
+                
+                // Visually deselect in Step 11 (will happen when we navigate there via checkSplitAvailability but we should ensure state is clean)
+                // We can preemptively clear UI classes for step 11
+                const splitCards = document.querySelectorAll('#split-grid .select-card');
+                splitCards.forEach(c => c.classList.remove('active'));
+
+                // Also disable the Next button for Step 11
+                const btn11 = document.getElementById('btn-next-11');
+                if(btn11) btn11.disabled = true;
+            }
+        }
     }
 
     const btnId = `btn-next-${currentStep}`;
@@ -359,7 +376,7 @@ const splitInfoData = {
     'full': {
         title: "Ganzkörper",
         desc: "Trainiert den gesamten Körper in jeder Einheit. Ideal für Einsteiger oder bei 2-3 Trainingstagen pro Woche, um die Frequenz pro Muskel hoch zu halten.",
-        validFreq: [2, 3, 4, 5, 6] // Always valid basically
+        validFreq: [2, 3] // Only valid for 2 or 3 days
     },
     'bro': {
         title: "Bro Split",
@@ -451,6 +468,7 @@ function showSplitError(key, currentFreq) {
         if(key === 'ppl') reason += "Push/Pull/Legs benötigt 3 oder 6 Tage.";
         if(key === 'pp') reason += "Push/Pull ist für 2, 4 oder 6 Tage ausgelegt.";
         if(key === 'ul') reason += "Upper/Lower ist für 2, 4 oder 6 Tage ausgelegt.";
+        if(key === 'full') reason += "Ganzkörper ist nur für 2 oder 3 Tage geeignet.";
         if(key === 'bro') reason += "Bro Split benötigt mindestens 4 Tage.";
         
         d.innerText = reason;

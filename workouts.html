@@ -6,53 +6,141 @@
     <title>KellerGym - Workouts</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
     <style>
         body { padding-bottom: 100px; }
+        
+        .simple-card {
+            background-color: #15161A;
+            border-radius: 24px;
+        }
+
+        /* Dashboard-style Week Grid */
+        .week-day-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            border: 2px solid transparent;
+            border-radius: 16px;
+            padding: 4px;
+            transition: 0.3s;
+            min-width: 40px;
+            cursor: pointer; /* Added pointer */
+        }
+        
+        .week-day-col:hover {
+            background-color: rgba(255,255,255,0.05); /* Slight hover effect */
+        }
+
+        .week-day-col.selected {
+             background-color: #2a2d35; /* Indicate selection */
+             border-color: #444;       /* Subtle border for selected */
+        }
+
+        /* Day Active Shimmer (copied from Dashboard) */
+        @keyframes shimmer {
+            0% { transform: translateX(-150%) skewX(-20deg); }
+            100% { transform: translateX(200%) skewX(-20deg); }
+        }
+        .day-active {
+            border-color: var(--primary) !important;
+            background-color: rgba(0, 255, 204, 0.1);
+            position: relative;
+            overflow: hidden !important;
+        }
+        .day-active::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-20deg) translateX(-150%);
+            animation: shimmer 3s infinite;
+            pointer-events: none;
+        }
+
+        .rig-image {
+            position: absolute;
+            right: 20px;
+            bottom: 8px;
+            height: 110px;
+            width: auto;
+            object-fit: contain;
+        }
+        
+        @media (min-width: 600px) {
+            .rig-image {
+                right: 50px; 
+            }
+        }
+
+        p { margin-bottom: 0; }
+
+        .start-btn {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 10px 30px; /* Reduced padding slightly */
+            border-radius: 30px;
+            font-size: 16px; /* Slightly smaller font to fit tight space if needed */
+            font-weight: 700;
+            cursor: pointer;
+            width: auto;
+            min-width: 140px;
+            display: inline-block;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+        .start-btn:active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Disabled state for non-today days */
+        .start-btn:disabled, .start-btn.disabled {
+            border-color: #333;
+            color: #555;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
 
     <div id="app-viewport">
-        <div class="header-row">
-            <h1>Workouts</h1>
+        <!-- Header -->
+        <div class="header-row" style="justify-content:center; margin-top:10px; margin-bottom: 25px;">
+            <h1 style="font-family: 'Black Ops One', cursive; color: var(--primary); font-size: 32px; margin:0; font-weight: 400;">Training</h1>
         </div>
 
-        <div class="card" style="padding: 20px; text-align: center; color: var(--text-mute);">
-            <i class="fa-solid fa-dumbbell" style="font-size: 48px; margin-bottom: 15px;"></i>
-            <p>Hier findest du bald deine Trainingspläne.</p>
-
-            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0;">
-            <p style="font-size: 12px; margin-bottom: 20px;">Icon Vorschau:</p>
-            
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; font-size: 24px; color: white;">
-                <div title="Dumbbell"><i class="fa-solid fa-dumbbell"></i></div>
-                <div title="Weight"><i class="fa-solid fa-weight-hanging"></i></div>
-                <div title="Person Lifting"><i class="fa-solid fa-person-lifting-weights"></i></div>
-                
-                <div title="Dumbbell"><i class="fa-solid fa-dumbbell"></i></div>
-                
-                <div title="Arm Flexing (Custom CSS Icon)">
-                    <div class="arm-flex-icon" style="width: 24px; height: 24px; display: inline-block;">
-                        <svg viewBox="0 0 512 512" style="fill:white;">
-                           <path d="M123.6 391.3c12.9-9.4 29.6-11.8 44.6-6.4c26.5 9.6 56.2 15.1 87.8 15.1c124.7 0 208-80.5 208-160s-83.3-160-208-160C130.3 80 50.9 136.6 22.4 243.5c-1.8 6.7-1.7 13.5 .4 20l27 69c4.2 10.6 15.9 16.2 26.8 12.8l10.8-3.4c6.6-2.1 9.7-9.5 7-15.8c-1.3-3.1-2.9-5.9-4.8-8.5c-3.1-4.3-3.4-10-.7-14.6l5.7-9.5c4.7-8 15.4-9.8 22.6-3.8l11.4 9.5c6.6 5.5 16.3 5.4 22.8- .2l4.8-4.2c6.9-6 17.5-5.5 23.9 1.1l7.6 7.9c5.6 5.9 5.2 15.3-.9 20.7l-9.1 8c-7 6.1-9 16.2-4.9 24.5l5.2 10.6c4.5 9.1 1.7 20.2-6.7 26.2zM256 0C114.6 0 0 107.5 0 240c0 42.4 11.8 82 32.5 116.3l-1.8 4.6c-5.7 14.7-2.7 31.6 8 43.1l69 74.4c17.1 18.5 45.8 20.4 65.3 4.3l12.6-10.4c16.3-13.4 20.6-36.6 10.1-55.2l-5.6-9.8c-5.5-9.6-3.4-21.7 4.9-28.9l6.5-5.6c11.3-9.8 28.2-8.6 38.3 2.7l3 3.4c10.8 12 29.5 12.3 40.7 .6L378 355c17.3-18.1 16.8-46.7-.8-64.2l-3-3C450.3 273.9 496 211.9 496 144C496 64.5 388.5 0 256 0z"/>
-                        </svg>
-                    </div>
-                </div>
-
-                <div title="Hand Fist"><i class="fa-solid fa-hand-fist"></i></div>
-                <div title="Running"><i class="fa-solid fa-person-running"></i></div>
-                
-                <div title="Stopwatch"><i class="fa-solid fa-stopwatch"></i></div>
-                <div title="Bolt"><i class="fa-solid fa-bolt"></i></div>
-                <div title="Heart Pulse"><i class="fa-solid fa-heart-pulse"></i></div>
-                <div title="List Check"><i class="fa-solid fa-list-check"></i></div>
-
-                <div title="Medal"><i class="fa-solid fa-medal"></i></div>
-                <div title="Trophy"><i class="fa-solid fa-trophy"></i></div>
-                <div title="Fire"><i class="fa-solid fa-fire"></i></div>
-                <div title="Calendar"><i class="fa-solid fa-calendar-days"></i></div>
+        <!-- Week Grid -->
+        <div class="simple-card" style="padding: 15px; margin-bottom: 25px;">
+            <div style="font-size:18px; font-weight:700; margin-bottom:15px; letter-spacing:0.5px;">Diese Woche</div>
+            <div id="week-grid" style="display: flex; justify-content: space-between; gap: 5px;">
+                <!-- JS Generated -->
             </div>
         </div>
+
+        <!-- Workout Card -->
+        <div class="carbon-card" style="padding: 20px; display:flex; flex-direction:column; position: relative;">
+            <div id="wo-header" style="font-size:18px; font-weight:700; margin-bottom:10px; letter-spacing:0.5px;">Heutiges Training</div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                <div>
+                    <div id="wo-title" style="font-size: 24px; font-weight: 800; margin-bottom: 4px; line-height: 1.2;">Lower Body</div>
+                    <div id="wo-desc" style="font-size: 15px; color: var(--text-mute);">1:10h, 6 Übungen</div>
+                </div>
+                
+                <!-- Rig Image -->
+                <img id="wo-img" src="img/lower_body.png" class="rig-image">
+            </div>
+
+            <!-- Start Button Group -->
+            <div style="margin-top: 10px;">
+                <button id="btn-start" class="start-btn">Starten</button>
+            </div>
+        </div>
+        
     </div>
 
     <!-- Bottom Navigation -->
@@ -63,5 +151,145 @@
         <a href="profile.html" class="nav-icon"><i class="fa-regular fa-user"></i></a>
     </div>
 
+    <script>
+        const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+        const FULL_DAYS = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+        
+        let selectedDayIndex = -1; // 0-6 (Mon-Sun)
+        let todayIndex = -1;
+
+        // Mock Data Schedule
+        // 0=Mon, 1=Tue, ...
+        const SCHEDULE = [
+            { type: 'lower', title: 'Lower Body', desc: '1:10h, 6 Übungen', img: 'img/lower_body.png' }, // Mo
+            { type: 'upper', title: 'Upper Body', desc: '1:15h, 7 Übungen', img: 'img/upper_body.png' }, // Di
+            { type: 'off', title: 'Offday', desc: 'Regeneriere dich', img: 'img/rest.png' },            // Mi
+            { type: 'lower', title: 'Lower Body', desc: '1:10h, 6 Übungen', img: 'img/lower_body.png' }, // Do
+            { type: 'full', title: 'Ganzkörper', desc: '1:20h, 9 Übungen', img: 'img/full_body.png' },  // Fr
+            { type: 'off', title: 'Offday', desc: 'Aktive Erholung', img: 'img/rest.png' },             // Sa
+            { type: 'off', title: 'Offday', desc: 'Regeneriere dich', img: 'img/rest.png' }             // So
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initWeek();
+        });
+
+        function initWeek() {
+            // Determine Today (Mon=0...Sun=6)
+            const d = new Date();
+            let day = d.getDay(); // 0=Sun, 1=Mon
+            todayIndex = (day === 0) ? 6 : day - 1;
+            
+            // Default selection = today
+            selectedDayIndex = todayIndex;
+
+            renderWeek();
+            renderWorkout();
+        }
+
+        function renderWeek() {
+            const container = document.getElementById('week-grid');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            // Get workout days settings
+            let workoutDays = ['Mo', 'Mi', 'Fr', 'So']; // Default
+            try {
+                const stored = localStorage.getItem('kellerGymData');
+                if(stored) {
+                    const data = JSON.parse(stored);
+                    if(data.days && data.days.length > 0) workoutDays = data.days;
+                }
+            } catch(e) { console.error(e); }
+
+            DAYS.forEach((label, idx) => {
+                const isToday = (idx === todayIndex);
+                const isSelected = (idx === selectedDayIndex);
+                const isWorkout = workoutDays.includes(label);
+
+                // Create Column Structure
+                const col = document.createElement('div');
+                col.className = 'week-day-col';
+                
+                // Add active/selected classes
+                if (isToday) col.classList.add('day-active'); // Shimmer 
+                if (isSelected) col.classList.add('selected'); // Interaction state
+
+                col.onclick = () => {
+                    selectedDayIndex = idx;
+                    renderWeek();
+                    renderWorkout();
+                };
+                
+                // Circle Icon
+                const circle = document.createElement('div');
+                circle.style.width = '30px';
+                circle.style.height = '30px';
+                circle.style.borderRadius = '50%';
+                circle.style.display = 'flex';
+                circle.style.alignItems = 'center';
+                circle.style.justifyContent = 'center';
+                
+                if(isWorkout) {
+                    circle.style.border = '2px solid var(--primary)';
+                    circle.style.background = 'rgba(0, 255, 204, 0.1)';
+                    // Biceps Image
+                    circle.innerHTML = `<img src="img/biceps_2.png" style="width: 18px; height: 18px; object-fit: contain;">`;
+                } else {
+                    circle.style.border = '1px solid transparent';
+                    circle.style.background = '#2a2d35';
+                    circle.innerHTML = '<i class="fa-solid fa-couch" style="color:#555; font-size:14px;"></i>';
+                }
+
+                // Label
+                const labelDiv = document.createElement('div');
+                labelDiv.innerText = label;
+                labelDiv.style.fontSize = '12px';
+                labelDiv.style.fontWeight = '600';
+                // Highlight text if today or selected
+                labelDiv.style.color = (isToday || isSelected) ? '#fff' : 'var(--text-mute)';
+
+                col.appendChild(circle);
+                col.appendChild(labelDiv);
+
+                container.appendChild(col);
+            });
+        }
+
+        function renderWorkout() {
+            const entry = SCHEDULE[selectedDayIndex];
+            
+            // Text Elements
+            const titleEl = document.getElementById('wo-title');
+            const descEl = document.getElementById('wo-desc');
+            const imgEl = document.getElementById('wo-img');
+            const headerEl = document.getElementById('wo-header');
+            const btnEl = document.getElementById('btn-start');
+
+            // Set Content
+            titleEl.innerText = entry.title;
+            descEl.innerText = entry.desc;
+            imgEl.src = entry.img;
+
+            // Header Logic
+            if(selectedDayIndex === todayIndex) {
+                headerEl.innerText = "Heutiges Training";
+                btnEl.disabled = false;
+                btnEl.classList.remove('disabled');
+                
+                if(entry.type === 'off') {
+                    btnEl.style.display = 'none'; // Optional: Can also hide if Rest day
+                } else {
+                    btnEl.style.display = 'inline-block';
+                }
+            } else {
+                headerEl.innerText = "Training am " + FULL_DAYS[selectedDayIndex];
+                // Instead of hiding, we disable it
+                btnEl.style.display = 'inline-block';
+                btnEl.disabled = true;
+                btnEl.classList.add('disabled');
+            }
+        }
+    </script>
 </body>
 </html>

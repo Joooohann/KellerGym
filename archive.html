@@ -121,7 +121,9 @@
                 // Handle spaces for CSS vs URL
                 const fontName = font.replace(/\+/g, ' ');
                 el.style.fontFamily = `"${fontName}", sans-serif`;
-                el.innerText = fontName;
+                el.innerText = '';
+                el.innerHTML = 'Keller<span style="color:var(--primary)">Gym</span>';
+                el.style.color = 'white';
                 list.appendChild(el);
             });
         }
