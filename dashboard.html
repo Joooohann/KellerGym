@@ -11,10 +11,9 @@
     <style>
         /* Dashboard specific overrides if needed */
         body { height: 100dvh; } /* Fix mobile viewports */
-        #app-viewport { padding-bottom: 0 !important; } /* Let screen-home padding handle it */
+        #app-viewport { padding-bottom: 90px !important; }
         
-        /* Dynamic scroll padding value, default 150px set by JS */
-        #screen-home { padding-bottom: var(--dash-pad, 150px) !important; }
+        #screen-home { padding-bottom: 20px !important; }
 
         .simple-card {
             background-color: #15161A;
@@ -97,9 +96,12 @@
                 </div>
             </div>
 
-            <!-- Today's Training Card -->
+            <!-- Training Card (Toggle Today/Tomorrow) -->
             <div class="carbon-card" onclick="toggleTrainingView()" style="padding: 20px; margin-bottom: 25px; cursor: pointer; position: relative;">
-                <div style="font-size:18px; font-weight:700; margin-bottom:15px; letter-spacing:0.5px;">Heutiges Training</div>
+                
+                <div style="font-size:18px; font-weight:700; margin-bottom:15px; letter-spacing:0.5px; color:var(--primary);" id="training-header">
+                    <span style="color:var(--primary)">Heutiges Training</span>
+                </div>
                 
                 <!-- Link Arrow -->
                 <a href="workouts.html" onclick="event.stopPropagation();" style="position: absolute; top: 20px; right: 20px; color: var(--text-mute); font-size: 14px; text-decoration: none;">
@@ -116,12 +118,10 @@
                     <img src="img/lower_body.png" class="rig-image" id="training-img">
                 </div>
 
-                <!-- Dots -->
+                <!-- Dots (2 states) -->
                 <div style="display: flex; gap: 5px; margin-top: 15px; justify-content: center;">
                     <div class="n-dot active" id="td-1"></div>
                     <div class="n-dot" id="td-2"></div>
-                    <div class="n-dot" id="td-3"></div>
-                    <div class="n-dot" id="td-4"></div>
                 </div>
             </div>
 
@@ -650,48 +650,35 @@
              }
         }
         
-        let trainingState = 0; // 0: Lower, 1: Upper, 2: Full, 3: Off
+        let trainingState = 0; // 0: Today (Lower), 1: Tomorrow (Off)
         function toggleTrainingView() {
-            trainingState = (trainingState + 1) % 4;
+            trainingState = (trainingState + 1) % 2; // Toggle between 0 and 1
             
+            const header = document.getElementById('training-header');
             const title = document.getElementById('daily-train-title');
             const desc = document.getElementById('daily-train-desc');
             const img = document.getElementById('training-img');
             const dot1 = document.getElementById('td-1');
             const dot2 = document.getElementById('td-2');
-            const dot3 = document.getElementById('td-3');
-            const dot4 = document.getElementById('td-4');
 
             // Reset dots
             if(dot1) dot1.classList.remove('active');
             if(dot2) dot2.classList.remove('active');
-            if(dot3) dot3.classList.remove('active');
-            if(dot4) dot4.classList.remove('active');
 
             if(trainingState === 0) {
-                // Lower Body
+                // Today: Lower Body
+                if(header) header.innerHTML = '<span style="color:var(--primary)">Heutiges Training</span>';
                 if(title) title.innerText = 'Lower Body';
                 if(desc) desc.innerText = '1:10h, 6 Übungen';
                 if(img) img.src = 'img/lower_body.png';
                 if(dot1) dot1.classList.add('active');
-            } else if (trainingState === 1) {
-                 // Upper Body
-                if(title) title.innerText = 'Upper Body';
-                if(desc) desc.innerText = '1:15h, 7 Übungen';
-                if(img) img.src = 'img/upper_body.png';
-                if(dot2) dot2.classList.add('active');
-            } else if (trainingState === 2) {
-                 // Full Body
-                if(title) title.innerText = 'Ganzkörper';
-                if(desc) desc.innerText = '1:20h, 8 Übungen';
-                if(img) img.src = 'img/full_body.png';
-                if(dot3) dot3.classList.add('active');
             } else {
-                // Offday
+                 // Tomorrow: Offday
+                if(header) header.innerHTML = '<span style="color:var(--primary)">Morgiges Training</span>';
                 if(title) title.innerText = 'Offday';
                 if(desc) desc.innerText = 'Regeneriere dich';
                 if(img) img.src = 'img/rest.png';
-                if(dot4) dot4.classList.add('active');
+                if(dot2) dot2.classList.add('active');
             }
         }
 

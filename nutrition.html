@@ -6,76 +6,265 @@
     <title>KellerGym - Ernährung</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts Imports (50+) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Amatic+SC:wght@700&family=Anton&family=Arvo:wght@700&family=Audiowide&family=Bangers&family=Bebas+Neue&family=Black+Ops+One&family=Cabin:wght@700&family=Cairo:wght@900&family=Comfortaa:wght@700&family=Creepster&family=Crimson+Text:wght@700&family=Dancing+Script:wght@700&family=Dosis:wght@800&family=Exo+2:wght@900&family=Fjalla+One&family=Fredoka+One&family=Hind:wght@700&family=Inconsolata:wght@900&family=Indie+Flower&family=Josefin+Sans:wght@700&family=Lato:wght@900&family=Libre+Baskerville:wght@700&family=Lobster&family=Lora:wght@700&family=Luckiest+Guy&family=Merriweather:wght@900&family=Monoton&family=Montserrat:wght@900&family=Mukta:wght@800&family=Noto+Sans:wght@900&family=Nunito:wght@900&family=Open+Sans:wght@800&family=Orbitron:wght@900&family=Oswald:wght@700&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:wght@900&family=Poppins:wght@900&family=Press+Start+2P&family=PT+Sans:wght@700&family=Quicksand:wght@700&family=Raleway:wght@900&family=Righteous&family=Roboto:wght@900&family=Roboto+Condensed:wght@700&family=Roboto+Mono:wght@700&family=Russo+One&family=Shadows+Into+Light&family=Special+Elite&family=Syncopate:wght@700&family=Teko:wght@700&family=Titillium+Web:wght@900&family=Ubuntu:wght@700&family=Ultra&family=Unica+One&family=Varela+Round&family=Bruno+Ace&family=Bruno+Ace+SC&family=Chakra+Petch:wght@700&family=Electrolize&family=Gruppo&family=Iceland&family=Jura:wght@700&family=Michroma&family=Nova+Square&family=Oxanium:wght@700&family=Quantico:wght@700&family=Rationale&family=Share+Tech&family=Wallpoet&family=Zen+Dots&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
 
     <style>
-        body { padding-bottom: 100px; }
-        
-        .font-showcase {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-top: 30px;
-            padding-bottom: 40px;
-        }
-        
-        .font-item {
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid #333;
-        }
-        
-        .font-name {
-            font-size: 10px;
-            color: #666;
-            margin-bottom: 10px;
-            font-family: sans-serif;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        
-        .font-preview {
-            font-size: 38px;
-            color: #fff;
-            line-height: 1.2;
-        }
-        
-        .font-preview span {
-            color: var(--primary);
+        .simple-card {
+            background-color: #15161A;
+            border-radius: 24px;
         }
 
-        /* Adjustments for specific fonts specific styling */
-        .font-preview[style*="Press Start 2P"] { font-size: 20px; margin-top: 10px; }
-        .font-preview[style*="Monoton"] { font-size: 32px; letter-spacing: 2px; }
-        .font-preview[style*="Audiowide"] { letter-spacing: 1px; }
+        .week-day-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            border: 2px solid transparent;
+            border-radius: 16px;
+            padding: 4px;
+            transition: 0.3s;
+            min-width: 40px;
+            cursor: pointer;
+        }
+        
+        .week-day-col:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .week-day-col.selected {
+             background-color: #2a2d35;
+             border-color: #444;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-150%) skewX(-20deg); }
+            100% { transform: translateX(200%) skewX(-20deg); }
+        }
+        
+        .day-active {
+            border-color: var(--primary) !important;
+            background-color: rgba(0, 255, 204, 0.1);
+            position: relative;
+            overflow: hidden !important;
+        }
+        
+        .day-active::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-20deg) translateX(-150%);
+            animation: shimmer 3s infinite;
+            pointer-events: none;
+        }
+
+        .macro-bar-bg {
+            background-color: #2a2d35;
+            height: 6px;
+            border-radius: 3px;
+            width: 100%;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .macro-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+        
+        .macro-carbs { background-color: var(--accent-blue); }
+        .macro-protein { background-color: var(--primary); }
+        .macro-fat { background-color: #e67e22; }
+
+        .meal-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .meal-row:last-child {
+            border-bottom: none;
+        }
+        
+        .add-meal-btn {
+            background: #2a2d35;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-mute);
+            cursor: pointer;
+        }
+        
+        .copy-meal-btn {
+            color: var(--text-mute);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Circular Progress approximation styling */
+        .circle-wrap {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* The SVG handles the border now, so we remove the background/border from circle-wrap */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(135deg);
+            transform-origin: 50% 50%;
+            stroke-linecap: round;
+        }
     </style>
 </head>
 <body>
 
     <div id="app-viewport">
-        <div class="header-row">
-            <h1>Ernährung</h1>
+        <!-- Header -->
+        <div class="header-row" style="justify-content:center; margin-top:10px; margin-bottom: 25px;">
+            <h1 style="font-family: 'Black Ops One', cursive; color: var(--primary); font-size: 32px; margin:0; font-weight: 400;">Ernährung</h1>
         </div>
 
-        <div class="card" style="padding: 20px; text-align: center; color: var(--text-mute); margin-bottom: 20px;">
-            <i class="fa-solid fa-utensils" style="font-size: 48px; margin-bottom: 15px;"></i>
-            <p>Hier geht es bald um deine Ernährung.</p>
+        <!-- Week Grid -->
+        <div class="simple-card" style="padding: 15px; margin-bottom: 25px;">
+            <div id="week-grid" style="display: flex; justify-content: space-between; gap: 5px;">
+                <!-- JS Generated -->
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div id="nutrition-content">
+            
+            <!-- Daily Plan Overview -->
+            <div class="carbon-card" style="padding: 20px; text-align: center; margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <i class="fa-solid fa-chevron-left" style="color: var(--text-mute);"></i>
+                    <div style="font-size: 18px; font-weight: 700;">Ernährungsplan heute</div>
+                    <i class="fa-solid fa-chevron-right" style="color: var(--text-mute);"></i>
+                </div>
+                
+                <div style="display: flex; justify-content: space-evenly; align-items: center; margin-bottom: 30px;">
+                    <!-- Konsumiert -->
+                    <div>
+                        <div style="font-size: 20px; font-weight: 700;">0</div>
+                        <div style="font-size: 12px; color: var(--text-mute);">konsumiert</div>
+                    </div>
+                    
+                    <!-- Circle Offen -->
+                    <div class="circle-wrap">
+                        <svg class="progress-ring" width="120" height="120" style="position: absolute; top: 0; left: 0;">
+                            <!-- background arc -->
+                            <circle class="progress-ring__circle" stroke="#2a2d35" stroke-width="8" fill="transparent" r="52" cx="60" cy="60" stroke-dasharray="326.72" stroke-dashoffset="81.68"/>
+                            <!-- foreground arc (the progress) -->
+                            <circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="8" fill="transparent" r="52" cx="60" cy="60" stroke-dasharray="326.72" stroke-dashoffset="150" />
+                        </svg>
+                        <div style="z-index: 10;">
+                            <div style="font-size: 24px; font-weight: 800; color: var(--primary);">3000</div>
+                            <div style="font-size: 14px; font-weight: 600;">kcal offen</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Geplant -->
+                    <div>
+                        <div style="font-size: 20px; font-weight: 700;">3000</div>
+                        <div style="font-size: 12px; color: var(--text-mute);">geplant</div>
+                    </div>
+                </div>
+                
+                <!-- Macros Row -->
+                <div style="display: flex; justify-content: space-between; gap: 15px; text-align: center;">
+                    <div style="flex: 1;">
+                        <div style="font-size: 14px; font-weight: 700; margin-bottom: 5px;">Kohlenhydrate</div>
+                        <div class="macro-bar-bg"><div class="macro-bar-fill macro-carbs" style="width: 0%;"></div></div>
+                        <div style="font-size: 12px; color: var(--text-mute); margin-top: 5px;">0 / 405g</div>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 14px; font-weight: 700; margin-bottom: 5px;">Eiweiß</div>
+                        <div class="macro-bar-bg"><div class="macro-bar-fill macro-protein" style="width: 0%;"></div></div>
+                        <div style="font-size: 12px; color: var(--text-mute); margin-top: 5px;">0 / 180g</div>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 14px; font-weight: 700; margin-bottom: 5px;">Fett</div>
+                        <div class="macro-bar-bg"><div class="macro-bar-fill macro-fat" style="width: 0%;"></div></div>
+                        <div style="font-size: 12px; color: var(--text-mute); margin-top: 5px;">0 / 60g</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meals Section -->
+            <div class="simple-card" style="padding: 15px; margin-bottom: 25px;">
+                <div class="meal-row">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i class="fa-solid fa-mug-saucer" style="color: #f1c40f; font-size: 18px; width: 20px; text-align: center;"></i>
+                        <span style="font-size: 16px; font-weight: 700;">Frühstück</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-regular fa-copy copy-meal-btn"></i>
+                        <div class="add-meal-btn"><i class="fa-solid fa-plus"></i></div>
+                    </div>
+                </div>
+                
+                <div class="meal-row">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i class="fa-solid fa-burger" style="color: #e67e22; font-size: 18px; width: 20px; text-align: center;"></i>
+                        <span style="font-size: 16px; font-weight: 700;">Mittag</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-regular fa-copy copy-meal-btn"></i>
+                        <div class="add-meal-btn"><i class="fa-solid fa-plus"></i></div>
+                    </div>
+                </div>
+
+                <div class="meal-row">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i class="fa-solid fa-burger" style="color: var(--primary); font-size: 18px; width: 20px; text-align: center;"></i>
+                        <span style="font-size: 16px; font-weight: 700;">Abend</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-regular fa-copy copy-meal-btn"></i>
+                        <div class="add-meal-btn"><i class="fa-solid fa-plus"></i></div>
+                    </div>
+                </div>
+
+                <div class="meal-row">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i class="fa-solid fa-apple-whole" style="color: #e74c3c; font-size: 18px; width: 20px; text-align: center;"></i>
+                        <span style="font-size: 16px; font-weight: 700;">Snack</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-regular fa-copy copy-meal-btn"></i>
+                        <div class="add-meal-btn"><i class="fa-solid fa-plus"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Water Tracking -->
+            <div class="simple-card" style="padding: 15px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(0, 210, 255, 0.1); border: 2px solid var(--accent-blue); display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-droplet" style="color: var(--accent-blue);"></i>
+                    </div>
+                    <span style="font-size: 18px; font-weight: 800;">0,0L</span>
+                </div>
+                
+                <div style="display: flex; align-items: center; background: #2a2d35; border-radius: 20px; padding: 5px;">
+                    <div style="width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-mute);"><i class="fa-solid fa-minus"></i></div>
+                    <div style="padding: 0 10px; font-size: 14px; font-weight: 700;">100 ml</div>
+                    <div style="width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); background: rgba(255,255,255,0.1);"><i class="fa-solid fa-plus"></i></div>
+                </div>
+            </div>
+
         </div>
 
-        <div style="border-top: 1px solid #333; margin: 30px 0;"></div>
-        
-        <div class="section-title" style="text-align:center; color:#888; margin-bottom: 5px;">Font Inspiration</div>
-        <div style="text-align:center; font-size: 12px; color: #555; margin-bottom: 20px;">Wähle deinen Favoriten</div>
-        
-        <div class="font-showcase" id="font-list">
-            <!-- Filled by JS -->
-        </div>
     </div>
 
     <!-- Bottom Navigation -->
@@ -87,36 +276,94 @@
     </div>
 
     <script>
-        const fonts = [
-            'Abril Fatface', 'Amatic SC', 'Anton', 'Arvo', 'Audiowide', 'Bangers', 'Bebas Neue', 
-            'Black Ops One', 'Cabin', 'Cairo', 'Comfortaa', 'Creepster', 'Crimson Text', 'Dancing Script', 
-            'Dosis', 'Exo 2', 'Fjalla One', 'Fredoka One', 'Hind', 'Inconsolata', 'Indie Flower', 
-            'Josefin Sans', 'Lato', 'Libre Baskerville', 'Lobster', 'Lora', 'Luckiest Guy', 'Merriweather', 
-            'Monoton', 'Montserrat', 'Mukta', 'Noto Sans', 'Nunito', 'Open Sans', 'Orbitron', 'Oswald', 
-            'Pacifico', 'Permanent Marker', 'Playfair Display', 'Poppins', 'Press Start 2P', 'PT Sans', 
-            'Quicksand', 'Raleway', 'Righteous', 'Roboto', 'Roboto Condensed', 'Roboto Mono', 'Russo One', 
-            'Shadows Into Light', 'Special Elite', 'Syncopate', 'Teko', 'Titillium Web', 'Ubuntu', 'Ultra', 
-            'Unica One', 'Varela Round', 'Bruno Ace', 'Bruno Ace SC', 'Chakra Petch', 'Electrolize',
-            'Gruppo', 'Iceland', 'Jura', 'Michroma', 'Nova Square', 'Oxanium', 'Quantico', 
-            'Rationale', 'Share Tech', 'Wallpoet', 'Zen Dots'
-        ];
+        const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+        const FULL_DAYS = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+        
+        let selectedDayIndex = -1;
+        let todayIndex = -1;
 
-        const container = document.getElementById('font-list');
-        fonts.forEach(font => {
-            const el = document.createElement('div');
-            el.className = 'font-item';
-            
-            // Allow clicking to log font name (optional dev helper)
-            el.onclick = () => { console.log('Selected Font:', font); alert('Font: ' + font); };
-            
-            el.innerHTML = `
-                <div class="font-name">${font}</div>
-                <div class="font-preview" style="font-family: '${font}', cursive, display;">
-                    Keller<span style="color: var(--primary);">Gym</span>
-                </div>
-            `;
-            container.appendChild(el);
+        document.addEventListener('DOMContentLoaded', () => {
+            initWeek();
         });
+
+        function initWeek() {
+            const d = new Date();
+            let day = d.getDay(); // 0=Sun, 1=Mon
+            todayIndex = (day === 0) ? 6 : day - 1;
+            
+            selectedDayIndex = todayIndex;
+            renderWeek();
+        }
+
+        function renderWeek() {
+            const container = document.getElementById('week-grid');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            DAYS.forEach((label, idx) => {
+                const isToday = (idx === todayIndex);
+                const isSelected = (idx === selectedDayIndex);
+
+                const col = document.createElement('div');
+                col.className = 'week-day-col';
+                
+                // Add active/selected classes visually from style.css likely applies to week-day-col
+                if (isToday) col.classList.add('day-active');
+                if (isSelected) col.classList.add('selected');
+
+                col.onclick = () => {
+                    selectedDayIndex = idx;
+                    renderWeek();
+                };
+                
+                // Circle Icon
+                const circle = document.createElement('div');
+                circle.style.width = '30px';
+                circle.style.height = '30px';
+                circle.style.borderRadius = '50%';
+                circle.style.display = 'flex';
+                circle.style.alignItems = 'center';
+                circle.style.justifyContent = 'center';
+                
+                // From workouts.html week style logic matching the screenshot
+                // Let's grab the actual schedule if we want the icons, or just placeholder icons
+                // The user's screenshot shows the same icons as the workout view (biceps/couch)
+                let isWorkout = true; // Placeholder, assuming mostly workouts
+                try {
+                    const stored = localStorage.getItem('kellerGymPlan');
+                    if(stored) {
+                        const plan = JSON.parse(stored);
+                        isWorkout = plan[idx] !== 'off';
+                    } else {
+                        const DEFAULT_PLAN = ['lower', 'upper', 'off', 'lower', 'full', 'off', 'off'];
+                        isWorkout = DEFAULT_PLAN[idx] !== 'off';
+                    }
+                } catch(e) {}
+                
+                if(isWorkout) {
+                    circle.style.border = '2px solid var(--primary)';
+                    circle.style.background = 'rgba(0, 255, 204, 0.1)';
+                    // Biceps Image
+                    circle.innerHTML = `<img src="img/biceps_2.png" style="width: 18px; height: 18px; object-fit: contain;">`;
+                } else {
+                    circle.style.border = '1px solid transparent';
+                    circle.style.background = '#2a2d35';
+                    circle.innerHTML = '<i class="fa-solid fa-couch" style="color:#555; font-size:14px;"></i>';
+                }
+
+                // Label
+                const labelDiv = document.createElement('div');
+                labelDiv.innerText = label;
+                labelDiv.style.fontSize = '12px';
+                labelDiv.style.fontWeight = '600';
+                labelDiv.style.color = (isToday || isSelected) ? '#fff' : 'var(--text-mute)';
+
+                col.appendChild(circle);
+                col.appendChild(labelDiv);
+
+                container.appendChild(col);
+            });
+        }
     </script>
 </body>
 </html>

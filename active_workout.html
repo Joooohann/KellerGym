@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KellerGym - Active Workout</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+    <style>
+        body { padding-bottom: 20px; }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* This allows centering the middle element relative to the container if we balance it, or use absolute positioning */
+            padding: 10px 0 20px 0;
+            position: relative;
+        }
+
+        .back-btn {
+            font-size: 24px;
+            color: var(--text-mute);
+            padding: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 10;
+        }
+
+        .page-title {
+            position: absolute;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            pointer-events: none; /* Let clicks pass through if needed */
+        }
+
+        .exercise-card {
+            background-color: #15161A;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Shimmer effect for completed exercises */
+        @keyframes subtleShimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .exercise-card.completed {
+            background: linear-gradient(120deg, rgba(21, 22, 26, 1) 0%, rgba(0, 128, 128, 0.4) 50%, rgba(21, 22, 26, 1) 100%);
+            background-size: 200% 200%;
+            animation: subtleShimmer 2.5s ease infinite;
+            border: 1px solid rgba(0, 128, 128, 0.6);
+            border-left: 4px solid var(--primary);
+            opacity: 0.85; /* Leichtes Ausgrauen, um Abschluss zu signalisieren */
+        }
+
+        .ex-image-container {
+            width: 60px;
+            height: 60px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ex-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .ex-info {
+            flex: 1;
+            margin-left: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .ex-muscle-label {
+            font-size: 11px; /* removed upper transform */
+            letter-spacing: 0.5px;
+            color: var(--text-mute);
+            margin-bottom: 2px;
+        }
+
+        .ex-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        .ex-stats-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .ex-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .ex-stat-icon {
+            color: #d35400; /* Darker Orange/Rust to match reference */
+            font-size: 12px;
+        }
+        
+        /* Specific override just for the chart icon */
+        .ex-stat-icon.fa-chart-simple {
+            color: #ff9500; /* Brighter orange for chart icon per request */
+        }
+
+        .ex-meta {
+            font-size: 13px;
+            color: var(--text-mute);
+        }
+        
+        .ex-sets {
+            display: flex;
+            gap: 5px;
+        }
+
+        .set-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            background: #2a2d35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .rig-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-left: 15px;
+            background: #222;
+        }
+
+        .swap-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: 0.2s;
+        }
+        .swap-btn:hover {
+            background: #333;
+            color: #ccc;
+        }
+
+        .btn-control {
+            border: none;
+            outline: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .btn-control:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-viewport">
+        <!-- Header -->
+        <div class="header-nav">
+            <a href="workouts.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i></a>
+            <div class="page-title" id="workout-title">...</div>
+            <div style="width: 44px;"></div> <!-- Spacer to balance back button -->
+        </div>
+
+        <!-- Controls -->
+        <div id="controls-container" style="display:flex; justify-content:center; gap: 10px; margin-bottom: 20px;">
+            <!-- JS Injected -->
+        </div>
+
+        <!-- Exercise List -->
+        <div id="exercise-list">
+            <!-- JS Generated -->
+        </div>
+
+        <div style="height: 50px;"></div>
+    </div>
+
+    <script>
+        // Mock Data for Exercises
+        const WORKOUT_CONTENT = {
+            'lower': [
+                { name: 'Squats', muscle: 'Beine', sets: 4, reps: '6-8', weight: '80', img: 'img/pullups.png' },
+                { name: 'Romanian Deadlifts', muscle: 'Beine', sets: 3, reps: '8-10', weight: '70', img: 'img/pullups.png' },
+                { name: 'Leg Press', muscle: 'Beine', sets: 3, reps: '10-12', weight: '120', img: 'img/pullups.png' },
+                { name: 'Leg Extensions', muscle: 'Beine', sets: 3, reps: '12-15', weight: '45', img: 'img/pullups.png' },
+                { name: 'Leg Curls', muscle: 'Beine', sets: 3, reps: '12-15', weight: '40', img: 'img/pullups.png' },
+                { name: 'Calf Raises', muscle: 'Waden', sets: 4, reps: '10-15', weight: '60', img: 'img/pullups.png' }
+            ],
+            'upper': [
+                { name: 'Bench Press', muscle: 'Brust', sets: 4, reps: '6-8', weight: '70', img: 'img/pullups.png' },
+                { name: 'Pull Ups', muscle: 'Rücken', sets: 3, reps: 'AMRAP', weight: '0', img: 'img/pullups.png' },
+                { name: 'Overhead Press', muscle: 'Schulter', sets: 3, reps: '8-10', weight: '40', img: 'img/pullups.png' },
+                { name: 'Barbell Rows', muscle: 'Rücken', sets: 3, reps: '8-10', weight: '60', img: 'img/pullups.png' },
+                { name: 'Incline DB Press', muscle: 'Brust', sets: 3, reps: '10-12', weight: '26', img: 'img/pullups.png' },
+                { name: 'Lateral Raises', muscle: 'Schulter', sets: 4, reps: '15-20', weight: '10', img: 'img/pullups.png' },
+                { name: 'Bicep Curls', muscle: 'Bizeps', sets: 3, reps: '12-15', weight: '12', img: 'img/pullups.png' }
+            ],
+            'full': [
+                { name: 'Squats', muscle: 'Beine', sets: 3, reps: '6-8', weight: '80', img: 'img/pullups.png' },
+                { name: 'Bench Press', muscle: 'Brust', sets: 3, reps: '6-8', weight: '70', img: 'img/pullups.png' },
+                { name: 'Deadlifts', muscle: 'Rücken', sets: 3, reps: '5', weight: '100', img: 'img/pullups.png' },
+                { name: 'Pull Ups', muscle: 'Rücken', sets: 3, reps: 'AMRAP', weight: '0', img: 'img/pullups.png' },
+                { name: 'Dips', muscle: 'Brust', sets: 3, reps: '10-12', weight: '0', img: 'img/pullups.png' },
+                { name: 'Face Pulls', muscle: 'Schulter', sets: 3, reps: '15-20', weight: '15', img: 'img/pullups.png' }
+            ]
+        };
+        
+        const WORKOUT_TITLES = {
+            'lower': 'Lower Body',
+            'upper': 'Upper Body',
+            'full': 'Ganzkörper'
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get workout type from localStorage
+            const activeType = localStorage.getItem('activeWorkoutType') || 'lower';
+            
+            // Set Title
+            const title = WORKOUT_TITLES[activeType] || 'Training';
+            document.getElementById('workout-title').innerText = title;
+
+            // --- Controls Logic ---
+            const sessionState = localStorage.getItem('workoutSessionState') || 'viewing';
+            const controlsContainer = document.getElementById('controls-container');
+            const isPaused = (localStorage.getItem('workoutIsPaused') === 'true');
+
+            if(sessionState === 'running') {
+                // Pause Button
+                const pauseBtn = document.createElement('button');
+                pauseBtn.className = 'btn-control';
+                pauseBtn.innerHTML = isPaused ? '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-pause"></i>';
+                pauseBtn.style.backgroundColor = '#333'; 
+                pauseBtn.style.border = '1px solid #555';
+                pauseBtn.style.width = '60px'; // Square-ish
+                pauseBtn.style.fontSize = '18px';
+                
+                pauseBtn.onclick = () => {
+                    const paused = (localStorage.getItem('workoutIsPaused') === 'true');
+                    if(paused) {
+                        localStorage.setItem('workoutIsPaused', 'false');
+                        pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                    } else {
+                        localStorage.setItem('workoutIsPaused', 'true');
+                        pauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                    }
+                };
+
+                // Finish Button
+                const finishBtn = document.createElement('button');
+                finishBtn.className = 'btn-control';
+                finishBtn.innerText = 'Beenden';
+                finishBtn.style.backgroundColor = 'rgba(211, 47, 47, 0.2)';
+                finishBtn.style.color = '#ff6666';
+                finishBtn.style.border = '1px solid #d32f2f';
+                finishBtn.style.flex = '1';
+                
+                finishBtn.onclick = () => {
+                    if(confirm('Training wirklich beenden?')) {
+                        localStorage.removeItem('workoutSessionState');
+                        localStorage.removeItem('workoutIsPaused');
+                        window.location.href = 'workouts.html';
+                    }
+                };
+
+                controlsContainer.appendChild(pauseBtn);
+                controlsContainer.appendChild(finishBtn);
+
+            } else {
+                // Start Button
+                const startBtn = document.createElement('button');
+                startBtn.className = 'btn-control';
+                startBtn.innerText = 'Starten';
+                startBtn.style.backgroundColor = 'var(--primary)';
+                startBtn.style.color = '#000'; // Contrast text
+                startBtn.style.width = '100%';
+                
+                startBtn.onclick = () => {
+                    localStorage.setItem('workoutSessionState', 'running');
+                    window.location.reload();
+                };
+                controlsContainer.appendChild(startBtn);
+            }
+
+            // Render List
+            const list = WORKOUT_CONTENT[activeType] || [];
+            const container = document.getElementById('exercise-list');
+            
+            list.forEach((ex, index) => {
+                const card = document.createElement('div');
+                card.className = 'exercise-card';
+                
+                // Simulate first two exercises as completed
+                if(index < 2) {
+                    card.classList.add('completed');
+                }
+
+                // Use placeholder image for all as requested
+                // const imgSrc = ex.img; 
+                const imgSrc = 'img/pullups.png';
+                
+                // Defaults
+                const muscle = ex.muscle || 'Muskelgruppe';
+                const weight = ex.weight ? ex.weight + ' kg' : '-';
+
+                card.innerHTML = `
+                    <div class="ex-image-container">
+                        <img src="${imgSrc}" alt="${ex.name}">
+                    </div>
+                
+                    <div class="ex-info">
+                        <div class="ex-muscle-label">${muscle}</div>
+                        <div class="ex-name">${ex.name}</div>
+                        
+                        <div class="ex-stats-row">
+                            <div class="ex-stat-item">
+                                <i class="fa-solid fa-chart-simple ex-stat-icon" style="color: #e67e22; transform: scaleY(-1);"></i> <!-- Orange Bar Chart -->
+                                <span>${ex.sets} Sätze</span>
+                            </div>
+                            <!-- <div class="ex-stat-item">
+                                <i class="fa-solid fa-rotate-right ex-stat-icon"></i>
+                                <span>${ex.reps}</span>
+                            </div> -->
+                            <div class="ex-stat-item">
+                                <i class="fa-solid fa-dumbbell ex-stat-icon" style="color: #e67e22;"></i>
+                                <span>${weight}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Swap Button -->
+                    <div class="swap-btn" onclick="openExerciseSwap('${ex.name}')">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        });
+        
+        function openExerciseSwap(exerciseName) {
+            // Placeholder for future menu
+            console.log('Swap exercise: ' + exerciseName);
+        }
+    </script>
+</body>
+</html>
