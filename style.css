@@ -102,6 +102,11 @@ body.no-nav #app-viewport { padding-bottom: 120px; }
     border: 1px solid rgba(255,255,255,0.03);
 }
 
+.simple-card {
+    background-color: #15161A;
+    border-radius: 24px;
+}
+
 .card { background: #1c1e24; border-radius: 20px; padding: 20px; margin-bottom: 15px; }
 
 
