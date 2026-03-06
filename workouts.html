@@ -134,7 +134,10 @@
 
         <!-- Workout Card -->
         <div class="carbon-card" onclick="viewWorkoutDetails()" style="cursor: pointer; padding: 20px; display:flex; flex-direction:column; position: relative;">
-            <div id="wo-header" style="font-size:18px; font-weight:700; margin-bottom:10px; letter-spacing:0.5px;">Heutiges Training</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div id="wo-header" style="font-size:18px; font-weight:700; letter-spacing:0.5px;">Heutiges Training</div>
+                <i id="wo-arrow" class="fa-solid fa-chevron-right" style="color:var(--text-mute); font-size:16px; display:none;"></i>
+            </div>
             
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
                 <div>
@@ -225,7 +228,7 @@
             'lower': { title: 'Lower Body', desc: '1:10h, 6 Übungen', img: 'img/lower_body.png' },
             'upper': { title: 'Upper Body', desc: '1:15h, 7 Übungen', img: 'img/upper_body.png' },
             'full':  { title: 'Ganzkörper', desc: '1:20h, 9 Übungen', img: 'img/full_body.png' },
-            'off':   { title: 'Offday', desc: 'Regeneriere dich', img: 'img/rest.png' }
+            'off':   { title: 'Restday', desc: 'Regeneriere dich', img: 'img/rest.png' }
         };
 
         // Default Plan
@@ -501,18 +504,28 @@
 
         function renderWorkout() {
             const entry = SCHEDULE[selectedDayIndex];
-            
+
             // Text Elements
             const titleEl = document.getElementById('wo-title');
             const descEl = document.getElementById('wo-desc');
             const imgEl = document.getElementById('wo-img');
             const headerEl = document.getElementById('wo-header');
             const btnEl = document.getElementById('btn-start');
+            const arrowEl = document.getElementById('wo-arrow');
 
             // Set Content
             titleEl.innerText = entry.title;
             descEl.innerText = entry.desc;
             imgEl.src = entry.img;
+
+            // Arrow Logic: show if it's not a rest day and we are not on "today" (where we have the start button instead)
+            // Wait, you said "Wenn man im Trainings-Menü einen Tag ausgewählt hat der kein Restday ist..."
+            // Usually, "Heutiges Training" has the start button. So let's show the arrow only for OTHER days that are NOT offdays.
+            if(selectedDayIndex !== todayIndex && entry.type !== 'off') {
+                arrowEl.style.display = 'block';
+            } else {
+                arrowEl.style.display = 'none';
+            }
 
             // Header Logic
             if(selectedDayIndex === todayIndex) {

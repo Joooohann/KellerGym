@@ -104,7 +104,7 @@
                 </div>
                 
                 <!-- Link Arrow -->
-                <a href="workouts.html" onclick="event.stopPropagation();" style="position: absolute; top: 20px; right: 20px; color: var(--text-mute); font-size: 14px; text-decoration: none;">
+                <a href="workouts.html" onclick="event.stopPropagation();" style="position: absolute; top: 0; right: 0; padding: 20px; color: var(--text-mute); font-size: 14px; text-decoration: none; z-index: 10;">
                     <i class="fa-solid fa-chevron-right"></i>
                 </a>
 
@@ -673,9 +673,9 @@
                 if(img) img.src = 'img/lower_body.png';
                 if(dot1) dot1.classList.add('active');
             } else {
-                 // Tomorrow: Offday
+                 // Tomorrow: Restday
                 if(header) header.innerHTML = '<span style="color:var(--primary)">Morgiges Training</span>';
-                if(title) title.innerText = 'Offday';
+                if(title) title.innerText = 'Restday';
                 if(desc) desc.innerText = 'Regeneriere dich';
                 if(img) img.src = 'img/rest.png';
                 if(dot2) dot2.classList.add('active');
