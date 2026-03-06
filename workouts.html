@@ -376,14 +376,14 @@
         function toggleScheduleEdit() {
             const content = document.getElementById('sched-content');
             const arrow = document.getElementById('sched-arrow');
-            
+
             // Close others if open (optional UI improvement)
-            document.getElementById('train-content').style.display = 'none';
-            document.getElementById('train-arrow').style.transform = 'rotate(0deg)';
+            if (document.getElementById('train-content')) document.getElementById('train-content').style.display = 'none';
+            if (document.getElementById('train-arrow')) document.getElementById('train-arrow').style.transform = 'rotate(0deg)';
             /* document.getElementById('ex-content').style.display = 'none'; */
             /* document.getElementById('ex-arrow').style.transform = 'rotate(0deg)'; */
-            document.getElementById('off-content').style.display = 'none';
-            document.getElementById('off-arrow').style.transform = 'rotate(0deg)';
+            if (document.getElementById('off-content')) document.getElementById('off-content').style.display = 'none';
+            if (document.getElementById('off-arrow')) document.getElementById('off-arrow').style.transform = 'rotate(0deg)';
 
             if(content.style.display === 'none') {
                 content.style.display = 'block';

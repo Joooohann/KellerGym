@@ -327,31 +327,31 @@
                 <div id="set-controls" style="display: none; justify-content: space-between; align-items: center; padding: 0;">
                     <!-- Wdh -->
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                      <div style="color: var(--text-mute); font-size: 14px; font-weight: 700; margin-bottom: 10px;">Wdh</div>
+                      <div style="color: var(--text-mute); font-size: 11px; font-weight: 700; margin-bottom: 10px;">Wdh</div>
                       <div style="display: flex; align-items: center; gap: 15px;">
-                          <i class="fa-solid fa-minus" onclick="adjustSetVal('wdh', -1)" style="color: var(--text-mute); font-size: 20px; cursor: pointer; padding: 5px;"></i>
-                          <span id="control-wdh" style="font-size: 24px; font-weight: 800; min-width: 25px; text-align: center;">10</span>
-                          <i class="fa-solid fa-plus" onclick="adjustSetVal('wdh', 1)" style="color: var(--text-main); font-size: 20px; cursor: pointer; padding: 5px;"></i>
+                          <i class="fa-solid fa-minus" onclick="adjustSetVal('wdh', -1)" style="color: var(--text-mute); font-size: 17px; cursor: pointer; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background-color: rgba(128, 128, 128, 0.15); border-radius: 50%;"></i>
+                          <span id="control-wdh" style="font-size: 21px; font-weight: 800; min-width: 25px; text-align: center;">10</span>
+                          <i class="fa-solid fa-plus" onclick="adjustSetVal('wdh', 1)" style="color: var(--text-main); font-size: 17px; cursor: pointer; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background-color: rgba(128, 128, 128, 0.15); border-radius: 50%;"></i>
                       </div>
                   </div>
 
                   <!-- Kg -->
                   <div style="display: flex; flex-direction: column; align-items: center;">
-                      <div style="color: var(--text-mute); font-size: 14px; font-weight: 700; margin-bottom: 10px;">Kg</div>
+                      <div style="color: var(--text-mute); font-size: 11px; font-weight: 700; margin-bottom: 10px;">Kg</div>
                       <div style="display: flex; align-items: center; gap: 15px;">
-                          <i class="fa-solid fa-minus" onclick="adjustSetVal('kg', -2.5)" style="color: var(--text-mute); font-size: 20px; cursor: pointer; padding: 5px;"></i>
-                          <span id="control-kg" style="font-size: 24px; font-weight: 800; min-width: 40px; text-align: center;">80</span>
-                          <i class="fa-solid fa-plus" onclick="adjustSetVal('kg', 2.5)" style="color: var(--text-main); font-size: 20px; cursor: pointer; padding: 5px;"></i>
+                          <i class="fa-solid fa-minus" onclick="adjustSetVal('kg', -2.5)" style="color: var(--text-mute); font-size: 17px; cursor: pointer; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background-color: rgba(128, 128, 128, 0.15); border-radius: 50%;"></i>
+                          <span id="control-kg" style="font-size: 21px; font-weight: 800; min-width: 40px; text-align: center;">80</span>
+                          <i class="fa-solid fa-plus" onclick="adjustSetVal('kg', 2.5)" style="color: var(--text-main); font-size: 17px; cursor: pointer; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background-color: rgba(128, 128, 128, 0.15); border-radius: 50%;"></i>
                       </div>
                   </div>
                   
                   <!-- RIR -->
                   <div style="display: flex; flex-direction: column; align-items: center;">
-                      <div style="color: var(--text-mute); font-size: 14px; font-weight: 700; margin-bottom: 10px;">RIR</div>
+                      <div style="color: var(--text-mute); font-size: 11px; font-weight: 700; margin-bottom: 10px;">RIR</div>
                       <div style="display: flex; align-items: center; gap: 15px;">
-                          <i class="fa-solid fa-minus" onclick="adjustSetVal('rir', -1)" style="color: var(--text-mute); font-size: 20px; cursor: pointer; padding: 5px;"></i>
-                          <span id="control-rir" style="font-size: 24px; font-weight: 800; min-width: 20px; text-align: center;">0</span>
-                          <i class="fa-solid fa-plus" onclick="adjustSetVal('rir', 1)" style="color: var(--text-main); font-size: 20px; cursor: pointer; padding: 5px;"></i>
+                          <i class="fa-solid fa-minus" onclick="adjustSetVal('rir', -1)" style="color: var(--text-mute); font-size: 17px; cursor: pointer; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background-color: rgba(128, 128, 128, 0.15); border-radius: 50%;"></i>
+                          <span id="control-rir" style="font-size: 21px; font-weight: 800; min-width: 20px; text-align: center;">0</span>
+                          <i class="fa-solid fa-plus" onclick="adjustSetVal('rir', 1)" style="color: var(--text-main); font-size: 17px; cursor: pointer; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background-color: rgba(128, 128, 128, 0.15); border-radius: 50%;"></i>
                       </div>
                   </div>
 
@@ -361,7 +361,7 @@
             <!-- Notes & Todo -->
             <div class="simple-card" style="margin-top: 20px; padding: 20px;">
                 <div style="font-size: 16px; font-weight: 700; margin-bottom: 10px;">Notizen</div>
-                <textarea oninput="autoResizeTextarea(this)" style="width: 100%; background: #1a1e22; border: 1px solid #333; border-radius: 8px; color: #fff; padding: 10px; font-family: inherit; font-size: 14px; line-height: 20px; resize: none; outline: none; min-height: 50px; max-height: 200px; overflow-y: auto; overflow-x: hidden;" placeholder="Tipps zur Ausführung..."></textarea>
+                <textarea oninput="autoResizeTextarea(this)" style="width: 100%; background: #1a1e22; border: 1px solid #333; border-radius: 8px; color: #fff; padding: 10px; font-family: inherit; font-size: 14px; line-height: 20px; resize: none; outline: none; min-height: 50px; max-height: 200px; overflow-y: auto; overflow-x: hidden;" placeholder="Notizen zur Übung"></textarea>
                 
                 <div style="margin-top: 20px; border-top: 1px solid #2a2d35; padding-top: 15px;">
                     <div onclick="toggleTodo()" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
