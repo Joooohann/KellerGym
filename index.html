@@ -1,23 +1,16 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KellerGym - Login</title>
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-touch-fullscreen" content="yes">
-    <meta name="theme-color" content="#08090c">
-
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="style_modal.css">
     
     <style>
-        /* Specific adjustments for login screen to center it */
         body {
             display: flex;
             align-items: center;
@@ -31,38 +24,196 @@
             max-width: 450px;
             padding: 20px;
         }
+        /* Kleiner Error-Style */
+        .error-message {
+            color: #ff4d4d;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
     </style>
 </head>
 <body class="no-nav">
 
     <div id="app-viewport">
-        <!-- LOGIN SCREEN -->
         <div id="screen-login" class="screen active">
             <div style="text-align: center; margin-bottom: 40px;">
                 <i class="fa-solid fa-dungeon" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
                 <h1 style="font-size: 36px; font-weight: 400; font-family: 'Black Ops One', cursive;">Keller<span style="color: var(--primary);">Gym</span></h1>
                 <p class="subtitle">Wo Ausreden keinen Empfang haben v0.2</p>
-            </div>
-
-            <div class="carbon-card">
+            </div>            <div id="login-card" class="carbon-card">
                 <div class="input-group">
-                    <label>Benutzername</label>
-                    <input type="text" id="login-user" class="input-field" placeholder="Benutzername eingeben">
+                    <label>E-Mail</label>
+                    <input type="email" id="login-user" class="input-field" placeholder="E-Mail eingeben">
                 </div>
                 <div class="input-group">
                     <label>Passwort</label>
                     <input type="password" id="login-pass" class="input-field" placeholder="Passwort eingeben">
                 </div>
-                <!-- Button triggers navigation via script.js -->
+
+                <div id="login-error" class="error-message"></div>
+
                 <button class="btn" id="btn-login-action">Login <i class="fa-solid fa-arrow-right"></i></button>
-                <button class="btn btn-secondary" id="btn-test-gen" style="margin-top: 15px;">
-                    Test Animation <i class="fa-solid fa-eye"></i>
+                <button class="btn btn-secondary" id="btn-switch-to-register" onclick="event.preventDefault(); document.getElementById('login-card').style.display='none'; document.getElementById('register-card').style.display='block'; document.getElementById('login-error').style.display='none'; document.getElementById('register-error').style.display='none';" style="margin-top: 15px; background: transparent; border: 1px solid #444;">
+                    Neuen Account erstellen
+                </button>
+                <button class="btn btn-secondary" onclick="window.location.href='dashboard.html?devmode=true'" style="margin-top: 15px; background: transparent; border: none; color: var(--text-mute); text-decoration: underline;">
+                    Direkt zum Dashboard
+                </button>
+            </div>
+
+            <!-- REGISTRATION CARD -->
+            <div id="register-card" class="carbon-card" style="display: none;">
+                <div class="input-group">
+                    <label>Name</label>
+                    <input type="text" id="register-name" class="input-field" placeholder="Dein Name">
+                </div>
+                <div class="input-group">
+                    <label>E-Mail</label>
+                    <input type="email" id="register-email" class="input-field" placeholder="E-Mail eingeben">
+                </div>
+                <div class="input-group">
+                    <label>Passwort</label>
+                    <input type="password" id="register-pass" class="input-field" placeholder="Passwort (min. 6 Zeichen)">
+                </div>
+
+                <div id="register-error" class="error-message"></div>
+
+                <button class="btn" id="btn-register-action">Account erstellen <i class="fa-solid fa-user-plus"></i></button>
+                <button class="btn btn-secondary" id="btn-switch-to-login" onclick="event.preventDefault(); document.getElementById('register-card').style.display='none'; document.getElementById('login-card').style.display='block'; document.getElementById('login-error').style.display='none'; document.getElementById('register-error').style.display='none';" style="margin-top: 15px; background: transparent; border: none; color: var(--text-mute);">
+                    Zurück zum Login
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Load main script -->
-    <script src="script.js"></script>
+    <script type="module">
+        import { supabase } from './supabase-config.js';
+
+        // Elements
+        const loginCard = document.getElementById('login-card');
+        const registerCard = document.getElementById('register-card');
+        
+        const btnLogin = document.getElementById('btn-login-action');
+        const btnRegister = document.getElementById('btn-register-action');
+        
+        const btnSwitchToRegister = document.getElementById('btn-switch-to-register');
+        const btnSwitchToLogin = document.getElementById('btn-switch-to-login');
+
+        // Inputs
+        const loginEmail = document.getElementById('login-user');
+        const loginPass = document.getElementById('login-pass');
+        const regName = document.getElementById('register-name');
+        const regEmail = document.getElementById('register-email');
+        const regPass = document.getElementById('register-pass');
+
+        const loginError = document.getElementById('login-error');
+        const regError = document.getElementById('register-error');
+
+        // View Toggles
+        btnSwitchToRegister.addEventListener('click', () => {
+            loginCard.style.display = 'none';
+            registerCard.style.display = 'block';
+            loginError.style.display = 'none';
+            regError.style.display = 'none';
+        });
+
+        btnSwitchToLogin.addEventListener('click', () => {
+            registerCard.style.display = 'none';
+            loginCard.style.display = 'block';
+            loginError.style.display = 'none';
+            regError.style.display = 'none';
+        });
+
+        // Hilfsfunktion für Fehlermeldungen
+        const showLoginError = (msg) => {
+            loginError.innerText = msg;
+            loginError.style.display = 'block';
+        };
+        const showRegError = (msg) => {
+            regError.innerText = msg;
+            regError.style.display = 'block';
+        };
+
+        // LOGIN FUNKTION
+        btnLogin.addEventListener('click', async (e) => {
+            if(e) e.preventDefault();
+            
+            try {
+                const email = loginEmail.value;
+                const password = loginPass.value;
+
+                if (!email || !password) {
+                    showLoginError("Bitte E-Mail und Passwort ausfüllen.");
+                    return;
+                }
+
+                btnLogin.innerHTML = "Lade... <i class='fa-solid fa-spinner fa-spin'></i>";
+                btnLogin.disabled = true;
+                loginError.style.display = 'none';
+
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+
+                if (error) {
+                    showLoginError("Login fehlgeschlagen: " + error.message);
+                    btnLogin.innerHTML = "Login <i class='fa-solid fa-arrow-right'></i>";
+                    btnLogin.disabled = false;
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (err) {
+                showLoginError("Fehler: " + err.message);
+                btnLogin.innerHTML = "Login <i class='fa-solid fa-arrow-right'></i>";
+                btnLogin.disabled = false;
+            }
+        });
+
+        // REGISTRIERUNGS FUNKTION
+        btnRegister.addEventListener('click', async (e) => {
+            if(e) e.preventDefault();
+            
+            try {
+                const name = regName.value.trim();
+                const email = regEmail.value.trim();
+                const password = regPass.value;
+
+                if (!name || !email || password.length < 6) {
+                    showRegError("Bitte fülle alle Felder aus (Passwort min. 6 Zeichen).");
+                    return;
+                }
+
+                btnRegister.innerHTML = "Lade... <i class='fa-solid fa-spinner fa-spin'></i>";
+                btnRegister.disabled = true;
+                regError.style.display = 'none';
+
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: name
+                        }
+                    }
+                });
+
+                if (error) {
+                    showRegError("Registrierung fehlgeschlagen: " + error.message);
+                    btnRegister.innerHTML = "Account erstellen <i class='fa-solid fa-user-plus'></i>";
+                    btnRegister.disabled = false;
+                } else {
+                    // Nach erfolgreichem SignUp direkt zum Onboarding
+                    window.location.href = 'onboarding.html';
+                }
+            } catch (err) {
+                showRegError("Ein unerwarteter Fehler ist aufgetreten: " + err.message);
+                btnRegister.innerHTML = "Account erstellen <i class='fa-solid fa-user-plus'></i>";
+                btnRegister.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>

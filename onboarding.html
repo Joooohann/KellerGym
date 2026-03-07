@@ -373,5 +373,65 @@
     </div>
 
     <script src="script.js"></script>
+    <script type="module">
+        import { supabase } from './supabase-config.js';
+
+        document.addEventListener('onboardingComplete', async (e) => {
+            window.savingToSupabase = true; // Verhindert den Auto-Redirect in script.js
+            
+            try {
+                const obData = e.detail;
+                const genText = document.getElementById('gen-text');
+                if (genText) genText.innerText = "Speichere Profil in der Cloud...";
+
+                // Aktuellen User von Supabase Auth abfragen
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                
+                if (userError || !user) {
+                    console.error("Kein Supabase User gefunden:", userError);
+                    alert("Achtung: Du bist nicht richtig eingeloggt. Daten wurden nur lokal gespeichert.");
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+
+                const userName = user.user_metadata?.full_name || "Unbekannt";
+                const workoutDaysStr = obData.days ? obData.days.join(',') : "";
+
+                // Neues Profil in 'user_profiles' eintragen
+                const { error: insertError } = await supabase
+                    .from('user_profiles')
+                    .insert([{
+                        user_id: user.id,
+                        name: userName,
+                        age: parseInt(obData.age),
+                        gender: obData.gender,
+                        height_cm: parseInt(obData.height),
+                        weight_kg: parseFloat(obData.weight),
+                        bodyfat_percent: parseInt(obData.bodyfat),
+                        activity_level: obData.activity,
+                        experience_level: obData.exp,
+                        goal: obData.goal,
+                        training_location: obData.location,
+                        workouts_per_week: parseInt(obData.freq),
+                        training_split: obData.split,
+                        workout_days: workoutDaysStr,
+                        water_goal_ml: 2500 // Standard, wie im Konzept gewünscht
+                    }]);
+
+                if (insertError) {
+                    console.error("Fehler beim Speichern in Supabase:", insertError);
+                    alert("Achtung: Profil konnte nicht in der Cloud gespeichert werden (" + insertError.message + ").");
+                } else {
+                    console.log("Supabase Profil erfolgreich erstellt!");
+                }
+                
+            } catch (err) {
+                console.error("Ein unerwarteter Fehler ist aufgetreten:", err);
+            } finally {
+                // In jedem Fall zum Dashboard navigieren
+                window.location.href = 'dashboard.html';
+            }
+        });
+    </script>
 </body>
 </html>

@@ -6,7 +6,8 @@
     <title>KellerGym - Profil</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+
     <style>
         .section-header {
             font-size: 20px;
@@ -102,12 +103,8 @@
 <body>
 
     <div id="app-viewport">
-        <div class="header-row">
-            <h1>Profil</h1>
-             <!-- Avatar Edit -->
-             <div style="width:40px; height:40px; border-radius:50%; overflow: hidden; border: 1px solid #333; position:relative;">
-                <img id="prof-img-preview" src="img/profile.jpg" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-           </div>
+        <div class="header-row" style="position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; margin-top: 10px;">
+            <h1 style="font-size: 32px; margin: 0; line-height: 1; font-weight: 400; font-family: 'Black Ops One', cursive; color: var(--primary);">PROFIL</h1>
         </div>
 
         <!-- Private Daten -->
@@ -118,9 +115,15 @@
                 <div style="width:80px; height:80px; border-radius:50%; overflow: hidden; border: 2px solid var(--primary);">
                     <img id="prof-img-large" src="img/profile.jpg" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-                <div style="position:absolute; bottom:0; padding: 4px 10px; background:var(--primary); border-radius:12px; font-size:10px; font-weight:bold; color:black; cursor:pointer;">
+                <div id="btn-edit-profile-pic" style="position:absolute; bottom:0; padding: 4px 10px; background:var(--primary); border-radius:12px; font-size:10px; font-weight:bold; color:black; cursor:pointer;">
                     Bearbeiten
                 </div>
+                <input type="file" id="inp-profile-pic" accept="image/*" style="display:none;">
+            </div>
+
+            <div class="input-row">
+                <label>Name</label>
+                <input type="text" id="inp-name" disabled style="background-color: #2a2d35; color: #888; border-color: #333; cursor: not-allowed;">
             </div>
 
             <div class="input-row">
@@ -211,7 +214,19 @@
                 </select>
             </div>
 
-             <button class="btn" onclick="saveProfileData()">Speichern</button>
+            <div class="input-row">
+                <label>Wasser-Ziel</label>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="number" id="inp-water" style="width: 80px;" disabled>
+                    <span style="color: var(--text-mute); font-size: 14px;">ml</span>
+                </div>
+            </div>
+
+             <div style="text-align: center; margin-top: 20px;">
+                 <button id="btn-save-profile" onclick="saveProfileData()" style="background-color: var(--primary); color: #fff; padding: 12px 24px; border-radius: 20px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit;">
+                     Speichern <i class="fa-solid fa-check"></i>
+                 </button>
+             </div>
         </div>
 
         <!-- Einstellungen -->
@@ -259,6 +274,13 @@
              <div style="font-size:12px; color: var(--text-mute); padding: 5px 10px 0;">
                 Passt den unteren Abstand im Dashboard an.
             </div>
+        </div>
+
+        <!-- LOGOUT BUTTON -->
+        <div style="text-align: center; margin: 40px 0 100px;">
+            <button id="btn-logout" style="background-color: var(--primary); color: #fff; padding: 12px 24px; border-radius: 20px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: inherit;">
+                Abmelden <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
         </div>
 
     </div>
@@ -309,7 +331,13 @@
             const dataStr = localStorage.getItem('kellerGymData');
             if(dataStr) {
                 const data = JSON.parse(dataStr);
-                
+
+                // Profilbild extrem schnell vorladen, um Blitzen zu vermeiden
+                if (data.profileImage) {
+                    const imgEl = document.getElementById('prof-img-large');
+                    if (imgEl) imgEl.src = data.profileImage;
+                }
+
                 // Populate inputs
                 if(data.gender) document.getElementById('inp-gender').value = data.gender;
                 if(data.age) document.getElementById('inp-age').value = data.age;
@@ -322,6 +350,7 @@
                 if(data.location) document.getElementById('inp-location').value = data.location;
                 if(data.freq) document.getElementById('inp-freq').value = data.freq;
                 if(data.split) document.getElementById('inp-split').value = data.split;
+                if(data.waterGoal) document.getElementById('inp-water').value = data.waterGoal;
             }
         }
 
@@ -329,7 +358,7 @@
             const dataStr = localStorage.getItem('kellerGymData');
             let data = {};
             if(dataStr) data = JSON.parse(dataStr);
-            
+
             data.gender = document.getElementById('inp-gender').value;
             data.age = document.getElementById('inp-age').value;
             data.height = document.getElementById('inp-height').value;
@@ -341,13 +370,12 @@
             data.location = document.getElementById('inp-location').value;
             data.freq = document.getElementById('inp-freq').value;
             data.split = document.getElementById('inp-split').value;
-            
-            localStorage.setItem('kellerGymData', JSON.stringify(data));
-            alert('Daten gespeichert!');
-        }
+            data.waterGoal = document.getElementById('inp-water').value || 2500;
 
-        function loadSettings() {
-            const settingsStr = localStorage.getItem('kellerGymSettings');
+            localStorage.setItem('kellerGymData', JSON.stringify(data));
+            
+            // Event senden, dass gespeichert wurde (für Supabase Sync)
+            document.dispatchEvent(new CustomEvent('profileSavedToCloud', { detail: data }));
             let settings = { 
                 sleepTracking: true,
                 devMode: true,
@@ -397,6 +425,188 @@
                 miscSec.style.display = dev ? 'block' : 'none';
             }
         }
+    </script>
+    <script type="module">
+        import { supabase } from './supabase-config.js';
+
+        // --- Profile Image Upload Logic ---
+        document.getElementById('btn-edit-profile-pic').addEventListener('click', () => {
+            document.getElementById('inp-profile-pic').click();
+        });
+
+        document.getElementById('inp-profile-pic').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Optional: Feedback während des Ladens
+            const btn = document.getElementById('btn-edit-profile-pic');
+            const originalText = btn.innerText;
+            btn.innerText = "Lädt...";
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const img = new Image();
+                img.onload = async () => {
+                    // Cavas für Komprimierung/Resizing erstellen (Max 250x250)
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    const maxSize = 250;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height *= maxSize / width;
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width *= maxSize / height;
+                            height = maxSize;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Konvertiere zu Base64 (JPEG, 80% Qualität)
+                    const base64String = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    // Zeige es sofort an
+                    document.getElementById('prof-img-large').src = base64String;
+
+                    // In lokaler Instanz speichern für sofortige Nutzung in anderen Tabs
+                    let localData = JSON.parse(localStorage.getItem('kellerGymData') || '{}');
+                    localData.profileImage = base64String;
+                    localStorage.setItem('kellerGymData', JSON.stringify(localData));
+
+                    // In Supabase speichern
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (user) {
+                        const { error } = await supabase
+                            .from('user_profiles')
+                            .update({ profile_image: base64String })
+                            .eq('user_id', user.id);
+                        
+                        if (error) {
+                            console.error("Fehler beim Hochladen:", error);
+                            alert("Profilbild konnte nicht in der Cloud gespeichert werden.");
+                        }
+                    }
+                    
+                    btn.innerText = originalText;
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Logout Logik
+        document.getElementById('btn-logout').addEventListener('click', async () => {
+            // Zeige Feedback auf dem Button
+            const btn = document.getElementById('btn-logout');
+            btn.innerHTML = 'Melde ab... <i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            // Lokale Daten sicherheitshalber löschen (optional, aber gut fürs Logout)
+            localStorage.removeItem('kellerGymData');
+
+            // Supabase Session beenden
+            const { error } = await supabase.auth.signOut();
+            
+            if (error) {
+                alert("Fehler beim Abmelden: " + error.message);
+                btn.innerHTML = 'Abmelden <i class="fa-solid fa-arrow-right-from-bracket"></i>';
+                btn.disabled = false;
+            } else {
+                // Zurück zum Login
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Supabase Sync für Wasser-Ziel und Profil-Speichern
+        async function loadSupabaseData() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                // Lade das aktuelle Wasserziel und Profilbild aus der DB ins DOM
+                const { data: profile, error } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .maybeSingle();
+                
+                if (error) {
+                    console.error("Fehler beim Laden des Profils:", error);
+                }
+
+                if (profile) {
+                    // Update Local Storage
+                    let localData = JSON.parse(localStorage.getItem('kellerGymData') || '{}');
+                    
+                    if (profile.water_goal_ml) localData.waterGoal = profile.water_goal_ml;
+                    if (profile.profile_image) localData.profileImage = profile.profile_image;
+                    
+                    // Auch restliche Eigenschaften aus der Datenbank wiederherstellen
+                    if (profile.gender) localData.gender = profile.gender;
+                    if (profile.age) localData.age = profile.age;
+                    if (profile.height_cm) localData.height = profile.height_cm;
+                    if (profile.weight_kg) localData.weight = profile.weight_kg;
+                    if (profile.bodyfat_percent) localData.bodyfat = profile.bodyfat_percent;
+                    if (profile.activity_level) localData.activity = profile.activity_level;
+                    if (profile.experience_level) localData.exp = profile.experience_level;
+                    if (profile.goal) localData.goal = profile.goal;
+                    if (profile.training_location) localData.location = profile.training_location;
+                    if (profile.workouts_per_week) localData.freq = profile.workouts_per_week;
+                    if (profile.training_split) localData.split = profile.training_split;
+
+                    localStorage.setItem('kellerGymData', JSON.stringify(localData));
+
+                    // Lade Ansicht basierend auf den neuen Daten neu
+                    loadProfile();
+
+                    // Update Name (nicht in kellerGymData nativ unterstützt)
+                    if (profile.name) {
+                        const nameInp = document.getElementById('inp-name');
+                        if (nameInp) nameInp.value = profile.name;
+                    }
+                }
+                
+                // Entsperren des Feldes, da DB geladen ist
+                const waterInpEl = document.getElementById('inp-water');
+                if (waterInpEl) waterInpEl.disabled = false;
+            }
+        }
+
+        // Als type="module" wird es erst nach dem DOM ausgeführt, daher direkt aufrufen:
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadSupabaseData);
+        } else {
+            loadSupabaseData();
+        }
+
+        document.addEventListener('profileSavedToCloud', async (e) => {
+            const data = e.detail;
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                // Wir speichern das neue Wasser-Ziel in der Datenbank ab
+                const { error } = await supabase
+                    .from('user_profiles')
+                    .update({ 
+                        water_goal_ml: parseInt(data.waterGoal)
+                    })
+                    .eq('user_id', user.id);
+
+                if (error) {
+                    alert("Konnte Daten nicht in der Cloud ablegen: " + error.message);
+                } else {
+                    alert('Daten & Wasserziel erfolgreich gespeichert!');
+                }
+            } else {
+                alert('Nur lokal gespeichert (Nicht eingeloggt)');
+            }
+        });
     </script>
 </body>
 </html>

@@ -90,8 +90,10 @@
                 
                 <!-- Icons (Absolute Right) -->
                 <div style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); display:flex; gap:15px; align-items:center;">
-                   <div style="width:40px; height:40px; border-radius:50%; overflow: hidden; border: 1px solid #333;">
-                        <img src="img/profile.jpg" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                   <div style="width:40px; height:40px; border-radius:50%; overflow: hidden; border: 1px solid #333; position: relative;">
+                        <!-- Spinner Background -->
+                        <i id="header-profile-spinner" class="fa-solid fa-circle-notch fa-spin" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--primary); font-size: 16px;"></i>
+                        <img id="header-profile-img" src="img/profile.jpg" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; display: block; position: relative; z-index: 2; opacity: 0; transition: opacity 0.3s ease;">
                    </div>
                 </div>
             </div>
@@ -128,7 +130,7 @@
             <!-- Training Week Section -->
             <div style="margin-bottom: 25px;">
                 <div class="simple-card" onclick="window.location.href='workouts.html'" style="cursor: pointer; padding: 15px; display: flex; flex-direction: column; gap: 10px; position:relative;">
-                    <div style="font-size:18px; font-weight:700; margin-bottom:5px;">Diese Woche</div>
+                    <div style="font-size:18px; font-weight:700; margin-bottom:5px;">Deine Trainingswoche</div>
                     
                     <!-- Link Arrow -->
                     <a href="workouts.html" onclick="event.stopPropagation();" style="position: absolute; top: 15px; right: 15px; color: var(--text-mute); font-size: 14px; text-decoration: none;">
@@ -145,10 +147,10 @@
             <!-- Quote & Nutrition Grid -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
                 
-                <!-- Quote (Tagesspruch) -->
+                <!-- Quote (Motivationsspruch) -->
                 <div id="section-quote" class="simple-card" style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; height: 160px;">
                     <div>
-                        <div style="font-size:17px; font-weight:700; margin-bottom:10px;">Tagesspruch</div>
+                        <div style="font-size:17px; font-weight:700; margin-bottom:10px;">Motivationsspruch</div>
                         <div id="quote-content" style="font-size:20px; font-weight: 600; line-height: 1.3; color: var(--primary);">
                             &quot;Muss nicht schmecke, muss wirke.&quot;
                         </div>
@@ -254,8 +256,8 @@
                     <div id="hist-title" style="font-size:16px; font-weight:700;">Gewicht</div>
                     <div style="font-size:12px; color: var(--text-mute); margin-bottom: 5px;">Letzte 30 Tage</div>
                     
-                    <!-- Link Arrow (Hidden by default for Weight) -->
-                    <a id="hist-arrow" href="workouts.html" onclick="event.stopPropagation();" style="display:none; position: absolute; top: 15px; right: 15px; color: var(--text-mute); font-size: 14px; text-decoration: none;">
+                    <!-- Link Arrow (Shows dynamically based on mode) -->
+                    <a id="hist-arrow" href="profile.html" onclick="event.stopPropagation();" style="position: absolute; top: 0; right: 0; padding: 20px; color: var(--text-mute); font-size: 14px; text-decoration: none; z-index: 10;">
                         <i class="fa-solid fa-chevron-right"></i>
                     </a>
 
@@ -307,11 +309,21 @@
         <a href="dashboard.html" class="nav-icon active"><i class="fa-solid fa-house"></i></a>
         <a href="workouts.html" class="nav-icon"><i class="fa-solid fa-dumbbell"></i></a>
         <a href="nutrition.html" class="nav-icon"><i class="fa-solid fa-utensils"></i></a>
-        <a href="profile.html" class="nav-icon"><i class="fa-regular fa-user"></i></a>
+        <a href="profile.html" class="nav-icon" id="nav-profile-icon"><i class="fa-regular fa-user"></i></a>
     </div>
 
     <script src="script.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for test mode flag and color the profile icon
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('devmode') === 'true') {
+                const profileIcon = document.getElementById('nav-profile-icon');
+                if (profileIcon) {
+                    profileIcon.style.color = 'var(--primary)';
+                }
+            }
+        });
         const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
         
         // Nutrition Logic
@@ -535,12 +547,18 @@
             // Mode 0 = Weight, 1 = Training
             if(currentHistoryMode === 0) {
                 if(titleEl) titleEl.textContent = 'Gewicht';
-                if(arrowEl) arrowEl.style.display = 'none';
+                if(arrowEl) {
+                    arrowEl.style.display = 'block';
+                    arrowEl.href = 'profile.html';
+                }
                 if(d1) d1.classList.add('active');
                 if(d2) d2.classList.remove('active');
             } else {
                 if(titleEl) titleEl.textContent = 'Training';
-                if(arrowEl) arrowEl.style.display = 'block';
+                if(arrowEl) {
+                    arrowEl.style.display = 'block';
+                    arrowEl.href = 'workouts.html';
+                }
                 if(d1) d1.classList.remove('active');
                 if(d2) d2.classList.add('active');
             }
@@ -697,10 +715,15 @@
              if(qa) qa.innerText = q.author;
         }
 
+        // Expose functions for Supabase Sync
+        window.setWaterAmount = (val) => { waterAmount = val; renderWater(); };
+        window.setWaterGoal = (val) => { waterGoal = val; renderWater(); };
+
         function updateWater(direction) {
             waterAmount += (direction * waterIncrement);
             if(waterAmount < 0) waterAmount = 0;
             renderWater();
+            document.dispatchEvent(new CustomEvent('waterUpdated', { detail: waterAmount }));
         }
 
         function renderWater() {
@@ -708,13 +731,14 @@
              const fillEl = document.getElementById('water-fill');
              if(!totalEl || !fillEl) return;
              
-             // Convert to L
-             totalEl.textContent = (waterAmount / 1000).toFixed(1) + ' L';
-             
-             // Fill height % (max at goal)
-             let pct = (waterAmount / waterGoal) * 100;
-             if(pct > 100) pct = 100;
-             fillEl.style.height = pct + '%';
+             // Convert to L and show goal
+             const amountL = (waterAmount / 1000).toFixed(1);
+             const goalL = (waterGoal / 1000).toFixed(1);
+             totalEl.textContent = amountL + ' / ' + goalL + ' L';
+
+             // Optische Füllung des Glases berechnen
+             const percent = Math.min((waterAmount / waterGoal) * 100, 100) || 0;
+             fillEl.style.height = percent + '%';
         }
 
         // Inline script to init dashboard specific logic
@@ -724,6 +748,14 @@
             if(savedData) {
                 try {
                     window.obData = JSON.parse(savedData);
+                    // Profilbild extrem schnell vorladen, um Blitzen zu vermeiden
+                    if (window.obData.profileImage) {
+                        const headerImg = document.getElementById('header-profile-img');
+                        if (headerImg) {
+                            headerImg.src = window.obData.profileImage;
+                            headerImg.style.opacity = '1'; // Sofort einblenden
+                        }
+                    }
                 } catch(e) {
                     console.error("Error parsing data", e);
                     window.obData = {};
@@ -763,6 +795,118 @@
             initQuote();
             renderWater(); // Ensure water is rendered
         });
+    </script>
+    <script type="module">
+        import { supabase } from './supabase-config.js';
+
+        // --- Supabase Water Sync Logic ---
+        function getLocalTodayStr() {
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        // Use local timezone date instead of UTC
+        let todayStr = getLocalTodayStr();
+        let userId = null;
+
+        // Debounce timer for updates
+        let syncTimeout = null;
+
+        async function initWaterBase() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if(!user) return;
+            userId = user.id;
+
+            // 1. Profil-Infos (Wasser-Ziel & Profilbild) holen
+            const { data: profile, error: profileErr } = await supabase
+                .from('user_profiles')
+                .select('water_goal_ml, profile_image')
+                .eq('user_id', userId)
+                .maybeSingle();
+
+            if (profileErr) {
+                console.error("Fehler beim Laden des Profils (Dashboard):", profileErr);
+            }
+
+            if (profile) {
+                // Wasser Ziel setzen
+                if (profile.water_goal_ml) {
+                    if(window.setWaterGoal) window.setWaterGoal(profile.water_goal_ml);
+                }
+                // Profilbild im Header setzen
+                if (profile.profile_image) {
+                    const headerImg = document.getElementById('header-profile-img');
+                    if (headerImg) {
+                        headerImg.src = profile.profile_image;
+                        headerImg.style.opacity = '1';
+                    }
+                } else {
+                    // Fallback, falls gar kein Bild existiert
+                    const headerImg = document.getElementById('header-profile-img');
+                    if (headerImg) {
+                        headerImg.style.opacity = '1';
+                    }
+                }
+            }
+
+            // 2. Heutigen Wasser-Log holen oder erstellen
+            const { data: waterLog, error } = await supabase
+                .from('water_logs')
+                .select('*')
+                .eq('user_id', userId)
+                .eq('date', todayStr)
+                .maybeSingle();
+
+            if (waterLog) {
+                // Es gibt schon einen, lade den Wert ins UI
+                if(window.setWaterAmount) window.setWaterAmount(waterLog.amount_ml);
+            } else {
+                // Es gibt keinen, lege einen neuen mit 0ml in der DB an
+                const { error: insertError } = await supabase.from('water_logs').insert([{
+                    user_id: userId,
+                    date: todayStr,
+                    amount_ml: 0
+                }]);
+                
+                if(insertError) {
+                    console.error("Water Insert Error:", insertError);
+                    alert("Wasser konnte nicht initialisiert werden: " + insertError.message);
+                } else {
+                    console.log("Neuer Wasser-Log für heute erstellt!");
+                }
+                
+                if(window.setWaterAmount) window.setWaterAmount(0);
+            }
+        }
+
+        document.addEventListener('waterUpdated', (e) => {
+            if (!userId) return;
+            const newAmount = e.detail;
+            
+            // Debouncing: 600ms warten, bevor wir es in die Cloud jagen,
+            // damit schnelles Klick-Spamming nicht 10 DB-Requests auslöst
+            clearTimeout(syncTimeout);
+            syncTimeout = setTimeout(async () => {
+                const { error } = await supabase
+                    .from('water_logs')
+                    .update({ amount_ml: newAmount })
+                    .eq('user_id', userId)
+                    .eq('date', todayStr);
+                
+                if(error) {
+                    console.error("Water Sync Error:", error);
+                    alert("Wasser konnte nicht geupdatet werden: " + error.message);
+                } else {
+                    console.log("Wasser in Cloud gespeichert:", newAmount, "ml");
+                }
+            }, 600);
+        });
+
+        // Initialize when script loads
+        initWaterBase();
     </script>
 </body>
 </html>

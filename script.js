@@ -13,7 +13,7 @@ try {
 let currentStep = 1;
 const totalSteps = 12;
 let obData = {
-    age: 25, gender: null, weight: 75, height: 180, bodyfat: 15, activity: null,
+    age: 20, gender: null, weight: 75, height: 180, bodyfat: 15, activity: null,
     exp: null, goal: null, location: null, split: null, freq: null, days: []
 };
 const stepMap = [
@@ -276,7 +276,17 @@ function finishOnboarding(isTest = false) {
                 // Save to Storage
                 localStorage.setItem('kellerGymData', JSON.stringify(obData));
                 console.log("Onboarding Complete -> To Dashboard");
-                window.location.href = 'dashboard.html';
+                
+                // Event auslösen, damit onboarding.html die Daten in Supabase fängt
+                const finishEvent = new CustomEvent('onboardingComplete', { detail: obData });
+                document.dispatchEvent(finishEvent);
+                
+                // Falls kein Listener da ist (z.B. im alten Test-Setup), trotzdem weiterleiten
+                setTimeout(() => {
+                    if (!window.savingToSupabase) {
+                        window.location.href = 'dashboard.html';
+                    }
+                }, 500);
             }
         }, duration);
     } else {

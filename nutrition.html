@@ -263,8 +263,51 @@
                 </div>
             </div>
 
+            <!-- Foods Button -->
+            <button id="btn-show-foods" style="width: 100%; border: none; background: #2a2d35; color: white; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 25px; transition: 0.3s;">
+                <i class="fa-solid fa-list" style="margin-right: 8px; color: var(--primary);"></i> Alle Nahrungsmittel anzeigen
+            </button>
+
         </div>
 
+    </div>
+
+    <!-- Foods List Modal -->
+    <div id="food-list-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #15161A; z-index: 1000; overflow-y: auto; padding-bottom: 90px; flex-direction: column;">
+        <div style="padding: 20px; display: flex; align-items: center; border-bottom: 1px solid #333; position: sticky; top: 0; background: #15161A; z-index: 10;">
+            <i class="fa-solid fa-arrow-left" id="btn-close-foods" style="font-size: 20px; cursor: pointer; padding-right: 15px;"></i>
+            <div style="font-size: 20px; font-weight: 700;">Alle Nahrungsmittel</div>
+        </div>
+
+        <!-- Sorting & Search Controls -->
+        <div style="padding: 10px 15px; display: flex; flex-direction: column; gap: 10px; background: #1a1c20; border-bottom: 1px solid #333;">
+            <div style="display: flex; align-items: center; background: #2a2d35; border: 1px solid #444; border-radius: 8px; padding: 0 10px;">
+                <i class="fa-solid fa-magnifying-glass" style="color: var(--text-mute); font-size: 14px;"></i>
+                <input type="text" id="foods-search-input" placeholder="Nach Name oder Marke suchen..." style="flex: 1; background: transparent; border: none; color: white; padding: 10px; font-size: 14px; outline: none;">
+                <i class="fa-solid fa-xmark" id="foods-search-clear" style="color: var(--text-mute); font-size: 14px; cursor: pointer; display: none; padding: 5px;"></i>
+            </div>
+            <div style="font-size: 13px; color: var(--text-mute);">Sortieren nach:</div>
+            <div style="display: flex; justify-content: space-between; gap: 10px;">
+                <select id="foods-sort-field" style="flex: 1; background: #2a2d35; color: white; border: 1px solid #444; padding: 6px 10px; border-radius: 8px; font-size: 14px; outline: none;">
+                    <option value="standard">Standard</option>
+                    <option value="name">Name</option>
+                    <option value="kcal">Kalorien</option>
+                    <option value="base">Gramm</option>
+                    <option value="protein">Eiweiß</option>
+                </select>
+                <select id="foods-sort-dir" style="flex: 1; background: #2a2d35; color: white; border: 1px solid #444; padding: 6px 10px; border-radius: 8px; font-size: 14px; outline: none;">
+                    <option value="asc">Aufsteigend</option>
+                    <option value="desc">Absteigend</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="foods-container" style="padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+            <!-- Loading Spinner -->
+            <div style="text-align: center; padding: 20px;" id="foods-loading">
+                 <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; color: var(--primary);"></i>
+            </div>
+        </div>
     </div>
 
     <!-- Bottom Navigation -->
@@ -277,10 +320,8 @@
 
     <script>
         const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-        const FULL_DAYS = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
-        
-        let selectedDayIndex = -1;
-        let todayIndex = -1;
+        let todayIndex = 0;
+        let selectedDayIndex = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
             initWeek();
@@ -326,8 +367,6 @@
                 circle.style.justifyContent = 'center';
                 
                 // From workouts.html week style logic matching the screenshot
-                // Let's grab the actual schedule if we want the icons, or just placeholder icons
-                // The user's screenshot shows the same icons as the workout view (biceps/couch)
                 let isWorkout = true; // Placeholder, assuming mostly workouts
                 try {
                     const stored = localStorage.getItem('kellerGymPlan');
@@ -364,6 +403,208 @@
                 container.appendChild(col);
             });
         }
+
+        // Modal Toggle Logic
+        document.getElementById('btn-show-foods').addEventListener('click', () => {
+            document.getElementById('food-list-modal').style.display = 'flex';
+            document.dispatchEvent(new CustomEvent('loadFoodsRequest'));
+        });
+
+        document.getElementById('btn-close-foods').addEventListener('click', () => {
+            document.getElementById('food-list-modal').style.display = 'none';
+        });
+    </script>
+    <script type="module">
+        import { supabase } from './supabase-config.js';
+
+        let foodsLoaded = false;
+        let allFoods = [];
+
+        function getLevenshteinDistance(s, t) {
+            if (!s.length) return t.length;
+            if (!t.length) return s.length;
+            const arr = [];
+            for (let i = 0; i <= t.length; i++) {
+                arr[i] = [i];
+                for (let j = 1; j <= s.length; j++) {
+                    arr[i][j] = i === 0 ? j : Math.min(
+                        arr[i - 1][j] + 1,
+                        arr[i][j - 1] + 1,
+                        arr[i - 1][j - 1] + (s[j - 1] === t[i - 1] ? 0 : 1)
+                    );
+                }
+            }
+            return arr[t.length][s.length];
+        }
+
+        function isFuzzyMatch(text, query) {
+            if (!text) return false;
+            text = text.toLowerCase();
+            query = query.toLowerCase();
+            
+            // Wenn die genaue Zeichenkette enthalten ist, sofort Treffer
+            if (text.includes(query)) return true;
+            
+            // Zu kurze Anfragen (<=2 Zeichen) müssen exakt im Wort vorkommen (keine Tippfehler)
+            if (query.length <= 2) return false;
+
+            // Intelligente Suche: Erlaubt Tippfehler erst ab 3 Zeichen
+            const words = text.split(/[\s\-]+/);
+            // 3-5 Zeichen = 1 Fehler erlaubt, ab 6 Zeichen = 2 Fehler erlaubt
+            const maxErrors = query.length <= 5 ? 1 : 2;
+            
+            for (let word of words) {
+                if (word.length < query.length - maxErrors) continue; // Wort ist sowieso zu kurz
+                
+                let compareLen = Math.min(word.length, query.length);
+                let substring = word.substring(0, compareLen);
+                
+                // Levenshtein nur bei ausreichend langen Suchanfragen testen
+                if (getLevenshteinDistance(substring, query) <= maxErrors) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function renderFoods() {
+            const container = document.getElementById('foods-container');
+            container.innerHTML = '';
+
+            if (!allFoods || allFoods.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#888; margin-top:20px;">Noch keine Nahrungsmittel vorhanden.</div>';
+                return;
+            }
+
+            const field = document.getElementById('foods-sort-field').value;
+            const dir = document.getElementById('foods-sort-dir').value;
+            const searchTerm = document.getElementById('foods-search-input').value.trim();
+            
+            let displayFoods = [...allFoods];
+
+            // 1. Filtern (Suche)
+            if (searchTerm.length > 0) {
+                displayFoods = displayFoods.filter(f => {
+                    const searchSpace = `${f.name || ''} ${f.brand || ''}`;
+                    return isFuzzyMatch(searchSpace, searchTerm);
+                });
+            }
+
+            // 2. Sortieren
+            if (field !== 'standard') {
+                displayFoods.sort((a, b) => {
+                    let valA, valB;
+                    if (field === 'name') {
+                        valA = (a.name || '').toLowerCase();
+                        valB = (b.name || '').toLowerCase();
+                    } else if (field === 'kcal') {
+                        valA = a.kcal || 0;
+                        valB = b.kcal || 0;
+                    } else if (field === 'base') {
+                        valA = a.base_amount_g || 0;
+                        valB = b.base_amount_g || 0;
+                    } else if (field === 'protein') {
+                        valA = a.protein || 0;
+                        valB = b.protein || 0;
+                    }
+
+                    if (valA < valB) return dir === 'asc' ? -1 : 1;
+                    if (valA > valB) return dir === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
+            displayFoods.forEach(food => {
+                const card = document.createElement('div');
+                card.style.background = '#2a2d35';
+                card.style.borderRadius = '12px';
+                card.style.padding = '15px';
+                card.style.display = 'flex';
+                card.style.flexDirection = 'column';
+                card.style.gap = '5px';
+
+                const titleRow = document.createElement('div');
+                titleRow.style.fontSize = '16px';
+                titleRow.style.fontWeight = '700';
+                titleRow.style.color = '#fff';
+                
+                if (food.brand) {
+                    titleRow.innerText = `${food.name} (${food.brand})`;
+                } else {
+                    titleRow.innerText = food.name;
+                }
+
+                const subRow = document.createElement('div');
+                subRow.style.fontSize = '13px';
+                subRow.style.color = 'var(--text-mute)';
+                
+                const pKcal = food.kcal || 0;
+                const pProt = food.protein || 0;
+                const pBase = food.base_amount_g || 100;
+
+                let baseStr = `${pBase}g`;
+                if (pBase === 1 && food.piece_name) {
+                    baseStr = `1 ${food.piece_name}`;
+                }
+
+                subRow.innerText = `${pKcal}kcal, ${baseStr}, ${pProt}g Eiweiß`;
+
+                card.appendChild(titleRow);
+                card.appendChild(subRow);
+                container.appendChild(card);
+            });
+
+            // Falls die Suche keine Treffer liefert
+            if (displayFoods.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#888; margin-top:20px;">Keine Treffer für deine Suche.</div>';
+            }
+        }
+
+        const searchInput = document.getElementById('foods-search-input');
+        const searchClear = document.getElementById('foods-search-clear');
+
+        searchInput.addEventListener('input', () => {
+            searchClear.style.display = searchInput.value.length > 0 ? 'block' : 'none';
+            renderFoods();
+        });
+
+        searchClear.addEventListener('click', () => {
+            searchInput.value = '';
+            searchClear.style.display = 'none';
+            renderFoods();
+            searchInput.focus();
+        });
+
+        document.getElementById('foods-sort-field').addEventListener('change', renderFoods);
+        document.getElementById('foods-sort-dir').addEventListener('change', renderFoods);
+
+        document.addEventListener('loadFoodsRequest', async () => {
+            if(foodsLoaded) return; // Load only once
+            
+            const container = document.getElementById('foods-container');
+            const loading = document.getElementById('foods-loading');
+
+            try {
+                // Read from the foods table
+                const { data: foods, error } = await supabase
+                    .from('foods')
+                    .select('name, brand, kcal, protein, base_amount_g, piece_name');
+
+                if (error) throw error;
+
+                allFoods = foods || [];
+                if (loading) loading.style.display = 'none';
+                foodsLoaded = true;
+
+                // Initial render
+                renderFoods();
+
+            } catch (err) {
+                console.error("Error fetching foods:", err);
+                if (loading) loading.style.display = 'none';
+                container.innerHTML = `<div style="text-align:center; color:#ff4444; margin-top:20px;">Fehler beim Laden (${err.message}).</div>`;
+            }
+        });
     </script>
 </body>
 </html>
