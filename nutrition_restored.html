@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KellerGym - Ernährung</title>
+    <title>KellerGym - Ernä¤hrung</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
@@ -130,10 +130,6 @@
             background: var(--bg-body) linear-gradient(180deg, rgba(0, 128, 128, 0.25) 0%, rgba(8, 9, 12, 0) 50%) no-repeat;
             background-attachment: fixed;
         }
-    .food-log-item { border-bottom: 1px solid #2a2d35; }
-        .food-log-item:last-child { border-bottom: none !important; }
-    .food-log-item { border-bottom: 1px solid #2a2d35; }
-        .food-log-item:last-child { border-bottom: none !important; }
     </style>
 </head>
 <body>
@@ -141,7 +137,7 @@
     <div id="app-viewport">
         <!-- Header -->
         <div class="header-row" style="justify-content:center; margin-top:10px; margin-bottom: 25px;">
-            <h1 style="font-family: 'Black Ops One', cursive; color: var(--primary); font-size: 32px; margin:0; font-weight: 400;">Ernährung</h1>
+            <h1 style="font-family: 'Black Ops One', cursive; color: var(--primary); font-size: 32px; margin:0; font-weight: 400;">Ernä¤hrung</h1>
         </div>
 
         <!-- Week Grid -->
@@ -158,7 +154,7 @@
             <div class="carbon-card" style="padding: 20px; text-align: center; margin-bottom: 25px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <i class="fa-solid fa-chevron-left date-nav-btn" data-dir="-1" style="color: var(--text-mute); cursor: pointer; padding: 10px;"></i>
-                    <div id="plan-date-title" style="font-size: 18px; font-weight: 700;">Ernährungsplan heute</div>
+                    <div id="plan-date-title" style="font-size: 18px; font-weight: 700;">Ernä¤hrungsplan heute</div>
                     <i class="fa-solid fa-chevron-right date-nav-btn" data-dir="1" style="color: var(--text-mute); cursor: pointer; padding: 10px;"></i>
                 </div>
                 
@@ -198,7 +194,7 @@
                         <div id="nutri-carbs-text" style="font-size: 12px; color: var(--text-mute); margin-top: 5px;">0 / 0g</div>
                     </div>
                     <div style="flex: 1;">
-                        <div style="font-size: 14px; font-weight: 700; margin-bottom: 5px;">Eiweiß</div>
+                        <div style="font-size: 14px; font-weight: 700; margin-bottom: 5px;">EiweißŸ</div>
                         <div class="macro-bar-bg"><div id="nutri-protein-bar" class="macro-bar-fill macro-protein" style="width: 0%;"></div></div>
                         <div id="nutri-protein-text" style="font-size: 12px; color: var(--text-mute); margin-top: 5px;">0 / 0g</div>
                     </div>
@@ -213,19 +209,19 @@
             <!-- Meals Section -->
             <div class="simple-card" style="padding: 15px; margin-bottom: 25px;">
                   
-                  <!-- Frühstück -->
+                  <!-- Frä¼hstä¼ck -->
                   <div class="meal-wrapper">
                       <div class="meal-row">
                           <div style="display: flex; align-items: center; gap: 15px;">
                               <i class="fa-solid fa-mug-saucer" style="color: #f1c40f; font-size: 18px; width: 20px; text-align: center;"></i>
-                              <span id="title-Frühstück" style="font-size: 16px; font-weight: 700;">Frühstück</span>
+                              <span id="title-FrühStück" style="font-size: 16px; font-weight: 700;">FrühStück</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 10px;">
                               <i class="fa-regular fa-copy copy-meal-btn"></i>
-                              <div class="add-meal-btn" data-meal="Frühstück"><i class="fa-solid fa-plus"></i></div>
+                              <div class="add-meal-btn" data-meal="Frä¼hstä¼ck"><i class="fa-solid fa-plus"></i></div>
                           </div>
                       </div>
-                      <div id="logs-Frühstück" class="meal-logs" style="margin-left: 35px; border-bottom: 1px solid #2a2d35; padding-bottom: 10px; margin-bottom: 10px; display: none;"></div>
+                      <div id="logs-Frä¼hstä¼ck" class="meal-logs" style="margin-left: 35px; border-bottom: 1px solid #2a2d35; padding-bottom: 10px; margin-bottom: 10px; display: none;"></div>
                   </div>
 
                   <!-- Mittag -->
@@ -330,7 +326,7 @@
                     <option value="name">Name</option>
                     <option value="kcal">Kalorien</option>
                     <option value="base">Gramm</option>
-                    <option value="protein">Eiweiß</option>
+                    <option value="protein">EiweißŸ</option>
                 </select>
                 <select id="foods-sort-dir" style="flex: 1; background: #2a2d35; color: white; border: 1px solid #444; padding: 6px 10px; border-radius: 8px; font-size: 14px; outline: none;">
                     <option value="asc">Aufsteigend</option>
@@ -402,10 +398,10 @@
                 const todayStr = `${ty}-${tm}-${td}`;
 
                 if (window.waterTodayStr === todayStr) {
-                    titleEl.innerText = "Ernährungsplan heute";
+                    titleEl.innerText = "Ernä¤hrungsplan heute";
                 } else {
                     const dayNames = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
-                    titleEl.innerText = "Ernährungsplan " + dayNames[activeDateObj.getDay()];
+                    titleEl.innerText = "Ernä¤hrungsplan " + dayNames[activeDateObj.getDay()];
                 }
             }
 
@@ -504,7 +500,7 @@
     <div id="add-food-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #15161A; z-index: 1000; overflow-y: auto; padding-bottom: 90px; flex-direction: column;">
         <div style="padding: 20px; display: flex; align-items: center; border-bottom: 1px solid #333; position: sticky; top: 0; background: #15161A; z-index: 10;">
             <i class="fa-solid fa-arrow-left" id="btn-close-add-food" style="font-size: 20px; cursor: pointer; padding-right: 15px;"></i>
-            <div style="font-size: 20px; font-weight: 700;">Nahrungsmittel hinzufügen</div>
+            <div style="font-size: 20px; font-weight: 700;">Nahrungsmittel hinzufä¼gen</div>
         </div>
 
         <div style="padding: 15px;">
@@ -512,7 +508,7 @@
             <div style="margin-bottom: 20px;">
                 <label style="font-size: 14px; font-weight: 600; color: var(--text-mute); display: block; margin-bottom: 5px;">Mahlzeit</label>
                 <select id="add-food-meal-select" style="width: 100%; padding: 10px; border-radius: 8px; background: #2a2d35; color: white; border: 1px solid #444; outline: none; font-family: inherit;">
-                    <option value="Frühstück">Frühstück</option>
+                    <option value="Frä¼hstä¼ck">Frä¼hstä¼ck</option>
                     <option value="Mittag">Mittag</option>
                     <option value="Abend">Abend</option>
                     <option value="Snack">Snack</option>
@@ -522,7 +518,7 @@
             <!-- Tabs -->
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <div id="tab-db-food" style="flex: 1; text-align: center; padding: 10px; border-radius: 8px; background: var(--primary); color: #15161A; font-weight: 700; cursor: pointer; transition: background 0.2s;">Aus Datenbank</div>
-                <div id="tab-quick-food" style="flex: 1; text-align: center; padding: 10px; border-radius: 8px; background: #2a2d35; color: white; font-weight: 700; cursor: pointer; transition: background 0.2s;">Schnell hinzufügen</div>
+                <div id="tab-quick-food" style="flex: 1; text-align: center; padding: 10px; border-radius: 8px; background: #2a2d35; color: white; font-weight: 700; cursor: pointer; transition: background 0.2s;">Schnell hinzufä¼gen</div>
             </div>
 
             <!-- Quick Add View -->
@@ -541,7 +537,7 @@
                         <input type="number" id="quick-food-carbs" placeholder="0" style="width: 100%; padding: 12px; border-radius: 8px; background: #2a2d35; border: 1px solid #444; color: white; outline: none;">
                     </div>
                     <div style="flex: 1;">
-                        <label style="font-size: 14px; color: var(--text-mute); margin-bottom: 5px; display: block;">Eiweiß (g)</label>
+                        <label style="font-size: 14px; color: var(--text-mute); margin-bottom: 5px; display: block;">EiweißŸ (g)</label>
                         <input type="number" id="quick-food-protein" placeholder="0" style="width: 100%; padding: 12px; border-radius: 8px; background: #2a2d35; border: 1px solid #444; color: white; outline: none;">
                     </div>
                     <div style="flex: 1;">
@@ -549,7 +545,7 @@
                         <input type="number" id="quick-food-fat" placeholder="0" style="width: 100%; padding: 12px; border-radius: 8px; background: #2a2d35; border: 1px solid #444; color: white; outline: none;">
                     </div>
                 </div>
-                <button class="btn" id="btn-save-quick-food" style="margin-top: 10px;">Hinzufügen</button>
+                <button class="btn" id="btn-save-quick-food" style="margin-top: 10px;">Hinzufä¼gen</button>
             </div>
 
             <!-- DB Food Search View -->
@@ -557,7 +553,6 @@
                 <div style="display: flex; align-items: center; background: #2a2d35; border: 1px solid #444; border-radius: 8px; padding: 0 10px;">
                     <i class="fa-solid fa-magnifying-glass" style="color: var(--text-mute); font-size: 14px;"></i>
                     <input type="text" id="add-db-search" placeholder="Nach Name oder Marke suchen..." style="flex: 1; background: transparent; border: none; color: white; padding: 10px; font-size: 14px; outline: none;">
-                      <i class="fa-solid fa-xmark" id="add-db-search-clear" style="color: var(--text-mute); font-size: 14px; cursor: pointer; display: none;"></i>
                 </div>
                 <div id="add-db-results" style="display: flex; flex-direction: column; gap: 10px; padding-bottom: 30px;">
                     <!-- Results JS Gen -->
@@ -580,7 +575,7 @@
                 <input type="number" id="amount-input" value="100" style="flex: 1; padding: 12px; border-radius: 8px; background: #2a2d35; border: 1px solid #444; color: white; outline: none; font-size: 16px; text-align: center;">
                 <select id="amount-unit-select" style="padding: 12px; border-radius: 8px; background: #2a2d35; color: white; border: 1px solid #444; outline: none; font-family: inherit;">
                     <option value="g" id="amount-g-option">Gramm (g)</option>
-                    <option value="piece" id="amount-piece-option" style="display:none;">Stück</option>
+                    <option value="piece" id="amount-piece-option" style="display:none;">Stä¼ck</option>
                 </select>
             </div>
 
@@ -588,11 +583,11 @@
             <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; background: #2a2d35; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
                 <div style="flex: 1 1 40%;"><div style="font-size:12px; color:var(--text-mute);">Kalorien</div><div id="amount-preview-kcal" style="font-weight:700;">-</div></div>
                 <div style="flex: 1 1 40%;"><div style="font-size:12px; color:var(--text-mute);">Kohlenhydrate</div><div id="amount-preview-carbs" style="font-weight:700;">-</div></div>
-                <div style="flex: 1 1 40%;"><div style="font-size:12px; color:var(--text-mute);">Eiweiß</div><div id="amount-preview-protein" style="font-weight:700;">-</div></div>
+                <div style="flex: 1 1 40%;"><div style="font-size:12px; color:var(--text-mute);">EiweißŸ</div><div id="amount-preview-protein" style="font-weight:700;">-</div></div>
                 <div style="flex: 1 1 40%;"><div style="font-size:12px; color:var(--text-mute);">Fette</div><div id="amount-preview-fat" style="font-weight:700;">-</div></div>
             </div>
 
-            <button class="btn" id="btn-save-db-food">Hinzufügen</button>
+            <button class="btn" id="btn-save-db-food">Hinzufä¼gen</button>
         </div>
     </div>
 
@@ -627,7 +622,7 @@
             // Wenn die genaue Zeichenkette enthalten ist, sofort Treffer
             if (text.includes(query)) return true;
             
-            // Zu kurze Anfragen (<=2 Zeichen) müssen exakt im Wort vorkommen (keine Tippfehler)
+            // Zu kurze Anfragen (<=2 Zeichen) mä¼ssen exakt im Wort vorkommen (keine Tippfehler)
             if (query.length <= 2) return false;
 
             // Intelligente Suche: Erlaubt Tippfehler erst ab 3 Zeichen
@@ -729,7 +724,7 @@
                     baseStr = `1 ${food.piece_name}`;
                 }
 
-                subRow.innerText = `${pKcal}kcal, ${baseStr}, ${pProt}g Eiweiß`;
+                subRow.innerText = `${pKcal}kcal, ${baseStr}, ${pProt}g EiweißŸ`;
 
                 card.appendChild(titleRow);
                 card.appendChild(subRow);
@@ -738,7 +733,7 @@
 
             // Falls die Suche keine Treffer liefert
             if (displayFoods.length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:#888; margin-top:20px;">Keine Treffer für deine Suche.</div>';
+                container.innerHTML = '<div style="text-align:center; color:#888; margin-top:20px;">Keine Treffer fä¼r deine Suche.</div>';
             }
         }
 
@@ -936,8 +931,8 @@
                 let totalFat = 0;
 
                 // Clear previous UI lists
-                  const meals = ['Frühstück', 'Mittag', 'Snack', 'Abend'];
-                  let mealCals = { 'Frühstück': 0, 'Mittag': 0, 'Snack': 0, 'Abend': 0 };
+                  const meals = ['FrühStück', 'Mittag', 'Snack', 'Abend'];
+                  let mealCals = { 'FrühStück': 0, 'Mittag': 0, 'Snack': 0, 'Abend': 0 };
 
                   meals.forEach(meal => {
                       const el = document.getElementById(`logs-${meal}`);
@@ -985,7 +980,7 @@
                         item.style.justifyContent = 'space-between';
                         item.style.alignItems = 'center';
                         item.style.padding = '8px 0';
-                        
+                        item.style.borderBottom = '1px solid #2a2d35';
 
                         // Add delete functionality
                         const removeBtn = item.querySelector('.remove-log-btn');
@@ -997,8 +992,8 @@
                                 if (!error) {
                                     window.initNutrition(); // Refresh automatically
                                 } else {
-                                    console.error("Fehler beim Löschen:", error);
-                                    alert("Fehler beim Löschen: " + error.message);
+                                    console.error("Fehler beim Lä¶schen:", error);
+                                    alert("Fehler beim Lä¶schen: " + error.message);
                                     removeBtn.style.opacity = '1';
                                 }
                             });
@@ -1027,17 +1022,17 @@
                 let leftover = targets.calories - totalConsumedKcal;
                 
                 if (leftover < 0) {
-                    // Über dem Ziel
+                    // äœber dem Ziel
                     if(kcalLeft) {
                         kcalLeft.innerText = Math.round(Math.abs(leftover));
                         kcalLeft.style.color = '#ff4757'; // Rot
                     }
-                    if(kcalLeftLabel) kcalLeftLabel.innerText = 'über Ziel';
+                    if(kcalLeftLabel) kcalLeftLabel.innerText = 'ä¼ber Ziel';
                 } else {
                     // Im Ziel
                     if(kcalLeft) {
                         kcalLeft.innerText = Math.round(leftover);
-                        kcalLeft.style.color = 'var(--primary)'; // Türkis
+                        kcalLeft.style.color = 'var(--primary)'; // Tä¼rkis
                     }
                     if(kcalLeftLabel) kcalLeftLabel.innerText = 'kcal offen';
                 }
@@ -1108,15 +1103,9 @@
                 const mealBtn = e.target.parentElement.querySelector('.add-meal-btn');
                 if (!mealBtn) return;
                 const meal = mealBtn.getAttribute('data-meal');
-                
-                if (btn.style.opacity === '0.5') return;
-                btn.style.opacity = '0.5';
 
-                const isConfirmed = confirm(`Möchtest du alle Einträge von gestern für ${meal} in den heutigen Tag einfügen?`);
-                if (!isConfirmed) {
-                    btn.style.opacity = '1';
-                    return;
-                }
+                const isConfirmed = confirm(`Mä¶chtest du alle Einträ¤ge von gestern fä¼r ${meal} in den heutigen Tag einfä¼gen?`);
+                if (!isConfirmed) return;
 
                 const prevDateObj = new Date(activeDateObj);
                 prevDateObj.setDate(prevDateObj.getDate() - 1);
@@ -1136,7 +1125,7 @@
                     if (fetchErr) throw fetchErr;
 
                     if (!oldLogs || oldLogs.length === 0) {
-                        alert(`Keine Einträge für ${meal} am Vortag gefunden.`);
+                        alert(`Keine Einträ¤ge fä¼r ${meal} am Vortag gefunden.`);
                         return;
                     }
 
@@ -1154,13 +1143,11 @@
                     const { error: insertErr } = await supabase.from('food_logs').insert(newLogs);
                     if (insertErr) throw insertErr;
 
-                    btn.style.opacity = '1';
                     if (typeof window.initNutrition === 'function') {
                         window.initNutrition();
                     }
 
                 } catch (err) {
-                    btn.style.opacity = '1';
                     console.error("Fehler beim Kopieren der Mahlzeit:", err);
                     alert("Fehler beim Kopieren: " + err.message);
                 }
@@ -1179,9 +1166,7 @@
                 setTimeout(() => {
                     const searchInput = document.getElementById('add-db-search');
                     if (searchInput) searchInput.value = '';
-                      const addDbClearIcon = document.getElementById('add-db-search-clear');
-                      if(addDbClearIcon) addDbClearIcon.style.display = 'none';
-                      if (typeof renderAddDbResults === 'function') {
+                    if (typeof renderAddDbResults === 'function') {
                         renderAddDbResults('');
                     }
                 }, 300);
@@ -1225,9 +1210,6 @@
         const btnSaveQuickFood = document.getElementById('btn-save-quick-food');
         if (btnSaveQuickFood) {
             btnSaveQuickFood.addEventListener('click', async () => {
-                if (btnSaveQuickFood.disabled) return;
-                btnSaveQuickFood.disabled = true;
-
                 const name = document.getElementById('quick-food-name').value;
                 const kcal = parseFloat(document.getElementById('quick-food-kcal').value) || 0;
                 const carbs = parseFloat(document.getElementById('quick-food-carbs').value) || 0;
@@ -1238,7 +1220,6 @@
                 // Validation
                 if (kcal <= 0) {
                     alert('Bitte trage mindestens die Kalorien ein!');
-                    btnSaveQuickFood.disabled = false;
                     return;
                 }
 
@@ -1246,7 +1227,7 @@
                     user_id: waterUserId,
                     date: window.waterTodayStr,
                     meal: meal,
-                    food_name: name || "Schnell hinzugefügt",
+                    food_name: name || "Schnell hinzugefä¼gt",
                     calories: Math.round(kcal),
                     carbs: Math.round(carbs),
                     protein: Math.round(protein),
@@ -1254,9 +1235,8 @@
                 }]);
 
                 if (error) {
-                    console.error("Fehler beim Hinzufügen (Schnell):", error);
+                    console.error("Fehler beim Hinzufä¼gen (Schnell):", error);
                     alert("Fehler beim Speichern: " + error.message);
-                    btnSaveQuickFood.disabled = false;
                     return;
                 }
 
@@ -1269,7 +1249,6 @@
                 document.getElementById('quick-food-carbs').value = '';
                 document.getElementById('quick-food-protein').value = '';
                 document.getElementById('quick-food-fat').value = '';
-                btnSaveQuickFood.disabled = false;
             });
         }
 
@@ -1311,7 +1290,7 @@
                         <span style="font-size: 16px; font-weight: 700;">${food.name}</span>
                         ${brandDiv}
                         <span style="color: var(--text-mute); font-size: 14px; margin-top: 4px;">
-                            ${food.kcal}kcal, ${unitStr}, ${food.protein || 0}g Eiweiß
+                            ${food.kcal}kcal, ${unitStr}, ${food.protein || 0}g EiweißŸ
                         </span>
                     </div>
                     <div style="background: var(--primary); min-width: 32px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
@@ -1336,7 +1315,7 @@
                     gOption.style.display = 'block';
 
                     if (food.piece_name && food.base_amount_g == 1) {
-                        // "1 Stück = 1g" - only piece is useful, hide grams
+                        // "1 Stä¼ck = 1g" - only piece is useful, hide grams
                         gOption.style.display = 'none';
                         if (pieceOption) {
                             pieceOption.style.display = 'block';
@@ -1370,24 +1349,11 @@
         }
         
         if (addDbSearch) {
-              const addDbSearchClear = document.getElementById('add-db-search-clear');
-              addDbSearch.addEventListener('input', (e) => {
-                  const term = e.target.value.toLowerCase().trim();
-                  if (addDbSearchClear) {
-                      addDbSearchClear.style.display = term.length > 0 ? 'block' : 'none';
-                  }
-                  renderAddDbResults(term);
-              });
-              
-              if (addDbSearchClear) {
-                  addDbSearchClear.addEventListener('click', () => {
-                      addDbSearch.value = '';
-                      addDbSearchClear.style.display = 'none';
-                      renderAddDbResults('');
-                      addDbSearch.focus();
-                  });
-              }
-          }
+            addDbSearch.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                renderAddDbResults(term);
+            });
+        }
 
         // 7. Amount Modal
         const btnCancelAmount = document.getElementById('btn-close-amount-modal');
@@ -1435,7 +1401,7 @@
             if (elF) elF.innerText = f + 'g';
         }
 
-        // 2. Event-Listener für Eingabeä¤nderungen
+        // 2. Event-Listener fä¼r Eingabeä¤nderungen
         if (addAmountInput) addAmountInput.addEventListener('input', updateAmountModalMacros);
         
         if (addAmountUnit) {
@@ -1459,17 +1425,11 @@
             });
         }
 
-        // 3. Speichern in die Datenbank (Der "Hinzufügen" Button)
+        // 3. Speichern in die Datenbank (Der "Hinzufä¼gen" Button)
         const btnSaveDbFood = document.getElementById('btn-save-db-food');
         if (btnSaveDbFood) {
             btnSaveDbFood.addEventListener('click', async () => {
-                if (btnSaveDbFood.disabled) return;
-                btnSaveDbFood.disabled = true;
-                
-                if (!currentSelectedDbFood) {
-                    btnSaveDbFood.disabled = false;
-                    return;
-                }
+                if (!currentSelectedDbFood) return;
 
                 const amount = parseFloat(addAmountInput.value) || 0;
                 const unit = addAmountUnit.value;
@@ -1506,19 +1466,17 @@
                 if (error) {
                     console.error("Fehler beim Speichern:", error);
                     alert("Fehler: " + error.message);
-                    btnSaveDbFood.disabled = false;
                     return;
                 }
 
-                // UI zurücksetzen und schließen
+                // UI zurä¼cksetzen und schlieäŸen
                 document.getElementById('add-food-amount-modal').style.display = 'none';
                 document.getElementById('add-food-modal').style.display = 'none';
-                
+                  window.initNutrition();
                 addDbSearch.value = '';
                 addDbResults.innerHTML = '';
                 currentSelectedDbFood = null;
-                btnSaveDbFood.disabled = false;
-
+                
                 // Dashboard aktualisieren
                 window.initNutrition();
             });
@@ -1526,7 +1484,6 @@
     </script>
 </body>
 </html>
-
 
 
 

@@ -1,41 +1,42 @@
-name,brand,kcal,carbs,fat,protein,barcode,piece_name,base_amount_g
-Kaiserbrötchen,Netto,175,34.5,1.1,5.8,,Stück,65
-Sonnenblumenkerne,Netto,252,3.5,22,8.4,,,100
-Nuss Frucht Mix,Netto,202,15.2,12.4,6.2,,Packung,40
-Leberkäsbrötchen,Fleischerei Gretenkord,498,25,35,35,,Semmel,140
-Gekochtes Ei,Netto,90,0.6,5.3,7.5,,Ei,1
-Rührei,Netto,95,0.6,6.7,8,,Ei,1
-Hamburger Royal Käse,McDonald's,527,37,28,32,,Burger,1
-Chicken Nuggets,McDonald's,42,2.7,2.1,2.8,,Nugget,1
-Mayonnaise,HELLMANN's,641,3.6,69,0.9,,,100
-Shortcake Biscuits,Biscotto,532,59,30,5.1,,,100
-H-Vollmilch 3.5%,Netto,64,4.8,3.5,3.3,,,100
-Schoko Muffin,Milka,482,51.5,27.9,5.7,,Stück,1
-Erdnüsse geröstet ungesalzen,,625,12,51,26,,,100
-Speisequark 40%,,142,3.7,10,8.8,,,100
-Chips Ungarisch,Funny-Frisch,530,49,33,6.1,,,100
-Haferflocken,,372,68.7,7,13.5,,,100
-Die gute Schokolade,,554,54.4,35.9,7.7,,,100
-Kinder Bueno,Kinder,123,11,8,2,,Riegel,1
-Kinder Country,Kinder,132,12.9,7.9,2,,Riegel,1
-Kinder Happy Hippo,Kinder,123,11.1,8,1.4,,Riegel,1
-Toffifee,,43,5.1,2.4,0.5,,Stück,1
-Kinder Cards,Kinder,65,6.9,3.4,1.5,,Stück,1
-RedBull Tropical,RedBull,58,13.8,0,0.1,,,125
-Knoppers,,137,12.6,8.4,2.5,,Riegel,1
-Fanta orange,,38,9.2,0.1,0.1,,ml,100
-Yogurette,,72,7.1,4.5,0.6,,Riegel,1
-Chicken Burger,McDonald's,347,37,17,11,,Burger,1
-Amicelli,,65,7.9,3.3,0.8,,Riegel,1
-Pick Up Choco,Leibnitz,199,5.9,10.1,2.7,,Riegel,1
-Skyr Natur,Logismose,57,3.5,0.2,10,,,100
-Vollkorn Toast,,64,10.5,1.1,2.2,,Scheibe,1
-Nutella,,539,57.9,30.9,6.3,,,100
-Gebrannte Mandeln,,548,50,32.1,12.5,,,100
-Nudossi,,544,50.2,35,6.9,,,100
-Cheese Burger,McDonald's,300,31,12,15,,Burger,1
-Wiener Wurst,,104,5,8,8,,Wurst,1
-Pizza Magerita,,789,103,28,28,,Pizza,1
-Flammenkuchen,Wagner,766,91,35.3,23.4,,Flammenkuchen,1
-Laugenstange mit Debrecziner,Ditsch,477,43.6,23.4,23,,Stück,1
-Pizza Salami,Ditsch,462,53.9,17.3,20.9,,Pizza,1
+name,brand,kcal,carbs,fat,protein,barcode,piece_name,base_amount_g,isChecked
+Kaiserbrötchen,Netto,175,34.5,1.1,5.8,,Stück,65,true
+Sonnenblumenkerne,Netto,252,3.5,22,8.4,,,100,true
+Nuss Frucht Mix,Netto,202,15.2,12.4,6.2,,Packung,40,true
+Leberkäsbrötchen,Fleischerei Gretenkord,498,25,35,35,,Semmel,140,true
+Gekochtes Ei,Netto,90,0.6,5.3,7.5,,Ei,1,true
+Rührei,Netto,95,0.6,6.7,8,,Ei,1,true
+Hamburger Royal Käse,McDonald's,527,37,28,32,,Burger,1,true
+Chicken Nuggets,McDonald's,42,2.7,2.1,2.8,,Nugget,1,true
+Mayonnaise,HELLMANN's,641,3.6,69,0.9,,,100,true
+Shortcake Biscuits,Biscotto,532,59,30,5.1,,,100,true
+H-Vollmilch 3.5%,Netto,64,4.8,3.5,3.3,,,100,true
+Schoko Muffin,Milka,482,51.5,27.9,5.7,,Stück,1,true
+Erdnüsse geröstet ungesalzen,,625,12,51,26,,,100,true
+Speisequark 40%,,142,3.7,10,8.8,,,100,true
+Chips Ungarisch,Funny-Frisch,530,49,33,6.1,,,100,true
+Haferflocken,,372,68.7,7,13.5,,,100,true
+Die gute Schokolade,,554,54.4,35.9,7.7,,,100,true
+Kinder Bueno,Kinder,123,11,8,2,,Riegel,1,true
+Kinder Country,Kinder,132,12.9,7.9,2,,Riegel,1,true
+Kinder Happy Hippo,Kinder,123,11.1,8,1.4,,Riegel,1,true
+Toffifee,,43,5.1,2.4,0.5,,Stück,1,true
+Kinder Cards,Kinder,65,6.9,3.4,1.5,,Stück,1,true
+RedBull Tropical,RedBull,58,13.8,0,0.1,,,125,true
+Knoppers,,137,12.6,8.4,2.5,,Riegel,1,true
+Fanta orange,,38,9.2,0.1,0.1,,ml,100,true
+Yogurette,,72,7.1,4.5,0.6,,Riegel,1,true
+Chicken Burger,McDonald's,347,37,17,11,,Burger,1,true
+Amicelli,,65,7.9,3.3,0.8,,Riegel,1,true
+Pick Up Choco,Leibnitz,199,5.9,10.1,2.7,,Riegel,1,true
+Skyr Natur,Logismose,57,3.5,0.2,10,,,100,true
+Vollkorn Toast,,64,10.5,1.1,2.2,,Scheibe,1,true
+Nutella,,539,57.9,30.9,6.3,,,100,true
+Gebrannte Mandeln,,548,50,32.1,12.5,,,100,true
+Nudossi,,544,50.2,35,6.9,,,100,true
+Cheese Burger,McDonald's,300,31,12,15,,Burger,1,true
+Wiener Wurst,,104,5,8,8,,Wurst,1,true
+Pizza Magerita,,789,103,28,28,,Pizza,1,true
+Flammenkuchen,Wagner,766,91,35.3,23.4,,Flammenkuchen,1,true
+Laugenstange mit Debrecziner,Ditsch,477,43.6,23.4,23,,Stück,1,true
+Pizza Salami,Ditsch,462,53.9,17.3,20.9,,Pizza,1,true
+Döner Kebab,,650,60,30,35,,Döner,1,true

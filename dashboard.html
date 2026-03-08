@@ -153,10 +153,10 @@
             <!-- Quote & Nutrition Grid -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
                 
-                <!-- Quote (Motivationsspruch) -->
+                <!-- Quote (Tagesspruch) -->
                 <div id="section-quote" class="simple-card" style="padding: 15px; display: flex; flex-direction: column; justify-content: space-between; height: 160px;">
                     <div>
-                        <div style="font-size:17px; font-weight:700; margin-bottom:10px;">Motivationsspruch</div>
+                        <div style="font-size:17px; font-weight:700; margin-bottom:10px;">Tagesspruch</div>
                         <div id="quote-content" style="font-size:20px; font-weight: 600; line-height: 1.3; color: var(--primary);">
                             &quot;Muss nicht schmecke, muss wirke.&quot;
                         </div>
@@ -190,10 +190,7 @@
                             <!-- Background Track - Thicker (12) -->
                             <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#333" stroke-width="12" stroke-linecap="round" />
                             <!-- Colored Value Track (gradient) - Thicker (12) -->
-                            <path id="gauge-path" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="url(#gaugeGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="125" stroke-dashoffset="60" style="transition: stroke-dashoffset 0.8s ease-out;" /> 
-                            
-                            <!-- Knob/Pointer Group for Rotation -->
-                            <g id="gauge-knob-group" style="transition: transform 0.8s ease-out; transform-origin: 50px 50px; transform: rotate(0deg);">
+                              <path id="gauge-path" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="url(#gaugeGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="130" stroke-dashoffset="130" style="transition: stroke-dashoffset 0.8s ease-out;" />
                                 <circle cx="50" cy="10" r="8" fill="#1c1e24" stroke="var(--primary)" stroke-width="3" /> 
                             </g>
                          </svg>
@@ -402,13 +399,10 @@
                 const currentPct = start + (range * ease);
                 
                 // Update DOM
-                const maxDash = 125;
-                const offset = maxDash - (maxDash * currentPct);
-                pathEl.style.strokeDashoffset = offset;
-                
-                const rotation = -90 + (180 * currentPct);
-                knobGroup.style.transform = `rotate(${rotation}deg)`;
-                
+                  const maxDash = 130;
+                  const offset = maxDash - (maxDash * currentPct);
+                  pathEl.style.strokeDashoffset = offset;
+
                 // Color Interpolation based on currentPct (Position on Bar)
                 const c1 = "#ff4444";
                 const c2 = "#ffcc00";
@@ -821,6 +815,61 @@
         // Debounce timer for updates
         let syncTimeout = null;
 
+        function calculateDetailedTargets(profile) {
+            const gender = profile.gender || 'male';
+            const weight = parseFloat(profile.weight_kg) || 75;
+            const age = parseInt(profile.age) || 25;
+            const height = parseFloat(profile.height_cm) || 175;
+            const bodyfatPercent = parseFloat(profile.bodyfat_percent) || 15;
+            const activityKey = profile.activity_level || 'low';
+            const goalKey = profile.goal || 'maintain_build';
+
+            const bodyfat = bodyfatPercent / 100;
+            const LBM = weight * (1 - bodyfat);
+            let BMR_raw = 370 + (21.6 * LBM);
+            if (gender === 'female') BMR_raw = BMR_raw * 0.97;
+            
+            let ageFactor = 1;
+            if (age > 20) ageFactor = 1 - (0.012 * ((age - 20) / 10));
+            const BMR = BMR_raw * ageFactor;
+
+            let activityFactor = 1.2;
+            if (activityKey === 'low') activityFactor = 1.4;
+            if (activityKey === 'somewhat') activityFactor = 1.55;
+            if (activityKey === 'med') activityFactor = 1.7;
+            if (activityKey === 'high') activityFactor = 1.85;
+
+            const TDEE = BMR * activityFactor;
+            const heightMeters = height / 100;
+            const BMI = weight / (heightMeters * heightMeters);
+
+            let goalFactor = 1.0;
+            if (goalKey === 'lose_build') goalFactor = 0.85;
+            if (goalKey === 'gain_build') {
+                if (BMI < 18.5) goalFactor = 1.25;
+                else if (BMI < 21) goalFactor = 1.18;
+                else goalFactor = 1.12;
+            }
+
+            let trainingBonus = 1.0;
+            if (goalKey === 'gain_build') trainingBonus = 1.08;
+
+            let calories = TDEE * goalFactor * trainingBonus;
+            let minCal = (gender === 'female') ? 1300 : 1600;
+            if (calories < minCal) calories = minCal;
+            
+            calories = Math.round(calories);
+            const protein = Math.round(weight * 2.0);
+            
+            // Fett: 25% der täglichen Kalorien (1g Fett = 9 kcal)
+            const fat = Math.round((calories * 0.25) / 9); 
+            
+            const leftoverKcal = calories - (protein * 4) - (fat * 9);
+            const carbs = Math.max(0, Math.round(leftoverKcal / 4));
+
+            return { calories, protein, carbs, fat };
+        }
+
         async function initWaterBase() {
             const { data: { user } } = await supabase.auth.getUser();
             if(!user) return;
@@ -829,7 +878,7 @@
             // 1. Profil-Infos (Wasser-Ziel & Profilbild) holen
             const { data: profile, error: profileErr } = await supabase
                 .from('user_profiles')
-                .select('water_goal_ml, profile_image')
+                .select('*')
                 .eq('user_id', userId)
                 .maybeSingle();
 
@@ -838,6 +887,19 @@
             }
 
             if (profile) {
+                // Makros & Kalorien berechnen
+                const targets = calculateDetailedTargets(profile);
+                nutriData[0].max = targets.calories;
+                nutriData[1].max = targets.protein;
+                nutriData[2].max = targets.carbs;
+                
+                // Vorübergend: Setzte den "current" Wert auf 0. Wir haben noch kein Daily Tracking.
+                nutriData[0].current = 0;
+                nutriData[1].current = 0;
+                nutriData[2].current = 0;
+
+                renderNutrition();
+
                 // Wasser Ziel setzen
                 if (profile.water_goal_ml) {
                     if(window.setWaterGoal) window.setWaterGoal(profile.water_goal_ml);
