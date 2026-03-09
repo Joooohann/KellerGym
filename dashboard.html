@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>KellerGym - Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="style_dashboard.css">
@@ -96,11 +96,11 @@
                 
                 <!-- Icons (Absolute Right) -->
                 <div style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); display:flex; gap:15px; align-items:center;">
-                   <div style="width:40px; height:40px; border-radius:50%; overflow: hidden; border: 1px solid #333; position: relative;">
+                   <a href="profile.html" style="width:40px; height:40px; border-radius:50%; overflow: hidden; border: 1px solid #333; position: relative; display: block;">
                         <!-- Spinner Background -->
                         <i id="header-profile-spinner" class="fa-solid fa-circle-notch fa-spin" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--primary); font-size: 16px;"></i>
-                        <img id="header-profile-img" src="img/profile.jpg" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; display: block; position: relative; z-index: 2; opacity: 0; transition: opacity 0.3s ease;">
-                   </div>
+                        <img id="header-profile-img" src="img/icon.png" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; display: block; position: relative; z-index: 2; opacity: 0; transition: opacity 0.3s ease;">
+                   </a>
                 </div>
             </div>
 

@@ -2,243 +2,650 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KellerGym - Alle Übungen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>KellerGym - Active Workout</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
     <style>
-        .filter-chip {
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid #333;
-            background: #1c1e24;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: 0.2s;
-            user-select: none;
-        }
-        .filter-chip.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: #fff;
-        }
-        .filter-container {
+        body { padding-bottom: 20px; }
+        
+        .header-nav {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding-bottom: 5px;
-            margin-top: 15px;
-            margin-bottom: 5px;
-            scrollbar-width: none; 
+            align-items: center;
+            justify-content: space-between; /* This allows centering the middle element relative to the container if we balance it, or use absolute positioning */
+            padding: 10px 0 20px 0;
+            position: relative;
         }
-        .filter-container::-webkit-scrollbar {
-            display: none; 
-        }
-        body {
-            background-color: #15161A; 
-            color: #ffffff; 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Inter', sans-serif;
-            overflow-y: auto;
-            padding-bottom: 90px;
-        }
-        .top-nav {
-            padding: 20px; 
-            display: flex; 
-            align-items: center; 
-            border-bottom: 1px solid #333; 
-            position: sticky; 
-            top: 0; 
-            background: #15161A; 
+
+        .back-btn {
+            font-size: 24px;
+            color: var(--text-mute);
+            padding: 10px;
+            cursor: pointer;
+            text-decoration: none;
             z-index: 10;
         }
+
+        .page-title {
+            position: absolute;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            pointer-events: none; /* Let clicks pass through if needed */
+        }
+
+        .exercise-card {
+            background-color: #15161A;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Shimmer effect for completed exercises */
+        @keyframes subtleShimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .exercise-card.completed {
+            background: linear-gradient(120deg, rgba(21, 22, 26, 1) 0%, rgba(0, 128, 128, 0.4) 50%, rgba(21, 22, 26, 1) 100%);
+            background-size: 200% 200%;
+            animation: subtleShimmer 2.5s ease infinite;
+            border: 1px solid rgba(0, 128, 128, 0.6);
+            border-left: 4px solid var(--primary);
+            opacity: 0.85; /* Leichtes Ausgrauen, um Abschluss zu signalisieren */
+        }
+
+        .ex-image-container {
+            width: 60px;
+            height: 60px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ex-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .ex-info {
+            flex: 1;
+            margin-left: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .ex-muscle-label {
+            font-size: 11px; /* removed upper transform */
+            letter-spacing: 0.5px;
+            color: var(--text-mute);
+            margin-bottom: 2px;
+        }
+
+        .ex-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        .ex-stats-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .ex-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .ex-stat-icon {
+            color: #d35400; /* Darker Orange/Rust to match reference */
+            font-size: 12px;
+        }
+        
+        /* Specific override just for the chart icon */
+        .ex-stat-icon.fa-chart-simple {
+            color: #ff9500; /* Brighter orange for chart icon per request */
+        }
+
+        .ex-meta {
+            font-size: 13px;
+            color: var(--text-mute);
+        }
+        
+        .ex-sets {
+            display: flex;
+            gap: 5px;
+        }
+
+        .set-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            background: #2a2d35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .rig-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-left: 15px;
+            background: #222;
+        }
+
+        .swap-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: 0.2s;
+        }
+        .swap-btn:hover {
+            background: #333;
+            color: #ccc;
+        }
+
+        .btn-control {
+            border: none;
+            outline: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .btn-control:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes shimmerRow {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Set Tracking Row Highlight */
+        .set-row {
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .set-row td {
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 600;
+            border-top: 2px solid transparent;
+            border-bottom: 2px solid transparent;
+        }
+
+        /* Apply border radius to first and last visible element of the row */
+        .set-row td:first-child { 
+            border-left: 2px solid transparent;
+            border-top-left-radius: 12px; 
+            border-bottom-left-radius: 12px; 
+        }
+        .set-row td:last-child { 
+            border-right: 2px solid transparent;
+            border-top-right-radius: 12px; 
+            border-bottom-right-radius: 12px; 
+        }
+
+        /* The row itself handles the background for the shimmer */
+        .set-row.active-set {
+            background: linear-gradient(120deg, rgba(0, 255, 204, 0.05) 30%, rgba(255, 255, 255, 0.25) 50%, rgba(0, 255, 204, 0.05) 70%);
+            background-size: 300% 100%;
+            animation: shimmerRow 8s infinite linear;
+        }
+        
+        .set-row.active-set td {
+            color: var(--primary);
+            border-top-color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        .set-row.active-set td:first-child { border-left-color: var(--primary); }
+        .set-row.active-set td:last-child { border-right-color: var(--primary); }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="top-nav">
-        <i class="fa-solid fa-arrow-left" onclick="window.location.href='workouts.html'" style="font-size: 20px; cursor: pointer; padding-right: 15px;"></i>
-        <div style="font-size: 20px; font-weight: 700;">Alle Übungen</div>
-    </div>
+    <div id="app-viewport">
+        <!-- Header -->
+        <div class="header-nav">
+            <a href="workouts.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i></a>
+            <div class="page-title" id="workout-title">...</div>
+            <div style="width: 44px;"></div> <!-- Spacer to balance back button -->
+        </div>
 
-    <!-- Search & Filter Controls -->
-    <div style="padding: 10px 15px; display: flex; flex-direction: column; background: #1a1c20; border-bottom: 1px solid #333;">
-        <div style="display: flex; align-items: center; background: #2a2d35; border: 1px solid #444; border-radius: 8px; padding: 0 10px;">
-            <i class="fa-solid fa-magnifying-glass" style="color: var(--text-mute); font-size: 14px;"></i>
-            <input type="text" id="exercise-search" placeholder="Nach Namen, Muskelgruppe o. Gerät suchen..." style="flex: 1; background: transparent; border: none; color: white; padding: 10px; font-size: 14px; outline: none;">
-            <i class="fa-solid fa-xmark" id="search-clear" style="color: var(--text-mute); font-size: 14px; cursor: pointer; display: none; padding: 5px;"></i>
+        <!-- Controls -->
+        <div id="controls-container" style="display:flex; justify-content:center; gap: 10px; margin-bottom: 20px;">
+            <!-- JS Injected -->
+        </div>
+
+        <!-- Exercise List -->
+        <div id="exercise-list">
+            <!-- JS Generated -->
         </div>
         
-        <!-- Filter Chips -->
-        <div class="filter-container" id="muscle-filters">
-            <!-- JS generated -->
+        <!-- Training anpassen Button -->
+        <div class="simple-card" style="margin-top: 20px; padding: 15px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="console.log('Training anpassen')">
+            <div style="font-size:16px; font-weight:700;">Training anpassen</div>
+            <i class="fa-solid fa-chevron-right" style="color:var(--text-mute);"></i>
         </div>
+
+        <div style="height: 50px;"></div>
     </div>
 
-    <!-- Exercises List -->
-    <div id="exercises-list" style="padding: 15px; display: flex; flex-direction: column; gap: 10px;">
-        <div id="loading" style="text-align: center; padding: 20px;">
-            <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; color: var(--primary);"></i>
+    <div id="exercise-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-body); z-index: 1000; flex-direction: column;">
+        <!-- Header -->
+        <div class="header-nav" style="padding: 20px 20px 10px 20px;">
+            <div class="back-btn" onclick="closeExerciseOverlay()"><i class="fa-solid fa-chevron-left"></i></div>
+            <div class="page-title" id="overlay-workout-title">...</div>
+            <div class="back-btn" id="overlay-pause-btn" onclick="toggleOverlayPause()"><i class="fa-solid fa-pause"></i></div>
         </div>
+        
+        <div style="padding: 10px 20px 20px 20px; flex: 1; overflow-y: auto;">
+            <!-- Exercise Details Card -->
+            <div class="exercise-card" style="margin-bottom: 25px; padding: 20px; align-items: flex-start; background: #1a1e22; border-radius: 16px;">
+                <div class="ex-image-container" style="width: 70px; height: 70px; margin-right: 10px;">
+                    <img id="overlay-ex-img" src="" alt="">
+                </div>
+                <div class="ex-info" style="margin-left: 5px;">
+                    <div id="overlay-ex-muscle" class="ex-muscle-label" style="font-size: 13px;">...</div>
+                    <div id="overlay-ex-name" class="ex-name" style="font-size: 20px; margin-bottom: 10px;">...</div>
+                    <div class="ex-stats-row">
+                        <div class="ex-stat-item">
+                            <img src="img/satz400.png" alt="Sätze" style="width: 14px; height: 14px; object-fit: contain;">
+                            <span id="overlay-ex-sets">...</span>
+                        </div>
+                        <div class="ex-stat-item" style="margin-left: 10px;">
+                            <i class="fa-solid fa-dumbbell ex-stat-icon" style="color: #e67e22;"></i>
+                            <span id="overlay-ex-weight">...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="carbon-card" style="padding: 15px 0;">
+                <table style="width: 100%; border-collapse: separate; border-spacing: 0 4px; text-align: center;">
+                    <thead>
+                        <tr style="color: var(--text-mute); font-size: 13px; font-weight: 700;">
+                            <th style="padding-bottom: 10px; border-bottom: 1px solid #333;">Satz</th>
+                            <th style="padding-bottom: 10px; border-bottom: 1px solid #333;">Wdh</th>
+                            <th style="padding-bottom: 10px; border-bottom: 1px solid #333;">Kg</th>
+                            <th style="padding-bottom: 10px; border-bottom: 1px solid #333;">RIR</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overlay-sets-tbody">
+                        <!-- JS Generated Sets -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Edit Controls below table inside a gray card -->
+            <div class="simple-card" style="margin-top: 30px; padding: 15px 10px;">
+                <div id="set-controls" style="display: none; justify-content: space-around; align-items: center; padding: 0;">
+                    <!-- Wdh -->
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                      <div style="color: var(--text-mute); font-size: 11px; font-weight: 700; margin-bottom: 8px;">Wdh</div>
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                          <i class="fa-solid fa-minus" onclick="adjustSetVal('wdh', -1)" style="color: var(--text-mute); font-size: 16px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background-color: rgba(128, 128, 128, 0.15); border-radius: 50%;"></i>
+                          <span id="control-wdh" style="font-size: 20px; font-weight: 800; min-width: 25px; text-align: center;">10</span>
+                          <i class="fa-solid fa-plus" onclick="adjustSetVal('wdh', 1)" style="color: var(--text-main); font-size: 16px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background-color: rgba(128, 128, 128, 0.15); border-radius: 50%;"></i>
+                      </div>
+                  </div>
+
+                  <!-- Kg -->
+                  <div style="display: flex; flex-direction: column; align-items: center;">
+                      <div style="color: var(--text-mute); font-size: 11px; font-weight: 700; margin-bottom: 8px;">Kg</div>
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                          <i class="fa-solid fa-minus" onclick="adjustSetVal('kg', -2.5)" style="color: var(--text-mute); font-size: 16px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background-color: rgba(128, 128, 128, 0.15); border-radius: 50%;"></i>
+                          <span id="control-kg" style="font-size: 20px; font-weight: 800; min-width: 40px; text-align: center;">80</span>
+                          <i class="fa-solid fa-plus" onclick="adjustSetVal('kg', 2.5)" style="color: var(--text-main); font-size: 16px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background-color: rgba(128, 128, 128, 0.15); border-radius: 50%;"></i>
+                      </div>
+                  </div>
+                  
+                  <!-- RIR -->
+                  <div style="display: flex; flex-direction: column; align-items: center;">
+                      <div style="color: var(--text-mute); font-size: 11px; font-weight: 700; margin-bottom: 8px;">RIR</div>
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                          <i class="fa-solid fa-minus" onclick="adjustSetVal('rir', -1)" style="color: var(--text-mute); font-size: 16px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background-color: rgba(128, 128, 128, 0.15); border-radius: 50%;"></i>
+                          <span id="control-rir" style="font-size: 20px; font-weight: 800; min-width: 20px; text-align: center;">0</span>
+                          <i class="fa-solid fa-plus" onclick="adjustSetVal('rir', 1)" style="color: var(--text-main); font-size: 16px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background-color: rgba(128, 128, 128, 0.15); border-radius: 50%;"></i>
+                      </div>
+                  </div>
+
+                </div> <!-- End of set-controls -->
+            </div> <!-- End of controls card -->
+            <!-- Notes -->
+            <div class="simple-card" style="margin-top: 20px; padding: 20px;">
+                <div style="font-size: 16px; font-weight: 700; margin-bottom: 10px;">Notizen</div>
+                <textarea oninput="autoResizeTextarea(this)" style="width: 100%; background: #1a1e22; border: 1px solid #333; border-radius: 8px; color: #fff; padding: 10px; font-family: inherit; font-size: 14px; line-height: 20px; resize: none; outline: none; min-height: 50px; max-height: 200px; overflow-y: auto; overflow-x: hidden;" placeholder="Notizen zur Übung"></textarea>
+            </div>
+            <div style="display: flex; justify-content: center; margin-top: 30px;">
+                <button class="btn-control" style="background-color: transparent; border: 2px solid var(--primary); color: var(--primary);" onclick="closeExerciseOverlay()">Übung speichern & abschließen</button>
+            </div>
     </div>
 
-    <script type="module">
-        import { supabase } from './supabase-config.js';
+    <script>
+        // Mock Data for Exercises
+        const WORKOUT_CONTENT = {
+            'lower': [
+                { name: 'Squats', muscle: 'Beine', sets: 4, reps: '6-8', weight: '80', img: 'img/pullups.png' },
+                { name: 'Romanian Deadlifts', muscle: 'Beine', sets: 3, reps: '8-10', weight: '70', img: 'img/pullups.png' },
+                { name: 'Leg Press', muscle: 'Beine', sets: 3, reps: '10-12', weight: '120', img: 'img/pullups.png' },
+                { name: 'Leg Extensions', muscle: 'Beine', sets: 3, reps: '12-15', weight: '45', img: 'img/pullups.png' },
+                { name: 'Leg Curls', muscle: 'Beine', sets: 3, reps: '12-15', weight: '40', img: 'img/pullups.png' },
+                { name: 'Calf Raises', muscle: 'Waden', sets: 4, reps: '10-15', weight: '60', img: 'img/pullups.png' }
+            ],
+            'upper': [
+                { name: 'Bench Press', muscle: 'Brust', sets: 4, reps: '6-8', weight: '70', img: 'img/pullups.png' },
+                { name: 'Pull Ups', muscle: 'Rücken', sets: 3, reps: 'AMRAP', weight: '0', img: 'img/pullups.png' },
+                { name: 'Overhead Press', muscle: 'Schulter', sets: 3, reps: '8-10', weight: '40', img: 'img/pullups.png' },
+                { name: 'Barbell Rows', muscle: 'Rücken', sets: 3, reps: '8-10', weight: '60', img: 'img/pullups.png' },
+                { name: 'Incline DB Press', muscle: 'Brust', sets: 3, reps: '10-12', weight: '26', img: 'img/pullups.png' },
+                { name: 'Lateral Raises', muscle: 'Schulter', sets: 4, reps: '15-20', weight: '10', img: 'img/pullups.png' },
+                { name: 'Bicep Curls', muscle: 'Bizeps', sets: 3, reps: '12-15', weight: '12', img: 'img/pullups.png' }
+            ],
+            'full': [
+                { name: 'Squats', muscle: 'Beine', sets: 3, reps: '6-8', weight: '80', img: 'img/pullups.png' },
+                { name: 'Bench Press', muscle: 'Brust', sets: 3, reps: '6-8', weight: '70', img: 'img/pullups.png' },
+                { name: 'Deadlifts', muscle: 'Rücken', sets: 3, reps: '5', weight: '100', img: 'img/pullups.png' },
+                { name: 'Pull Ups', muscle: 'Rücken', sets: 3, reps: 'AMRAP', weight: '0', img: 'img/pullups.png' },
+                { name: 'Dips', muscle: 'Brust', sets: 3, reps: '10-12', weight: '0', img: 'img/pullups.png' },
+                { name: 'Face Pulls', muscle: 'Schulter', sets: 3, reps: '15-20', weight: '15', img: 'img/pullups.png' }
+            ]
+        };
+        
+        const WORKOUT_TITLES = {
+            'lower': 'Lower Body',
+            'upper': 'Upper Body',
+            'full': 'Ganzkörper'
+        };
 
-        let allExercises = [];
-        const muscles = ['Bizeps', 'Trizeps', 'Rücken', 'Brust', 'Schulter', 'Beine', 'Bauch'];
-        let activeMuscles = new Set(['Bizeps']);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get workout type from localStorage
+            const activeType = localStorage.getItem('activeWorkoutType') || 'lower';
+            
+            // Set Title
+            const title = WORKOUT_TITLES[activeType] || 'Training';
+            document.getElementById('workout-title').innerText = title;
 
-        // Init Filters
-        const filterContainer = document.getElementById('muscle-filters');
-        muscles.forEach(m => {
-            const chip = document.createElement('div');
-            chip.className = 'filter-chip';
-            if (activeMuscles.has(m)) chip.classList.add('active');
-            chip.innerText = m;
-            chip.onclick = () => {
-                if (activeMuscles.has(m)) {
-                    activeMuscles.delete(m);
-                    chip.classList.remove('active');
-                } else {
-                    activeMuscles.add(m);
-                    chip.classList.add('active');
-                }
-                renderList();
-            };
-            filterContainer.appendChild(chip);
-        });
+            // --- Controls Logic ---
+            const sessionState = localStorage.getItem('workoutSessionState') || 'viewing';
+            const controlsContainer = document.getElementById('controls-container');
+            const isPaused = (localStorage.getItem('workoutIsPaused') === 'true');
 
-        // Init Search
-        const searchInput = document.getElementById('exercise-search');
-        const searchClear = document.getElementById('search-clear');
-
-        searchInput.addEventListener('input', () => {
-            searchClear.style.display = searchInput.value.length > 0 ? 'block' : 'none';
-            renderList();
-        });
-
-        searchClear.addEventListener('click', () => {
-            searchInput.value = '';
-            searchClear.style.display = 'none';
-            renderList();
-            searchInput.focus();
-        });
-
-        async function loadExercises() {
-            try {
-                // Fetch exercises sorted basically, custom sort will be applied in JS
-                const { data, error } = await supabase
-                    .from('exercises')
-                    .select('*');
+            if(sessionState === 'running') {
+                // Pause Button
+                const pauseBtn = document.createElement('button');
+                pauseBtn.className = 'btn-control';
+                pauseBtn.innerHTML = isPaused ? '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-pause"></i>';
+                pauseBtn.style.backgroundColor = '#333'; 
+                pauseBtn.style.border = '1px solid #555';
+                pauseBtn.style.width = '60px'; // Square-ish
+                pauseBtn.style.fontSize = '18px';
                 
-                if (error) throw error;
-                
-                // Sort array according to requested muscle order, then by order_index
-                const muscleOrder = {
-                    'Bizeps': 1,
-                    'Trizeps': 2,
-                    'Rücken': 3,
-                    'Brust': 4,
-                    'Schulter': 5,
-                    'Beine': 6,
-                    'Bauch': 7
+                pauseBtn.onclick = () => {
+                    const paused = (localStorage.getItem('workoutIsPaused') === 'true');
+                    if(paused) {
+                        localStorage.setItem('workoutIsPaused', 'false');
+                        pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                    } else {
+                        localStorage.setItem('workoutIsPaused', 'true');
+                        pauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                    }
                 };
 
-                const sortedData = (data || []).sort((a, b) => {
-                    const musA = a.primary_muscle || '';
-                    const musB = b.primary_muscle || '';
-                    
-                    const orderA = muscleOrder[musA] || 99;
-                    const orderB = muscleOrder[musB] || 99;
-
-                    if (orderA !== orderB) {
-                        return orderA - orderB;
+                // Finish Button
+                const finishBtn = document.createElement('button');
+                finishBtn.className = 'btn-control';
+                finishBtn.innerText = 'Beenden';
+                finishBtn.style.backgroundColor = 'rgba(211, 47, 47, 0.2)';
+                finishBtn.style.color = '#ff6666';
+                finishBtn.style.border = '1px solid #d32f2f';
+                finishBtn.style.flex = '1';
+                
+                finishBtn.onclick = () => {
+                    if(confirm('Training wirklich beenden?')) {
+                        localStorage.removeItem('workoutSessionState');
+                        localStorage.removeItem('workoutIsPaused');
+                        window.location.href = 'workouts.html';
                     }
-                    
-                    // Fallback to order_index if muscle group is the same
-                    const idxA = a.order_index || 0;
-                    const idxB = b.order_index || 0;
-                    return idxA - idxB;
-                });
+                };
 
-                allExercises = sortedData;
+                controlsContainer.appendChild(pauseBtn);
+                controlsContainer.appendChild(finishBtn);
+
+            } else {
+                // Start Button
+                const startBtn = document.createElement('button');
+                startBtn.className = 'btn-control';
+                startBtn.innerText = 'Starten';
+                startBtn.style.backgroundColor = 'var(--primary)';
+                startBtn.style.color = '#000'; // Contrast text
+                startBtn.style.width = '100%';
                 
-                // Hide loading spinner
-                document.getElementById('loading').style.display = 'none';
-                renderList();
-            } catch (err) {
-                console.error('Fehler beim Laden der Übungen:', err);
-                document.getElementById('loading').innerHTML = '<div style="color:#ff4444; font-size:14px;">Fehler beim Laden: ' + err.message + '</div>';
+                startBtn.onclick = () => {
+                    localStorage.setItem('workoutSessionState', 'running');
+                    window.location.reload();
+                };
+                controlsContainer.appendChild(startBtn);
             }
-        }
 
-        function renderList() {
-            const container = document.getElementById('exercises-list');
-            // Remove everything except the loading div (if it exists)
-            Array.from(container.children).forEach(child => {
-                if(child.id !== 'loading') {
-                    child.remove();
-                }
-            });
+            // Render List
+            const list = WORKOUT_CONTENT[activeType] || [];
+            const container = document.getElementById('exercise-list');
             
-            const term = searchInput.value.toLowerCase().trim();
-
-            let displayData = allExercises.filter(ex => {
-                const p = ex.primary_muscle || '';
-                if (activeMuscles.size > 0 && !activeMuscles.has(p)) return false;
-
-                if (term) {
-                    const searchString = `${ex.name || ''} ${ex.primary_muscle || ''} ${ex.equipment || 'Körpergewicht'}`.toLowerCase();
-                    return searchString.includes(term);
-                }
-                return true;
-            });
-
-            if (displayData.length === 0) {
-                const noData = document.createElement('div');
-                noData.style.cssText = 'text-align:center; color:var(--text-mute); padding: 20px;';
-                noData.innerText = 'Keine Übungen gefunden.';
-                container.appendChild(noData);
-                return;
-            }
-
-            displayData.forEach(ex => {
-                const imgSource = ex.img_source || 'img/pullups.png';
-                const equip = ex.equipment || 'Körpergewicht';
-                const muscle = ex.primary_muscle || 'Unbekannt';
-
+            list.forEach((ex, index) => {
                 const card = document.createElement('div');
-                card.style.cssText = 'background: #2a2d35; border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer;';
+                card.className = 'exercise-card';
                 
+                // Clicking the card opens details
+                card.onclick = () => {
+                    openExerciseOverlay(ex);
+                };
+
+                // Simulate first two exercises as completed
+                if(index < 2) {
+                    card.classList.add('completed');
+                }
+
+                // Use placeholder image for all as requested
+                const imgSrc = 'img/pullups.png';
+                
+                // Defaults
+                const muscle = ex.muscle || 'Muskelgruppe';
+                const weight = ex.weight ? ex.weight + ' kg' : '-';
+
                 card.innerHTML = `
-                    <div style="width: 60px; height: 50px; background: #1c1e24; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                        <img src="${imgSource}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;" onerror="this.src='img/pullups.png'">
+                    <div class="ex-image-container">
+                        <img src="${imgSrc}" alt="${ex.name}">
                     </div>
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <span style="font-size: 16px; font-weight: 700; color: #fff;">${ex.name}</span>
-                        <span style="color: var(--text-mute); font-size: 13px; margin-top: 4px; display: flex; align-items: center; gap: 8px;">
-                            <span style="display: flex; align-items: center; gap: 4px;">
-                                <img src="img/biceps_2_orange.png" style="width: 14px; height: 14px; object-fit: contain;"> ${muscle}
-                            </span>
-                            &bull;
-                            <span style="display: flex; align-items: center; gap: 4px;">
-                                <i class="fa-solid fa-dumbbell" style="color: #d97736; font-size: 12px;"></i> ${equip}
-                            </span>
-                        </span>
+                
+                    <div class="ex-info">
+                        <div class="ex-muscle-label">${muscle}</div>
+                        <div class="ex-name">${ex.name}</div>
+                        
+                        <div class="ex-stats-row">
+                            <div class="ex-stat-item">
+                                <img src="img/satz400.png" alt="Sätze" style="width: 14px; height: 14px; object-fit: contain;">
+                                <span>${ex.sets} Sätze</span>
+                            </div>
+                            <div class="ex-stat-item">
+                                <i class="fa-solid fa-dumbbell ex-stat-icon" style="color: #e67e22;"></i>
+                                <span>${weight}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Swap Button -->
+                    <div class="swap-btn" onclick="openExerciseSwap(event, '${ex.name}')">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
                     </div>
                 `;
                 container.appendChild(card);
             });
+        });
+        
+        function openExerciseSwap(e, exerciseName) {
+            e.stopPropagation(); // Prevent opening the overlay
+            // Placeholder for future menu
+            console.log('Swap exercise: ' + exerciseName);
         }
 
-        loadExercises();
+        // --- Exercise Details Overlay Logic ---
+        let currentEditingSetIndex = 0;
+        let activeExerciseSets = []; // Array of { wdh, kg, rir }
+        
+        function openExerciseOverlay(ex) {
+            // Set basic info
+            document.getElementById('overlay-workout-title').innerText = document.getElementById('workout-title').innerText;
+            document.getElementById('overlay-ex-img').src = 'img/pullups.png'; // placeholder
+            document.getElementById('overlay-ex-muscle').innerText = ex.muscle || 'Muskelgruppe';
+            document.getElementById('overlay-ex-name').innerText = ex.name;
+            document.getElementById('overlay-ex-sets').innerText = ex.sets + ' Sätze';
+            document.getElementById('overlay-ex-weight').innerText = (ex.weight || '0') + ' kg';
+
+            // Generate mock set data loosely based on exercise reps
+            activeExerciseSets = [];
+            const baseWdh = parseInt(ex.reps) || 10;
+            const baseKg = parseFloat(ex.weight) || 0;
+
+            for(let i=0; i<ex.sets; i++) {
+                activeExerciseSets.push({
+                    wdh: baseWdh,
+                    kg: baseKg,
+                    rir: 0
+                });
+            }
+
+            currentEditingSetIndex = 0;
+            renderSetsTable();
+            updateControlsDisplay();
+
+            // Show Overlay
+            const overlay = document.getElementById('exercise-overlay');
+            overlay.style.display = 'flex';
+            document.getElementById('set-controls').style.display = 'flex';
+            // ensure the parent card is also visible/flex if needed, or if it has no logic to hide, leave it.
+        }
+
+        function closeExerciseOverlay() {
+            document.getElementById('exercise-overlay').style.display = 'none';
+        }
+
+        function renderSetsTable() {
+            const tbody = document.getElementById('overlay-sets-tbody');
+            tbody.innerHTML = '';
+
+            activeExerciseSets.forEach((set, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'set-row' + (index === currentEditingSetIndex ? ' active-set' : '');
+                
+                tr.onclick = () => {
+                    currentEditingSetIndex = index;
+                    renderSetsTable();
+                    updateControlsDisplay();
+                };
+
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${set.wdh}</td>
+                    <td>${Number(set.kg).toFixed(1)}</td>
+                    <td>${set.rir}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateControlsDisplay() {
+            if(activeExerciseSets.length === 0) return;
+            const currentObj = activeExerciseSets[currentEditingSetIndex];
+            document.getElementById('control-wdh').innerText = currentObj.wdh;
+            document.getElementById('control-kg').innerText = Number(currentObj.kg).toFixed(1);
+            document.getElementById('control-rir').innerText = currentObj.rir;
+        }
+
+        function adjustSetVal(field, amount) {
+            if(activeExerciseSets.length === 0) return;
+            
+            let val = activeExerciseSets[currentEditingSetIndex][field];
+            val += amount;
+            
+            // Constraints
+            if(field === 'wdh' && val < 0) val = 0;
+            if(field === 'kg' && val < 0) val = 0;
+            if(field === 'rir') {
+                if(val < 0) val = 0;
+                if(val > 5) val = 5;
+            }
+
+            activeExerciseSets[currentEditingSetIndex][field] = val;
+            
+            // Re-render
+            updateControlsDisplay();
+            renderSetsTable();
+        }
+
+        let overlayPaused = false;
+        function toggleOverlayPause() {
+            overlayPaused = !overlayPaused;
+            const btn = document.getElementById('overlay-pause-btn');
+            if(overlayPaused) {
+                btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+            }
+        }
+
+        // --- Todo Logic in Overlay ---
+        function autoResizeTextarea(el) {
+            el.style.height = 'auto'; // Reset um die Scrollhöhe neu zu berechnen
+            el.style.height = el.scrollHeight + 'px'; // Anpassen auf neuen Inhalt
+        }
     </script>
 </body>
 </html>
+
+
