@@ -71,7 +71,7 @@
     <div style="padding: 10px 15px; display: flex; flex-direction: column; background: #1a1c20; border-bottom: 1px solid #333;">
         <div style="display: flex; align-items: center; background: #2a2d35; border: 1px solid #444; border-radius: 8px; padding: 0 10px;">
             <i class="fa-solid fa-magnifying-glass" style="color: var(--text-mute); font-size: 14px;"></i>
-            <input type="text" id="exercise-search" placeholder="Nach Namen, Muskelgruppe oder Gerät suchen..." style="flex: 1; background: transparent; border: none; color: white; padding: 10px; font-size: 14px; outline: none;">
+            <input type="text" id="exercise-search" placeholder="Nach Namen, Muskelgruppe o. Gerät suchen..." style="flex: 1; background: transparent; border: none; color: white; padding: 10px; font-size: 14px; outline: none;">
             <i class="fa-solid fa-xmark" id="search-clear" style="color: var(--text-mute); font-size: 14px; cursor: pointer; display: none; padding: 5px;"></i>
         </div>
         
@@ -133,15 +133,42 @@
 
         async function loadExercises() {
             try {
-                // Fetch exercises sorted by primary_muscle and order_index
+                // Fetch exercises sorted basically, custom sort will be applied in JS
                 const { data, error } = await supabase
                     .from('exercises')
-                    .select('*')
-                    .order('primary_muscle', { ascending: true })
-                    .order('order_index', { ascending: true });
+                    .select('*');
                 
                 if (error) throw error;
-                allExercises = data || [];
+                
+                // Sort array according to requested muscle order, then by order_index
+                const muscleOrder = {
+                    'Bizeps': 1,
+                    'Trizeps': 2,
+                    'Rücken': 3,
+                    'Brust': 4,
+                    'Schulter': 5,
+                    'Beine': 6,
+                    'Bauch': 7
+                };
+
+                const sortedData = (data || []).sort((a, b) => {
+                    const musA = a.primary_muscle || '';
+                    const musB = b.primary_muscle || '';
+                    
+                    const orderA = muscleOrder[musA] || 99;
+                    const orderB = muscleOrder[musB] || 99;
+
+                    if (orderA !== orderB) {
+                        return orderA - orderB;
+                    }
+                    
+                    // Fallback to order_index if muscle group is the same
+                    const idxA = a.order_index || 0;
+                    const idxB = b.order_index || 0;
+                    return idxA - idxB;
+                });
+
+                allExercises = sortedData;
                 
                 // Hide loading spinner
                 document.getElementById('loading').style.display = 'none';

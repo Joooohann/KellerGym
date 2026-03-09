@@ -1,7 +1,7 @@
 order_index,name,primary_muscle,description,equipment,note,amount_sets,amount_reps,kg,img_source,secondary_muscle
 
 1,Bankdrücken,Brust,,Langhantel,,4,8,70,,Trizeps;Schulter
-2,Flachbank Kurzhantelpressen,Brust,,Kurzhanteln,,3,10,24,,Trizeps;Schulter
+2,Kurzhantelbankdrücken,Brust,,Kurzhanteln,,3,10,24,,Trizeps;Schulter
 3,Kabel Flys,Brust,,Kabelzug,,3,12,20,,Schulter
 4,Kurzhantel Flys,Brust,,Kurzhanzeln,,3,10,10,,Schulter
 5,Dips,Brust,,Dip-Barren,,3,10,0,,Trizeps;Schulter
@@ -10,14 +10,14 @@ order_index,name,primary_muscle,description,equipment,note,amount_sets,amount_re
 8,Liegestütze Breitgriff,Brust,,,,3,20,,,Trizeps
 9,Diamant Liegestütze,Brust,,,,3,20,,,Trizeps
 
-1,Klimmzüge,Rücken,,Klimmzugstange,,3,8,0,,Bizeps
-2,Vorgebeugtes Rudern,Rücken,,Langhantel,,3,10,60,,Bizeps;Schulter
-3,Latziehen,Rücken,,Latzugmaschine,,3,10,55,,Bizeps
+1,Latziehen,Rücken,,Latzugmaschine,,3,10,55,,Bizeps
+2,Langhantel Rudern,Rücken,,Langhantel,,3,10,60,,Bizeps;Schulter
 4,Kurzhantel Rudern,Rücken,,Kurzhanteln,,3,10,28,,Bizeps
+4,Klimmzüge,Rücken,,Klimmzugstange,,3,8,0,,Bizeps
 5,T-Bar Rudern,Rücken,,T-Bar Maschine,,3,10,50,,Bizeps
 6,Sitzendes Kabelrudern,Rücken,,Kabelzug,,3,12,50,,Bizeps
 7,Klimmzüge Breitgriff,Rücken,,,,3,12,0,,Bizeps
-8,Kurzhantel Deadlift,Rücken,,,Kurzhanteln,3,12,15,,
+8,Kurzhantel Deadlift,Rücken,,Kurzhanteln,,3,12,15,,
 
 1,Schulterdrücken,Schulter,,Langhantel,,3,8,40,,Trizeps
 2,Kurzhantel Schulterdrücken,Schulter,,Kurzhanteln,,3,10,22,,Trizeps
