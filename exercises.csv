@@ -1,0 +1,59 @@
+order_index,name,primary_muscle,description,equipment,note,amount_sets,amount_reps,kg,img_source,secondary_muscle
+
+1,Bankdrücken,Brust,,Langhantel,,4,8,70,,Trizeps;Schulter
+2,Flachbank Kurzhantelpressen,Brust,,Kurzhanteln,,3,10,24,,Trizeps;Schulter
+3,Kabel Flys,Brust,,Kabelzug,,3,12,20,,Schulter
+4,Kurzhantel Flys,Brust,,Kurzhanzeln,,3,10,10,,Schulter
+5,Dips,Brust,,Dip-Barren,,3,10,0,,Trizeps;Schulter
+6,Butterfly,Brust,,Maschine,,3,12,40,,Schulter
+7,Schrägbankdrücken,Brust,,Kurzhanteln,,3,10,26,,Schulter;Trizeps
+8,Liegestütze Breitgriff,Brust,,,,3,20,,,Trizeps
+9,Diamant Liegestütze,Brust,,,,3,20,,,Trizeps
+
+1,Klimmzüge,Rücken,,Klimmzugstange,,3,8,0,,Bizeps
+2,Vorgebeugtes Rudern,Rücken,,Langhantel,,3,10,60,,Bizeps;Schulter
+3,Latziehen,Rücken,,Latzugmaschine,,3,10,55,,Bizeps
+4,Kurzhantel Rudern,Rücken,,Kurzhanteln,,3,10,28,,Bizeps
+5,T-Bar Rudern,Rücken,,T-Bar Maschine,,3,10,50,,Bizeps
+6,Sitzendes Kabelrudern,Rücken,,Kabelzug,,3,12,50,,Bizeps
+7,Klimmzüge Breitgriff,Rücken,,,,3,12,0,,Bizeps
+8,Kurzhantel Deadlift,Rücken,,,Kurzhanteln,3,12,15,,
+
+1,Schulterdrücken,Schulter,,Langhantel,,3,8,40,,Trizeps
+2,Kurzhantel Schulterdrücken,Schulter,,Kurzhanteln,,3,10,22,,Trizeps
+3,Seitheben,Schulter,,Kurzhanteln,,4,12,10,,
+4,Face Pulls,Schulter,,Kabelzug,,3,12,25,,Rücken
+5,Frontheben,Schulter,,Kurzhanteln,,3,12,10,,Brust
+6,Reverse Flys,Schulter,,Kurzhanteln,,3,12,8,,Rücken
+7,Liegestütze,Schulter,,,,3,12,,,
+
+1,Bizepscurls,Bizeps,,Kurzhanteln,,3,10,12,,
+2,Hammer Curls,Bizeps,,Kurzhanteln,,3,10,14,,Unterarme
+3,Konzentrationscurls,Bizeps,,Kurzhanteln,,3,12,10,,
+4,Langhantelcurls,Bizeps,,Langhantel,,3,10,30,,
+5,Kabelcurls,Bizeps,,Kabelzug,,3,12,25,,
+
+1,Trizepsdrücken,Trizeps,,Kabelzug,,3,12,30,,
+2,Überkopf Trizepsdrücken,Trizeps,,Kurzhanteln,,3,10,18,,
+3,Enges Bankdrücken,Trizeps,,Langhantel,,3,8,60,,Brust
+4,Dips Trizeps,Trizeps,,Dip-Barren,,3,10,0,,Brust
+5,Trizeps Kickbacks,Trizeps,,Kurzhanteln,,3,12,8,,
+6,Archer Liegestütze,Trizeps,,,,3,20,,,Brust
+7,Diamant Liegestütze,Trizeps,,,,3,20,,,Brust
+
+1,Kniebeugen,Beine,,Langhantel,,4,8,80,,Gluteus
+2,Beinpresse,Beine,,Beinpresse Maschine,,3,10,140,,Gluteus
+3,Rumänisches Kreuzheben,Beine,,Langhantel,,3,10,70,,Gluteus;Rücken
+4,Ausfallschritte,Beine,,Kurzhanteln,,3,10,20,,Gluteus
+5,Beinstrecker,Beine,,Maschine,,3,12,45,,
+6,Beinbeuger,Beine,,Maschine,,3,12,45,,
+7,Wadenheben stehend,Beine,,Maschine,,4,15,60,,
+8,Wadenheben sitzend,Beine,,Maschine,,4,15,40,,
+9,Wadenheben stehend,Beine,,,,4,15,60,,
+10,Speed Squats,Beine,,,,3,15,,,
+
+1,Beinheben hängend,Bauch,,Klimmzugstange,,3,12,0,,Hüftbeuger
+2,Plank,Bauch,,Körpergewicht,,3,30,0,,
+3,Crunches,Bauch,,Körpergewicht,,3,15,0,,
+4,Kabel Crunches,Bauch,,Kabelzug,,3,15,30,,
+5,Russian Twists,Bauch,,Kurzhantel,,3,20,10,,Schräge Bauchmuskeln

@@ -191,10 +191,10 @@
                             <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#333" stroke-width="12" stroke-linecap="round" />
                             <!-- Colored Value Track (gradient) - Thicker (12) -->
                               <path id="gauge-path" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="url(#gaugeGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="130" stroke-dashoffset="130" style="transition: stroke-dashoffset 0.8s ease-out;" />
-                                <circle cx="50" cy="10" r="8" fill="#1c1e24" stroke="var(--primary)" stroke-width="3" /> 
-                            </g>
-                         </svg>
-                         
+                                <g id="gauge-knob-group">
+                                    <circle cx="50" cy="10" r="8" fill="#1c1e24" stroke="var(--primary)" stroke-width="3" /> 
+                                </g>
+                           </svg>
                          <!-- Value Text Centered -->
                          <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); text-align: center; width: 100%;">
                              <div style="font-size: 16px; font-weight: 800; line-height: 1;" id="nutri-val">--</div>
@@ -352,8 +352,12 @@
             
             // Text Updates
             document.getElementById('nutri-label').innerText = mode.label;
+            let unit = '';
+            if (currentNutriMode === 0) unit = ' kcal';
+            if (currentNutriMode === 1 || currentNutriMode === 2) unit = 'g';
+            
             document.getElementById('nutri-val').innerText = mode.current;
-            document.getElementById('nutri-max').innerText = '/ ' + mode.max;
+            document.getElementById('nutri-max').innerText = '/ ' + mode.max + unit;
             
             // Active Dot
             document.getElementById('nd-1').classList.toggle('active', currentNutriMode === 0);
@@ -402,6 +406,11 @@
                   const maxDash = 130;
                   const offset = maxDash - (maxDash * currentPct);
                   pathEl.style.strokeDashoffset = offset;
+
+                  // Rotate knob
+                  const angle = -90 + (180 * currentPct);
+                  knobGroup.style.transformOrigin = '50px 50px';
+                  knobGroup.style.transform = `rotate(${angle}deg)`;
 
                 // Color Interpolation based on currentPct (Position on Bar)
                 const c1 = "#ff4444";
@@ -894,9 +903,28 @@
                 nutriData[2].max = targets.carbs;
                 
                 // Vorübergend: Setzte den "current" Wert auf 0. Wir haben noch kein Daily Tracking.
-                nutriData[0].current = 0;
-                nutriData[1].current = 0;
-                nutriData[2].current = 0;
+                // Aktuelle Ernährungsdaten (Food Logs) holen
+                const { data: foodLogs } = await supabase
+                    .from('food_logs')
+                    .select('calories, protein, carbs')
+                    .eq('user_id', userId)
+                    .eq('date', todayStr);
+                
+                let totalKcal = 0;
+                let totalProtein = 0;
+                let totalCarbs = 0;
+                
+                if (foodLogs && foodLogs.length > 0) {
+                    foodLogs.forEach(log => {
+                        totalKcal += log.calories || 0;
+                        totalProtein += log.protein || 0;
+                        totalCarbs += log.carbs || 0;
+                    });
+                }
+                
+                nutriData[0].current = Math.round(totalKcal);
+                nutriData[1].current = Math.round(totalProtein);
+                nutriData[2].current = Math.round(totalCarbs);
 
                 renderNutrition();
 

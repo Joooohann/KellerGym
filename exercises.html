@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KellerGym - Alle Übungen</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+    <style>
+        .filter-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            background: #1c1e24;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+            user-select: none;
+        }
+        .filter-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 5px;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            scrollbar-width: none; 
+        }
+        .filter-container::-webkit-scrollbar {
+            display: none; 
+        }
+        body {
+            background-color: #15161A; 
+            color: #ffffff; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Inter', sans-serif;
+            overflow-y: auto;
+            padding-bottom: 90px;
+        }
+        .top-nav {
+            padding: 20px; 
+            display: flex; 
+            align-items: center; 
+            border-bottom: 1px solid #333; 
+            position: sticky; 
+            top: 0; 
+            background: #15161A; 
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="top-nav">
+        <i class="fa-solid fa-arrow-left" onclick="window.location.href='workouts.html'" style="font-size: 20px; cursor: pointer; padding-right: 15px;"></i>
+        <div style="font-size: 20px; font-weight: 700;">Alle Übungen</div>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div style="padding: 10px 15px; display: flex; flex-direction: column; background: #1a1c20; border-bottom: 1px solid #333;">
+        <div style="display: flex; align-items: center; background: #2a2d35; border: 1px solid #444; border-radius: 8px; padding: 0 10px;">
+            <i class="fa-solid fa-magnifying-glass" style="color: var(--text-mute); font-size: 14px;"></i>
+            <input type="text" id="exercise-search" placeholder="Nach Namen, Muskelgruppe oder Gerät suchen..." style="flex: 1; background: transparent; border: none; color: white; padding: 10px; font-size: 14px; outline: none;">
+            <i class="fa-solid fa-xmark" id="search-clear" style="color: var(--text-mute); font-size: 14px; cursor: pointer; display: none; padding: 5px;"></i>
+        </div>
+        
+        <!-- Filter Chips -->
+        <div class="filter-container" id="muscle-filters">
+            <!-- JS generated -->
+        </div>
+    </div>
+
+    <!-- Exercises List -->
+    <div id="exercises-list" style="padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+        <div id="loading" style="text-align: center; padding: 20px;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; color: var(--primary);"></i>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './supabase-config.js';
+
+        let allExercises = [];
+        const muscles = ['Bizeps', 'Trizeps', 'Rücken', 'Brust', 'Schulter', 'Beine', 'Bauch'];
+        let activeMuscles = new Set(['Bizeps']);
+
+        // Init Filters
+        const filterContainer = document.getElementById('muscle-filters');
+        muscles.forEach(m => {
+            const chip = document.createElement('div');
+            chip.className = 'filter-chip';
+            if (activeMuscles.has(m)) chip.classList.add('active');
+            chip.innerText = m;
+            chip.onclick = () => {
+                if (activeMuscles.has(m)) {
+                    activeMuscles.delete(m);
+                    chip.classList.remove('active');
+                } else {
+                    activeMuscles.add(m);
+                    chip.classList.add('active');
+                }
+                renderList();
+            };
+            filterContainer.appendChild(chip);
+        });
+
+        // Init Search
+        const searchInput = document.getElementById('exercise-search');
+        const searchClear = document.getElementById('search-clear');
+
+        searchInput.addEventListener('input', () => {
+            searchClear.style.display = searchInput.value.length > 0 ? 'block' : 'none';
+            renderList();
+        });
+
+        searchClear.addEventListener('click', () => {
+            searchInput.value = '';
+            searchClear.style.display = 'none';
+            renderList();
+            searchInput.focus();
+        });
+
+        async function loadExercises() {
+            try {
+                // Fetch exercises sorted by primary_muscle and order_index
+                const { data, error } = await supabase
+                    .from('exercises')
+                    .select('*')
+                    .order('primary_muscle', { ascending: true })
+                    .order('order_index', { ascending: true });
+                
+                if (error) throw error;
+                allExercises = data || [];
+                
+                // Hide loading spinner
+                document.getElementById('loading').style.display = 'none';
+                renderList();
+            } catch (err) {
+                console.error('Fehler beim Laden der Übungen:', err);
+                document.getElementById('loading').innerHTML = '<div style="color:#ff4444; font-size:14px;">Fehler beim Laden: ' + err.message + '</div>';
+            }
+        }
+
+        function renderList() {
+            const container = document.getElementById('exercises-list');
+            // Remove everything except the loading div (if it exists)
+            Array.from(container.children).forEach(child => {
+                if(child.id !== 'loading') {
+                    child.remove();
+                }
+            });
+            
+            const term = searchInput.value.toLowerCase().trim();
+
+            let displayData = allExercises.filter(ex => {
+                const p = ex.primary_muscle || '';
+                if (activeMuscles.size > 0 && !activeMuscles.has(p)) return false;
+
+                if (term) {
+                    const searchString = `${ex.name || ''} ${ex.primary_muscle || ''} ${ex.equipment || 'Körpergewicht'}`.toLowerCase();
+                    return searchString.includes(term);
+                }
+                return true;
+            });
+
+            if (displayData.length === 0) {
+                const noData = document.createElement('div');
+                noData.style.cssText = 'text-align:center; color:var(--text-mute); padding: 20px;';
+                noData.innerText = 'Keine Übungen gefunden.';
+                container.appendChild(noData);
+                return;
+            }
+
+            displayData.forEach(ex => {
+                const imgSource = ex.img_source || 'img/pullups.png';
+                const equip = ex.equipment || 'Körpergewicht';
+                const muscle = ex.primary_muscle || 'Unbekannt';
+
+                const card = document.createElement('div');
+                card.style.cssText = 'background: #2a2d35; border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer;';
+                
+                card.innerHTML = `
+                    <div style="width: 60px; height: 50px; background: #1c1e24; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <img src="${imgSource}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;" onerror="this.src='img/pullups.png'">
+                    </div>
+                    <div style="flex: 1; display: flex; flex-direction: column;">
+                        <span style="font-size: 16px; font-weight: 700; color: #fff;">${ex.name}</span>
+                        <span style="color: var(--text-mute); font-size: 13px; margin-top: 4px; display: flex; align-items: center; gap: 8px;">
+                            <span style="display: flex; align-items: center; gap: 4px;">
+                                <img src="img/biceps_2_orange.png" style="width: 14px; height: 14px; object-fit: contain;"> ${muscle}
+                            </span>
+                            &bull;
+                            <span style="display: flex; align-items: center; gap: 4px;">
+                                <i class="fa-solid fa-dumbbell" style="color: #d97736; font-size: 12px;"></i> ${equip}
+                            </span>
+                        </span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        loadExercises();
+    </script>
+</body>
+</html>
