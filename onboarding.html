@@ -23,6 +23,13 @@
             background: var(--bg-body);
         }
     </style>
+        <style>
+            /* Ermöglicht Scrollen bei Schritt 9 (Trainingsort) auf Handy */
+            #ob-step-9.ob-content {
+                max-height: 100svh;
+                overflow-y: auto;
+            }
+        </style>
     <script>
         // Check for test mode immediately to prevent flash
         if(window.location.search.includes('test=true')) {
