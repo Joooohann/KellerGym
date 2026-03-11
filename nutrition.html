@@ -695,8 +695,8 @@
             const dir = document.getElementById('foods-sort-dir').value;
             const searchTerm = document.getElementById('foods-search-input').value.trim();
             
-            let displayFoods = [...allFoods];
 
+            let displayFoods = [...allFoods];
             // 1. Filtern (Suche)
             if (searchTerm.length > 0) {
                 displayFoods = displayFoods.filter(f => {
@@ -704,7 +704,6 @@
                     return isFuzzyMatch(searchSpace, searchTerm);
                 });
             }
-
             // 2. Sortieren
             if (field !== 'standard') {
                 displayFoods.sort((a, b) => {
@@ -722,13 +721,12 @@
                         valA = a.protein || 0;
                         valB = b.protein || 0;
                     }
-
                     if (valA < valB) return dir === 'asc' ? -1 : 1;
                     if (valA > valB) return dir === 'asc' ? 1 : -1;
                     return 0;
                 });
             }
-
+            // Remove any slicing/limiting here so all foods are shown
             displayFoods.forEach(food => {
                 const card = document.createElement('div');
                 card.style.background = '#2a2d35';
@@ -737,33 +735,26 @@
                 card.style.display = 'flex';
                 card.style.flexDirection = 'column';
                 card.style.gap = '5px';
-
                 const titleRow = document.createElement('div');
                 titleRow.style.fontSize = '16px';
                 titleRow.style.fontWeight = '700';
                 titleRow.style.color = '#fff';
-                
                 if (food.brand) {
                     titleRow.innerText = `${food.name} (${food.brand})`;
                 } else {
                     titleRow.innerText = food.name;
                 }
-
                 const subRow = document.createElement('div');
                 subRow.style.fontSize = '13px';
                 subRow.style.color = 'var(--text-mute)';
-                
                 const pKcal = food.kcal || 0;
                 const pProt = food.protein || 0;
                 const pBase = food.base_amount_g || 100;
-
                 let baseStr = `${pBase}g`;
                 if (pBase === 1 && food.piece_name) {
                     baseStr = `1 ${food.piece_name}`;
                 }
-
                 subRow.innerText = `${pKcal}kcal, ${baseStr}, ${pProt}g Eiweiß`;
-
                 card.appendChild(titleRow);
                 card.appendChild(subRow);
                 container.appendChild(card);
@@ -1373,8 +1364,8 @@
                 );
             }
             
-            // Limit to 50 results to prevent lag
-            filtered.slice(0, 50).forEach(food => {
+            // Show all results (no limit)
+            filtered.forEach(food => {
                 const row = document.createElement('div');
                 row.className = 'food-result-item'; 
                 row.style.cssText = 'padding: 10px; border-bottom: 1px solid #333; cursor: pointer; display: flex; justify-content: space-between; align-items: center;';
