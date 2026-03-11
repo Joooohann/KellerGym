@@ -24,8 +24,8 @@
         }
     </style>
         <style>
-            /* Ermöglicht Scrollen bei Schritt 9 (Trainingsort) auf Handy */
-            #ob-step-9.ob-content {
+            /* Ermöglicht Scrollen bei Schritt 10 (Trainings-Geräte) auf Handy */
+            #ob-step-10.ob-content {
                 max-height: 100svh;
                 overflow-y: auto;
             }
@@ -258,11 +258,12 @@
                     <div class="select-card" data-val="Beinpresse Maschine" onclick="toggleEquipment(this, 'Beinpresse Maschine')">Beinpresse Maschine</div>
                     <div class="select-card" data-val="Wadenmaschine" onclick="toggleEquipment(this, 'Wadenmaschine')">Wadenmaschine</div>
                 </div>
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
-                    <!-- Hier ist Button-10 für Equipment -->
-                    <button class="btn" id="btn-next-10" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
+                    <div style="height: 2cm;"></div>
+                    <div class="nav-buttons">
+                        <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                        <!-- Hier ist Button-10 für Equipment -->
+                        <button class="btn" id="btn-next-10" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
             </div>
 
             <!-- STEP 11: FREQUENCY -->
