@@ -593,6 +593,8 @@
                 delBtn.onclick = async (e) => {
                     e.stopPropagation();
                     if (plans.length <= 1) return; // Prevent deleting last plan
+                    const confirmed = confirm('Möchtest du diesen Trainingsplan wirklich löschen?');
+                    if (!confirmed) return;
                     // Delete plan from Supabase
                     const supabase = (await import('./supabase-config.js')).supabase;
                     const { error } = await supabase
@@ -805,8 +807,66 @@
                 btnEl.classList.add('disabled');
             }
         }
+
+
+        function a() {
+
+            
+            // a
+                        // a
+                                    // a
+                                                // a
+                                                            // a
+                                                                        // a
+        }
+
+        // function renderWorkout() {
+            const entry = SCHEDULE[selectedDayIndex];
+
+            // Text Elements
+            const titleEl = document.getElementById('wo-title');
+            const descEl = document.getElementById('wo-desc');
+            const imgEl = document.getElementById('wo-img');
+            const headerEl = document.getElementById('wo-header');
+            const btnEl = document.getElementById('btn-start');
+            const arrowEl = document.getElementById('wo-arrow');
+
+            // Set Content
+            titleEl.innerText = entry.title;
+            descEl.innerText = entry.desc;
+            imgEl.src = entry.img;
+
+            // Arrow Logic: show if it's not a rest day
+            if(entry.type !== 'off') {
+                arrowEl.style.display = 'block';
+            } else {
+                arrowEl.style.display = 'none';
+            }
+
+            // Header Logic
+        //     if(selectedDayIndex === todayIndex) {
+        //         headerEl.innerHTML = '<span style="color:var(--primary)">Heutiges Training</span>';
+
+        //         if(entry.type === 'off') {
+        //             btnEl.style.display = 'inline-block';
+        //             btnEl.disabled = true;
+        //             btnEl.classList.add('disabled');
+        //         } else {
+        //             btnEl.style.display = 'inline-block';
+        //             btnEl.disabled = false;
+        //             btnEl.classList.remove('disabled');
+        //         }
+        //     } else {
+        //         headerEl.innerHTML = 'Training am <span style="color:var(--primary)">' + FULL_DAYS[selectedDayIndex] + '</span>';
+        //         // Instead of hiding, we disable it
+        //         btnEl.style.display = 'inline-block';
+        //         btnEl.disabled = true;
+        //         btnEl.classList.add('disabled');
+        //     }
+        // }
+
     </script>
-        
-    </script>
+
 </body>
 </html>
+
