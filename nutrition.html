@@ -526,12 +526,25 @@
         <div style="padding: 15px;">
             <!-- Meal Selector -->
             <div style="margin-bottom: 20px;">
-                <label style="font-size: 14px; font-weight: 600; color: var(--text-mute); display: block; margin-bottom: 5px;">Mahlzeitt</label>
+                <label style="font-size: 14px; font-weight: 600; color: var(--text-mute); display: block; margin-bottom: 5px;">Mahlzeit_</label>
                 <select id="add-food-meal-select" style="width: 100%; padding: 10px; border-radius: 8px; background: #2a2d35; color: white; border: 1px solid #444; outline: none; font-family: inherit;">
-                    <option value="Frühstück">Frühstück</option>
-                    <option value="Mittag">Mittag</option>
-                    <option value="Abend">Abend</option>
-                    <option value="Snack">Snack</option>
+                                        <option value="Frühstück">Frühstück</option>
+                                        <option value="Mittag">Mittag</option>
+                                        <option value="Abend">Abend</option>
+                                        <option value="Snack">Snack</option>
+                                </select>
+                                <style>
+                                @media (max-width: 600px) {
+                                    #add-food-meal-select {
+                                        min-height: 56px !important;
+                                        font-size: 22px !important;
+                                        padding: 16px 12px !important;
+                                    }
+                                    #add-food-meal-select option {
+                                        font-size: 20px !important;
+                                    }
+                                }
+                                </style>
                 </select>
             </div>
 
