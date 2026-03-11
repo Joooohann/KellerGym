@@ -896,24 +896,45 @@
             }
 
             if (profile) {
+                // Profildaten global und lokal speichern
+                window.obData = {
+                    ...profile,
+                    // Kompatibilität zu älteren Feldern
+                    age: profile.age,
+                    gender: profile.gender,
+                    weight: profile.weight_kg,
+                    height: profile.height_cm,
+                    bodyfat: profile.bodyfat_percent,
+                    activity: profile.activity_level,
+                    exp: profile.experience_level,
+                    goal: profile.goal,
+                    location: profile.training_location,
+                    equipment: profile.equipment ? profile.equipment.split(',').map(e => e.trim()) : [],
+                    freq: profile.workouts_per_week,
+                    split: profile.training_split,
+                    days: profile.workout_days ? profile.workout_days.split(',').map(d => d.trim()) : [],
+                    plan_name: profile.plan_name || '',
+                    profileImage: profile.profile_image || ''
+                };
+                localStorage.setItem('kellerGymData', JSON.stringify(window.obData));
+
                 // Makros & Kalorien berechnen
                 const targets = calculateDetailedTargets(profile);
                 nutriData[0].max = targets.calories;
                 nutriData[1].max = targets.protein;
                 nutriData[2].max = targets.carbs;
-                
-                // Vorübergend: Setzte den "current" Wert auf 0. Wir haben noch kein Daily Tracking.
+
                 // Aktuelle Ernährungsdaten (Food Logs) holen
                 const { data: foodLogs } = await supabase
                     .from('food_logs')
                     .select('calories, protein, carbs')
                     .eq('user_id', userId)
                     .eq('date', todayStr);
-                
+
                 let totalKcal = 0;
                 let totalProtein = 0;
                 let totalCarbs = 0;
-                
+
                 if (foodLogs && foodLogs.length > 0) {
                     foodLogs.forEach(log => {
                         totalKcal += log.calories || 0;
@@ -921,30 +942,28 @@
                         totalCarbs += log.carbs || 0;
                     });
                 }
-                
+
                 nutriData[0].current = Math.round(totalKcal);
                 nutriData[1].current = Math.round(totalProtein);
                 nutriData[2].current = Math.round(totalCarbs);
 
+                // --- UI nach Supabase-Load aktualisieren ---
                 renderNutrition();
-
+                renderWater();
+                if (typeof renderWeek === 'function') renderWeek();
+                if (typeof renderHistory === 'function') renderHistory();
+                if (typeof renderSleep === 'function') renderSleep();
+                // Profilbild im Header setzen
+                const headerImg = document.getElementById('header-profile-img');
+                if (headerImg) {
+                    if (profile.profile_image) {
+                        headerImg.src = profile.profile_image;
+                    }
+                    headerImg.style.opacity = '1';
+                }
                 // Wasser Ziel setzen
                 if (profile.water_goal_ml) {
                     if(window.setWaterGoal) window.setWaterGoal(profile.water_goal_ml);
-                }
-                // Profilbild im Header setzen
-                if (profile.profile_image) {
-                    const headerImg = document.getElementById('header-profile-img');
-                    if (headerImg) {
-                        headerImg.src = profile.profile_image;
-                        headerImg.style.opacity = '1';
-                    }
-                } else {
-                    // Fallback, falls gar kein Bild existiert
-                    const headerImg = document.getElementById('header-profile-img');
-                    if (headerImg) {
-                        headerImg.style.opacity = '1';
-                    }
                 }
             }
 

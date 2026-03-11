@@ -8,7 +8,7 @@ order_index,name,primary_muscle,description,equipment,note,amount_sets,amount_re
 6,Butterfly,Brust,,Maschine,,3,12,40,,Schulter
 7,Schrägbankdrücken,Brust,,Kurzhanteln,,3,10,26,,Schulter;Trizeps
 8,Liegestütze Breitgriff,Brust,,,,3,20,,,Trizeps
-9,Diamant Liegestütze,Brust,,,,3,20,,,Trizeps
+9,Diamond Liegestütze,Brust,,,,3,20,,,Trizeps
 
 1,Latziehen,Rücken,,Latzugmaschine,,3,10,55,,Bizeps
 2,Langhantel Rudern,Rücken,,Langhantel,,3,10,60,,Bizeps;Schulter
@@ -16,7 +16,7 @@ order_index,name,primary_muscle,description,equipment,note,amount_sets,amount_re
 4,Klimmzüge,Rücken,,Klimmzugstange,,3,8,0,,Bizeps
 5,T-Bar Rudern,Rücken,,T-Bar Maschine,,3,10,50,,Bizeps
 6,Sitzendes Kabelrudern,Rücken,,Kabelzug,,3,12,50,,Bizeps
-7,Klimmzüge Breitgriff,Rücken,,,,3,12,0,,Bizeps
+7,Klimmzüge Breitgriff,Rücken,,Klimmzugstange,,3,12,0,,Bizeps
 8,Kurzhantel Deadlift,Rücken,,Kurzhanteln,,3,12,15,,
 
 1,Schulterdrücken,Schulter,,Langhantel,,3,8,40,,Trizeps
@@ -47,7 +47,7 @@ order_index,name,primary_muscle,description,equipment,note,amount_sets,amount_re
 4,Ausfallschritte,Beine,,Kurzhanteln,,3,10,20,,Gluteus
 5,Beinstrecker,Beine,,Maschine,,3,12,45,,
 6,Beinbeuger,Beine,,Maschine,,3,12,45,,
-7,Wadenheben stehend,Beine,,Maschine,,4,15,60,,
+7,Wadenheben stehend Maschine,Beine,,Maschine,,4,15,60,,
 8,Wadenheben sitzend,Beine,,Maschine,,4,15,40,,
 9,Wadenheben stehend,Beine,,,,4,15,60,,
 10,Speed Squats,Beine,,,,3,15,,,

@@ -973,7 +973,9 @@
                                 </div>
                                 <div>
                                     <strong style="font-size: 14px;">${log.food_name}</strong><br>
-                                    <small style="color: var(--text-mute); font-size: 12px;">${log.calories || 0} kcal</small>
+                                    <small style="color: var(--text-mute); font-size: 12px;">
+                                        ${log.calories || 0} kcal${log.amount ? (log.unit === 'piece' ? `, ${log.amount} ${log.food_name}` : `, ${log.amount}${log.unit || 'g'}`) : ''}
+                                    </small>
                                 </div>
                             </div>
                             <div style="text-align: right; font-size: 12px; color: var(--text-mute); display: flex; flex-direction: column; justify-content: center;">
@@ -1118,6 +1120,14 @@
                     return;
                 }
 
+                // Ensure foods are available for calculation
+                if (!allFoods || allFoods.length === 0) {
+                     try {
+                        const { data: foods } = await supabase.from('foods').select('name, kcal, base_amount_g, piece_name');
+                        if (foods) allFoods = foods;
+                     } catch(e) { console.warn("Reload foods failed", e); }
+                }
+
                 const prevDateObj = new Date(activeDateObj);
                 prevDateObj.setDate(prevDateObj.getDate() - 1);
                 const py = prevDateObj.getFullYear();
@@ -1137,22 +1147,61 @@
 
                     if (!oldLogs || oldLogs.length === 0) {
                         alert(`Keine Einträge für ${meal} am Vortag gefunden.`);
+                        btn.style.opacity = '1';
                         return;
                     }
 
-                    const newLogs = oldLogs.map(log => ({
-                        user_id: waterUserId,
-                        date: window.waterTodayStr,
-                        meal: meal,
-                        food_name: log.food_name,
-                        calories: log.calories,
-                        carbs: log.carbs,
-                        protein: log.protein,
-                        fat: log.fat
-                    }));
+                    const newLogs = oldLogs.map(log => {
+                        const payload = {
+                            user_id: waterUserId,
+                            date: window.waterTodayStr,
+                            meal: meal,
+                            food_name: log.food_name,
+                            calories: log.calories,
+                            carbs: log.carbs,
+                            protein: log.protein,
+                            fat: log.fat
+                        };
+                        
+                        // Calculate amount from base_amount_g if missing
+                        let amount = log.amount;
+                        let unit = log.unit;
+                        
+                        // Try to recover amount using food definition
+                        if (!amount && allFoods.length > 0) {
+                            const foodDef = allFoods.find(f => f.name === log.food_name);
+                            if (foodDef && foodDef.kcal > 0 && log.calories > 0) {
+                                const base = foodDef.base_amount_g || 100;
+                                const calculated = (log.calories * base) / foodDef.kcal;
+                                amount = Math.round(calculated);
+                                unit = (foodDef.piece_name && base === 1) ? 'piece' : 'g';
+                            }
+                        }
+
+                        if (amount) payload.amount = amount;
+                        if (unit) payload.unit = unit;
+                        
+                        return payload;
+                    });
 
                     const { error: insertErr } = await supabase.from('food_logs').insert(newLogs);
-                    if (insertErr) throw insertErr;
+                    
+                    if (insertErr) {
+                         // Fallback für den Kopiervorgang, falls INSERT fehlschlägt wegen fehlender Spalten
+                        if (insertErr.message && (insertErr.message.includes('column') || insertErr.message.includes('exist'))) {
+                             console.log("Fallback Copy: Removing amount/unit from payload");
+                             const fallbackLogs = newLogs.map(l => {
+                                 const c = {...l};
+                                 delete c.amount; 
+                                 delete c.unit;
+                                 return c;
+                             });
+                             const { error: insertErr2 } = await supabase.from('food_logs').insert(fallbackLogs);
+                             if (insertErr2) throw insertErr2;
+                        } else {
+                            throw insertErr;
+                        }
+                    }
 
                     btn.style.opacity = '1';
                     if (typeof window.initNutrition === 'function') {
@@ -1492,7 +1541,7 @@
                 const p = currentSelectedDbFood.protein * ratio;
                 const f = currentSelectedDbFood.fat * ratio;
 
-                const { error } = await supabase.from('food_logs').insert([{
+                const payload = {
                     user_id: waterUserId,
                     date: window.waterTodayStr,
                     meal: meal,
@@ -1500,14 +1549,47 @@
                     calories: Math.round(k),
                     carbs: Math.round(c),
                     protein: Math.round(p),
-                    fat: Math.round(f)
-                }]);
+                    fat: Math.round(f),
+                    // Neuerdings optionale Felder, falls in DB noch nicht vorhanden:
+                    // amount: amount,
+                    // unit: unit
+                };
+                
+                // Wir fügen die neuen Felder nur hinzu, wenn wir sicher sind oder es try-catched wird.
+                // Da wir nicht wissen, ob die DB-Migration erfolgt ist, versuchen wir es erstmal MIT den Feldern.
+                // Falls das fehlschlägt, könnte es an fehlenden Spalten liegen.
+                // Aber Supabase JS Client wirft Fehler meist nur bei Constraint-Verletzungen oder Typ-Fehlern.
+                // Unbekannte Spalten werden normalerweise von PostgREST ignoriert ODER werfen Fehler (je nach Konfig).
+                // Standard: Error: 42703 column "amount" does not exist
+                
+                // Wir senden es einfach mit. Wenn der Nutzer sagt 'Datenbank nicht mehr richtig connectet',
+                // meint er evtl., dass der Insert fehlschlägt.
+                
+                payload.amount = amount;
+                payload.unit = unit;
+
+                const { error } = await supabase.from('food_logs').insert([payload]);
 
                 if (error) {
-                    console.error("Fehler beim Speichern:", error);
-                    alert("Fehler: " + error.message);
-                    btnSaveDbFood.disabled = false;
-                    return;
+                    console.error("Fehler beim Speichern (Versuch 1):", error);
+                    
+                    // Fallback: Wenn Fehler "column does not exist" oder "Could not find the 'amount' column" ist
+                    if (error.message && (error.message.includes('column') || error.message.includes('amount') || error.message.includes('find'))) {
+                        console.log("Fallback: Versuche Speichern ohne amount/unit");
+                        delete payload.amount;
+                        delete payload.unit;
+                        const { error: error2 } = await supabase.from('food_logs').insert([payload]);
+                        if (error2) {
+                             console.error("Fehler beim Speichern (Fallback):", error2);
+                             alert("Fehler: " + error2.message);
+                             btnSaveDbFood.disabled = false;
+                             return;
+                        }
+                    } else {
+                        alert("Fehler: " + error.message);
+                        btnSaveDbFood.disabled = false;
+                        return;
+                    }
                 }
 
                 // UI zurücksetzen und schließen

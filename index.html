@@ -82,11 +82,19 @@
         </div>
     </div>
 
+    <script>
+        // Globaler Error Handler (optional, kann für Produktion entfernt werden)
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error(msg, url, lineNo, columnNo, error);
+            return false;
+        };
+    </script>
     <script type="module">
         import { supabase } from './supabase-config.js';
 
-        // Elements
-        const loginCard = document.getElementById('login-card');
+        try {
+            // Elements
+            const loginCard = document.getElementById('login-card');
         const registerCard = document.getElementById('register-card');
         
         const btnLogin = document.getElementById('btn-login-action');
@@ -208,6 +216,11 @@
                 btnRegister.disabled = false;
             }
         });
+        
+        } catch (globalErr) {
+            console.error("Critical Initialization Error:", globalErr);
+            alert("Kritischer Fehler beim Starten der App: " + globalErr.message);
+        }
     </script>
 </body>
 </html>

@@ -236,34 +236,46 @@
                 <div style="height: 100px;"></div>
             </div>
 
-            <!-- STEP 10: FREQUENCY -->
+            <!-- STEP 10: EQUIPMENT -->
             <div id="ob-step-10" class="ob-content">
-                <h1>Wie oft pro Woche?</h1>
-                <div class="select-grid">
-                    <div class="select-card" onclick="selectOption('freq', '2', this)">
-                        <div class="title">2x</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('freq', '3', this)">
-                        <div class="title">3x</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('freq', '4', this)">
-                        <div class="title">4x</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('freq', '5', this)">
-                        <div class="title">5x</div>
-                    </div>
-                    <div class="select-card" onclick="selectOption('freq', '6', this)">
-                        <div class="title">6x</div>
-                    </div>
+                <h1>Trainings-Geräte</h1>
+                <p class="subtitle">Welche Geräte stehen dir zur Verfügung?</p>
+                <div class="select-grid" id="equipment-grid">
+                    <div class="select-card" data-val="Kurzhanteln" onclick="toggleEquipment(this, 'Kurzhanteln')">Kurzhanteln</div>
+                    <div class="select-card" data-val="Langhantel" onclick="toggleEquipment(this, 'Langhantel')">Langhantel</div>
+                    <div class="select-card" data-val="Klimmzugstange" onclick="toggleEquipment(this, 'Klimmzugstange')">Klimmzugstange</div>
+                    <div class="select-card" data-val="Dip-Barren" onclick="toggleEquipment(this, 'Dip-Barren')">Dip-Barren</div>
+                    <div class="select-card" data-val="Latzugmaschine" onclick="toggleEquipment(this, 'Latzugmaschine')">Latzugmaschine</div>
+                    <div class="select-card" data-val="T-Bar Maschine" onclick="toggleEquipment(this, 'T-Bar Maschine')">T-Bar Maschine</div>
+                    <div class="select-card" data-val="Kabelzug" onclick="toggleEquipment(this, 'Kabelzug')">Kabelzug</div>
+                    <div class="select-card" data-val="Beinpresse Maschine" onclick="toggleEquipment(this, 'Beinpresse Maschine')">Beinpresse Maschine</div>
+                    <div class="select-card" data-val="Wadenmaschine" onclick="toggleEquipment(this, 'Wadenmaschine')">Wadenmaschine</div>
                 </div>
                 <div class="nav-buttons">
                     <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <!-- Hier ist Button-10 für Equipment -->
                     <button class="btn" id="btn-next-10" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
 
-            <!-- STEP 11: SPLIT -->
+            <!-- STEP 11: FREQUENCY -->
             <div id="ob-step-11" class="ob-content">
+                <h1>Wie oft pro Woche?</h1>
+                <div class="select-grid">
+                    <div class="select-card" data-freq="2"><div class="title">2x</div></div>
+                    <div class="select-card" data-freq="3"><div class="title">3x</div></div>
+                    <div class="select-card" data-freq="4"><div class="title">4x</div></div>
+                    <div class="select-card" data-freq="5"><div class="title">5x</div></div>
+                    <div class="select-card" data-freq="6"><div class="title">6x</div></div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" id="btn-next-11" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 12: SPLIT -->
+            <div id="ob-step-12" class="ob-content">
                 <h1>Trainings-Split</h1>
                 <p class="subtitle">Wie möchtest du dein Training aufteilen?</p>
                 <p style="font-size: 12px; color: var(--text-mute); margin-top: -10px; margin-bottom: 20px; line-height: 1.4;">
@@ -315,14 +327,26 @@
 
                 <div class="nav-buttons">
                     <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
-                    <button class="btn" id="btn-next-11" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                    <button class="btn" id="btn-next-12" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
                 <!-- Space buffer -->
                 <div style="height: 50px;"></div>
             </div>
 
-            <!-- STEP 12: DAYS -->
-            <div id="ob-step-12" class="ob-content">
+            <!-- STEP 13: PLAN NAME -->
+            <div id="ob-step-13" class="ob-content">
+                <h1>Wie soll dein Plan heißen?</h1>
+                <p class="subtitle">Gib deinem Trainingsplan einen Namen. Zum Beispiel: "Mein erster Plan" oder "Muskelaufbau 2026"</p>
+                <input type="text" id="plan-name-input" maxlength="32" placeholder="z.B. Namen für Plan eingeben" style="width:100%;padding:12px;border-radius:8px;background:#2a2d35;border:1px solid #444;color:white;outline:none;font-size:16px;margin-bottom:10px;">
+                <div id="plan-name-error" style="color:#ff4757;font-size:13px;min-height:18px;margin-bottom:10px;"></div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                    <button class="btn" id="btn-next-13" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 14: DAYS -->
+            <div id="ob-step-14" class="ob-content">
                 <h1>Wann trainierst du?</h1>
                 <p class="subtitle" id="days-subtitle">Wähle deine Trainingstage.</p>
                 <div class="week-grid">
@@ -378,7 +402,7 @@
 
         document.addEventListener('onboardingComplete', async (e) => {
             window.savingToSupabase = true; // Verhindert den Auto-Redirect in script.js
-            
+
             try {
                 const obData = e.detail;
                 const genText = document.getElementById('gen-text');
@@ -386,10 +410,11 @@
 
                 // Aktuellen User von Supabase Auth abfragen
                 const { data: { user }, error: userError } = await supabase.auth.getUser();
-                
                 if (userError || !user) {
                     console.error("Kein Supabase User gefunden:", userError);
                     alert("Achtung: Du bist nicht richtig eingeloggt. Daten wurden nur lokal gespeichert.");
+                    // Profil trotzdem lokal speichern
+                    localStorage.setItem('kellerGymData', JSON.stringify(obData));
                     window.location.href = 'dashboard.html';
                     return;
                 }
@@ -397,34 +422,86 @@
                 const userName = user.user_metadata?.full_name || "Unbekannt";
                 const workoutDaysStr = obData.days ? obData.days.join(',') : "";
 
-                // Neues Profil in 'user_profiles' eintragen
-                const { error: insertError } = await supabase
-                    .from('user_profiles')
-                    .insert([{
-                        user_id: user.id,
-                        name: userName,
-                        age: parseInt(obData.age),
-                        gender: obData.gender,
-                        height_cm: parseInt(obData.height),
-                        weight_kg: parseFloat(obData.weight),
-                        bodyfat_percent: parseInt(obData.bodyfat),
-                        activity_level: obData.activity,
-                        experience_level: obData.exp,
-                        goal: obData.goal,
-                        training_location: obData.location,
-                        workouts_per_week: parseInt(obData.freq),
-                        training_split: obData.split,
-                        workout_days: workoutDaysStr,
-                        water_goal_ml: 2500 // Standard, wie im Konzept gewünscht
-                    }]);
+                // Prüfen, ob Profil schon existiert
+                let hasProfile = false;
+                try {
+                    const { data: existingProfiles, error: profileError } = await supabase
+                        .from('user_profiles')
+                        .select('id')
+                        .eq('user_id', user.id);
+                    if (!profileError && existingProfiles && existingProfiles.length > 0) {
+                        hasProfile = true;
+                    }
+                } catch (e) { /* ignore */ }
 
-                if (insertError) {
-                    console.error("Fehler beim Speichern in Supabase:", insertError);
-                    alert("Achtung: Profil konnte nicht in der Cloud gespeichert werden (" + insertError.message + ").");
-                } else {
-                    console.log("Supabase Profil erfolgreich erstellt!");
+                // Nur einfügen, wenn noch kein Profil existiert
+                if (!hasProfile) {
+                    const { error: insertError } = await supabase
+                        .from('user_profiles')
+                        .insert([{
+                            user_id: user.id,
+                            name: userName,
+                            age: parseInt(obData.age),
+                            gender: obData.gender,
+                            height_cm: parseInt(obData.height),
+                            weight_kg: parseFloat(obData.weight),
+                            bodyfat_percent: parseInt(obData.bodyfat),
+                            activity_level: obData.activity,
+                            experience_level: obData.exp,
+                            goal: obData.goal,
+                            training_location: obData.location,
+                            equipment: obData.equipment ? obData.equipment.join(', ') : "",
+                            workouts_per_week: parseInt(obData.freq),
+                            training_split: obData.split,
+                            workout_days: workoutDaysStr,
+                            water_goal_ml: 2500 // Standard, wie im Konzept gewünscht
+                        }]);
+                    if (insertError) {
+                        console.error("Fehler beim Speichern in Supabase:", insertError);
+                        alert("Achtung: Profil konnte nicht in der Cloud gespeichert werden (" + insertError.message + ").");
+                    } else {
+                        console.log("Supabase Profil erfolgreich erstellt!");
+                    }
                 }
-                
+
+                // --- NEU: Plan in workout_plans speichern ---
+                if (obData.plan_name && obData.plan_name.trim().length > 0) {
+                    // 1. Alle bestehenden Pläne des Nutzers deaktivieren
+                    const { error: updateError } = await supabase
+                        .from('workout_plans')
+                        .update({ is_active: false })
+                        .eq('user_id', user.id);
+                    if (updateError) {
+                        console.error('Fehler beim Deaktivieren alter Pläne:', updateError);
+                    }
+
+                    // 2. Neuen Plan als aktiv speichern
+                    const { error: planError } = await supabase
+                        .from('workout_plans')
+                        .insert([{
+                            user_id: user.id,
+                            name: obData.plan_name.trim(),
+                            experience_level: obData.exp,
+                            split: obData.split,
+                            workouts_per_week: parseInt(obData.freq),
+                            workout_days: workoutDaysStr,
+                            location: obData.location,
+                            equipment: obData.equipment ? obData.equipment.join(', ') : "",
+                            is_active: true // Nur dieser Plan ist aktiv
+                        }]);
+                    if (planError) {
+                        console.error("Fehler beim Speichern des Plans in workout_plans:", planError);
+                        alert("Achtung: Trainingsplan konnte nicht gespeichert werden (" + planError.message + ").");
+                    } else {
+                        console.log("Trainingsplan erfolgreich gespeichert!");
+                    }
+                } else {
+                    console.warn("Kein Planname für workout_plans übergeben, Plan wird nicht gespeichert.");
+                }
+
+                // Profil nach Supabase-Sync auch lokal speichern
+                localStorage.setItem('kellerGymData', JSON.stringify(obData));
+
             } catch (err) {
                 console.error("Ein unerwarteter Fehler ist aufgetreten:", err);
             } finally {

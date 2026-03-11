@@ -11,10 +11,11 @@ try {
 } catch(e) { console.log(e); }
 
 let currentStep = 1;
-const totalSteps = 12;
+const totalSteps = 14;
 let obData = {
     age: 20, gender: null, weight: 75, height: 180, bodyfat: 15, activity: null,
-    exp: null, goal: null, location: null, split: null, freq: null, days: []
+    exp: null, goal: null, location: null, equipment: [], split: null, freq: null, days: [],
+    plan_name: null
 };
 const stepMap = [
     { cat: 0, sub: 0 }, // 1. Age
@@ -26,9 +27,11 @@ const stepMap = [
     { cat: 1, sub: 1 }, // 7. Exp
     { cat: 1, sub: 2 }, // 8. Goal
     { cat: 2, sub: 0 }, // 9. Location
-    { cat: 2, sub: 1 }, // 10. Freq
-    { cat: 3, sub: 0 }, // 11. Split
-    { cat: 3, sub: 1 }  // 12. Days
+    { cat: 2, sub: 1 }, // 10. Equipment
+    { cat: 2, sub: 2 }, // 11. Freq
+    { cat: 3, sub: 0 }, // 12. Split
+    { cat: 3, sub: 1 }, // 13. Plan Name
+    { cat: 3, sub: 2 }  // 14. Days
 ];
 
 // CLEAR STORAGE ON RELOAD if not on dashboard
@@ -142,11 +145,12 @@ function renderProgressBar() {
     const trackContainer = document.querySelector('.progress-tracks');
     if(!trackContainer) return;
 
+    // Update: Last category now has 3 steps (Plan Name, Days, Finish)
     const structure = [
         { label: "Körper", steps: 5 },
         { label: "Level", steps: 3 },
-        { label: "Training", steps: 2 },
-        { label: "Planung", steps: 2 }
+        { label: "Training", steps: 3 },
+        { label: "Planung", steps: 3 } // 12: Split, 13: Plan Name, 14: Days
     ];
 
     trackContainer.innerHTML = '';
@@ -205,11 +209,45 @@ function updateProgressUI() {
         });
     }
     
-    if(currentStep === 11) {
+
+    if(currentStep === 12) {
         checkSplitAvailability();
     }
-    
-    if(currentStep === 12) { 
+// Dynamische Split-Auswahl je nach Trainingsfrequenz
+function checkSplitAvailability() {
+    // Make available globally for inline handlers
+    window.checkSplitAvailability = checkSplitAvailability;
+    const freq = obData.freq || 3;
+    const splitCards = document.querySelectorAll('#split-grid .select-card');
+    splitCards.forEach(card => {
+        const key = card.getAttribute('data-val');
+        const info = splitInfoData[key];
+        if(info && info.validFreq && !info.validFreq.includes(freq)) {
+            card.classList.add('disabled');
+            card.style.opacity = 0.4;
+            card.style.pointerEvents = 'none';
+        } else {
+            card.classList.remove('disabled');
+            card.style.opacity = 1;
+            card.style.pointerEvents = '';
+        }
+    });
+    // Falls der aktuell gewählte Split nicht mehr passt, Auswahl zurücksetzen
+    if(obData.split) {
+        const info = splitInfoData[obData.split];
+        if(info && info.validFreq && !info.validFreq.includes(freq)) {
+            obData.split = null;
+            splitCards.forEach(c => c.classList.remove('active'));
+            const btn12 = document.getElementById('btn-next-12');
+            if(btn12) btn12.disabled = true;
+        }
+    }
+}
+
+
+// window.checkSplitAvailability = checkSplitAvailability; // Entfernt, da nicht mehr global benötigt
+
+    if(currentStep === 13) {
         const sub = document.getElementById('days-subtitle');
         if(sub && obData.freq) sub.innerText = `Wähle genau ${obData.freq} Tage aus.`;
     }
@@ -323,43 +361,73 @@ function selectOption(key, value, element) {
     }
 
     // Enable Next Button
-    // Step 11 is distinct
+    // Step 12 is distinct (Split)
     let step = currentStep;
     // Attempt to deduce step if possible, but currentStep var is reliable enough
     
-    // Special check for freq to clear days and invalidate incompatible split
+    // Auto-select equipment based on location
+    if(key === 'location') {
+        const eqCards = document.querySelectorAll('#ob-step-10 .select-card');
+        eqCards.forEach(c => c.classList.remove('active'));
+        obData.equipment = [];
+        
+        let defaults = [];
+        if (value === 'home') defaults = ['Kurzhanteln'];
+        else if (value === 'keller') defaults = ['Kurzhanteln', 'Langhantel', 'Klimmzugstange', 'Dip-Barren', 'Latzugmaschine', 'Kabelzug'];
+        else if (value === 'gym' || value === 'mixed') defaults = ['Kurzhanteln', 'Langhantel', 'Klimmzugstange', 'Dip-Barren', 'Latzugmaschine', 'T-Bar Maschine', 'Kabelzug', 'Beinpresse Maschine', 'Wadenmaschine'];
+        
+        eqCards.forEach(card => {
+            const eqVal = card.getAttribute('data-val');
+            if (defaults.includes(eqVal)) {
+                card.classList.add('active');
+                if (!obData.equipment.includes(eqVal)) obData.equipment.push(eqVal);
+            }
+        });
+        
+        const eqNextBtn = document.getElementById('btn-next-10');
+        if (eqNextBtn) eqNextBtn.disabled = obData.equipment.length === 0;
+    }
+    
+    // Special check for freq to clear days
     if(key === 'freq') {
         obData.days = [];
         const days = document.querySelectorAll('.day-card');
         days.forEach(d => d.classList.remove('active'));
-        
-        // Disable "Next" button on Step 11 (Split) if previously selected split is now invalid
-        // We do this by checking if the CURRENT split fits the NEW freq
-        if(obData.split) {
-            const info = splitInfoData[obData.split];
-            const newFreq = parseInt(value);
-            if(info && info.validFreq && !info.validFreq.includes(newFreq)) {
-                // Invalid! Clear header, disable button step 11 logic
-                obData.split = null; // Clear selection
-                
-                // Visually deselect in Step 11 (will happen when we navigate there via checkSplitAvailability but we should ensure state is clean)
-                // We can preemptively clear UI classes for step 11
-                const splitCards = document.querySelectorAll('#split-grid .select-card');
-                splitCards.forEach(c => c.classList.remove('active'));
-
-                // Also disable the Next button for Step 11
-                const btn11 = document.getElementById('btn-next-11');
-                if(btn11) btn11.disabled = true;
-            }
-        }
+        // checkSplitAvailability() wird nur in showStep(12) aufgerufen
     }
 
-    const btnId = `btn-next-${currentStep}`;
-    const nextBtn = document.getElementById(btnId);
-    if(nextBtn) {
-        nextBtn.disabled = false;
-        // Optionally auto-advance?
-        // if(key !== 'split') nextOnboarding(); 
+    // Step 11: Enable Next only if freq is set
+    if(key === 'freq') {
+        const btn11 = document.getElementById('btn-next-11');
+        if(btn11) {
+            btn11.disabled = false;
+            btn11.classList.add('active');
+        }
+    } else {
+        const btnId = `btn-next-${currentStep}`;
+        const nextBtn = document.getElementById(btnId);
+        if(nextBtn) {
+            nextBtn.disabled = false;
+            nextBtn.classList.add('active');
+        }
+    }
+}
+
+function toggleEquipment(element, eqName) {
+    element.classList.toggle('active');
+    
+    if (obData.equipment.includes(eqName)) {
+        obData.equipment = obData.equipment.filter(e => e !== eqName);
+    } else {
+        obData.equipment.push(eqName);
+    }
+    
+    const nextBtn = document.getElementById('btn-next-10');
+    if (nextBtn) {
+        // Optionale Regel: Mindestens 1 Gerät? Oder wir erlauben Leer (Bodyweight only).
+        // Wir aktivieren den Button einfach immer, oder nur wenn etwas da ist. 
+        // Für jetzt: User kann auch alles abwählen, was "Keine Geräte = Bodyweight" bedeutet.
+        nextBtn.disabled = false; 
     }
 }
 
@@ -425,6 +493,14 @@ function handleSplitClick(e, key, element) {
         selectOption('split', key, element);
         // Also close info box if open?
         // closeInfoBox(); 
+            // Fix: Nach Split-Auswahl ggf. Weiter-Button für Schritt 11 aktivieren, falls freq schon gesetzt
+            if (obData.freq) {
+                const btn11 = document.getElementById('btn-next-11');
+                if(btn11) {
+                    btn11.disabled = false;
+                    btn11.classList.add('active');
+                }
+            }
     } else {
         // Show Error Info
         showSplitError(key, freq);
@@ -503,66 +579,112 @@ function closeInfoBox() {
     }
 }
 document.addEventListener('DOMContentLoaded', () => {
+    // Plan-Name Step: Prefill and validation
+    const planNameInput = document.getElementById('plan-name-input');
+    const planNameError = document.getElementById('plan-name-error');
+    const btnNext13 = document.getElementById('btn-next-13');
+    if (planNameInput && btnNext13) {
+        let userPlans = [];
+        let userId = null;
+        (async () => {
+            try {
+                const supabase = (await import('./supabase-config.js')).supabase;
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (user && !userError) {
+                    userId = user.id;
+                    const { data: plans, error } = await supabase
+                        .from('workout_plans')
+                        .select('name')
+                        .eq('user_id', user.id);
+                    if (!error && plans) {
+                        userPlans = plans.map(p => (p.name || '').toLowerCase());
+                        // Prefill only if no plans exist
+                        if (userPlans.length === 0) {
+                            planNameInput.value = 'Mein erster Plan';
+                        } else {
+                            planNameInput.value = '';
+                        }
+                        planNameInput.dispatchEvent(new Event('input'));
+                    }
+                }
+            } catch (e) { /* ignore */ }
+        })();
+
+        planNameInput.addEventListener('input', async () => {
+            const val = planNameInput.value.trim();
+            if (val.length < 3) {
+                planNameError.innerText = 'Bitte gib mindestens 3 Zeichen ein.';
+                btnNext13.disabled = true;
+            } else if (val.length > 32) {
+                planNameError.innerText = 'Maximal 32 Zeichen erlaubt.';
+                btnNext13.disabled = true;
+            } else if (userPlans.includes(val.toLowerCase())) {
+                planNameError.innerText = 'Du hast bereits einen Plan mit diesem Namen.';
+                btnNext13.disabled = true;
+            } else {
+                planNameError.innerText = '';
+                btnNext13.disabled = false;
+            }
+        });
+    }
+
+    // Schritt 11: Frequenz-Auswahl Event-Listener
+    const freqCards = document.querySelectorAll('#ob-step-11 .select-card');
+    freqCards.forEach(card => {
+        card.addEventListener('click', function() {
+            selectOption('freq', this.getAttribute('data-freq'), this);
+        });
+    });
 });
 
-function checkSplitAvailability() {
-    const freq = obData.freq;
-    if(!freq) return;
-
-    // Use split-grid selector specifically
-    const cards = document.querySelectorAll('#split-grid .select-card');
-    
-    cards.forEach(card => {
-        // New HTML uses data-val
-        const key = card.getAttribute('data-val');
-        if(!key || !splitInfoData[key]) return;
-        
-        const info = splitInfoData[key];
-        let enabled = true;
-        if(info.validFreq && !info.validFreq.includes(freq)) {
-            enabled = false;
-        }
-
-        if(enabled) {
-            card.classList.remove('disabled');
-        } else {
-            card.classList.add('disabled');
-            card.classList.remove('active');
-        }
-    });
+function validateStep(step) {
+    if(step === 1 && !obData.age) return false;
+    if(step === 2 && !obData.gender) return false;
+    if(step === 3 && !obData.weight) return false;
+    if(step === 4 && !obData.height) return false;
+    if(step === 5 && !obData.bodyfat) return false;
+    if(step === 6 && !obData.activity) return false;
+    if(step === 7 && !obData.exp) return false;
+    if(step === 8 && !obData.goal) return false;
+    if(step === 9 && !obData.location) return false;
+    if(step === 10 && obData.equipment.length === 0) return false;
+    if(step === 11 && !obData.freq) return false;
+    if(step === 12 && !obData.split) return false;
+    if(step === 13) {
+        const planNameInput = document.getElementById('plan-name-input');
+        if (!planNameInput) return false;
+        const val = planNameInput.value.trim();
+        if (val.length < 3 || val.length > 32) return false;
+    }
+    if(step === 14 && obData.days.length !== obData.freq) return false;
+    return true;
 }
 
-function syncInputs(key, val) {
-    obData[key] = val;
-    const disp = document.getElementById(`val-${key}`);
-    if(disp) disp.innerText = val;
-}
-
-function toggleDay(element, dayId) {
-    if (!obData.freq) {
-        alert("Bitte wähle zuerst eine Frequenz.");
+function nextOnboarding() {
+    if(!validateStep(currentStep)) return;
+    // Save plan name on step 13
+    if (currentStep === 13) {
+        const planNameInput = document.getElementById('plan-name-input');
+        if (planNameInput) {
+            obData.plan_name = planNameInput.value.trim();
+        }
+    }
+    if(currentStep >= totalSteps) {
+        console.log("Onboarding Fertig!", obData);
+        finishOnboarding();
         return;
     }
+    currentStep++;
+    showStep(currentStep);
+}
 
-    const index = obData.days.indexOf(dayId);
-    if (index > -1) {
-        obData.days.splice(index, 1);
-        element.classList.remove('active');
-    } else {
-        if (obData.days.length < obData.freq) {
-            obData.days.push(dayId);
-            element.classList.add('active');
-        }
-    }
-    const finishBtn = document.getElementById('btn-finish-ob');
-    if(finishBtn) {
-        if (obData.days.length === obData.freq) {
-            finishBtn.disabled = false;
-        } else {
-            finishBtn.disabled = true;
-        }
+function prevOnboarding() {
+    if(currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
     }
 }
+
 function showStep(step) {
     // Reset Scroll & Zoom attempt
     const viewport = document.getElementById('app-viewport');
@@ -575,56 +697,10 @@ function showStep(step) {
         nextStepEl.classList.add('active-step');
     }
     updateProgressUI();
-    if(step === 11) {
-        checkSplitAvailability(); // Ensure availability is checked when showing step 11
+    if(step === 12) {
+        checkSplitAvailability(); // Ensure availability is checked when showing step 12
     }
 }
-
-function nextOnboarding() {
-    if(!validateStep(currentStep)) return;
-
-    if(currentStep >= totalSteps) {
-        console.log("Onboarding Fertig!", obData);
-        finishOnboarding();
-        return;
-    }
-
-    currentStep++;
-    showStep(currentStep);
-}
-
-function prevOnboarding() {
-    if(currentStep > 1) {
-        currentStep--;
-        showStep(currentStep);
-    }
-}
-
-function validateStep(step) {
-    if(step === 1 && !obData.age) return false;
-    if(step === 2 && !obData.gender) return false;
-    if(step === 3 && !obData.weight) return false;
-    if(step === 4 && !obData.height) return false;
-    if(step === 5 && !obData.bodyfat) return false;
-    
-    if(step === 6 && !obData.activity) return false;
-    if(step === 7 && !obData.exp) return false;
-    if(step === 8 && !obData.goal) return false;
-
-    if(step === 9 && !obData.location) return false;
-    if(step === 10 && !obData.freq) return false;
-    if(step === 11 && !obData.split) return false;
-    if(step === 12 && obData.days.length !== obData.freq) return false;
-
-    return true;
-}
-
-
-
-/* 
- Older functions removed for cleanup (finishOnboarding duplicate, completeSetup) 
-*/
-
 
 function calculateCalories() {
     console.log("Starte Kalorienberechnung...");
@@ -781,9 +857,34 @@ function calculateCalories() {
 }
 
 
-/* 
-  completeSetup removed 
-*/
+
+// --- STEP 14: Day Selection Logic ---
+function toggleDay(el, day) {
+    if (!el || !day) return;
+    // Toggle active class
+    el.classList.toggle('active');
+    // Update obData.days array
+    if (el.classList.contains('active')) {
+        if (!obData.days.includes(day)) {
+            obData.days.push(day);
+        }
+    } else {
+        obData.days = obData.days.filter(d => d !== day);
+    }
+    // Sort days in week order
+    const weekOrder = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+    obData.days.sort((a, b) => weekOrder.indexOf(a) - weekOrder.indexOf(b));
+    // Update button state
+    const finishBtn = document.getElementById('btn-finish-ob');
+    if (finishBtn) {
+        finishBtn.disabled = (obData.days.length !== Number(obData.freq));
+    }
+    // Optionally update subtitle with count
+    const subtitle = document.getElementById('days-subtitle');
+    if (subtitle) {
+        subtitle.innerText = `Wähle deine Trainingstage (${obData.days.length}/${obData.freq})`;
+    }
+}
 
 
 

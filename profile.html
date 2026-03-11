@@ -110,7 +110,7 @@
 
     <div id="app-viewport">
         <div class="header-row" style="position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; margin-top: 10px;">
-            <h1 style="font-size: 32px; margin: 0; line-height: 1; font-weight: 400; font-family: 'Black Ops One', cursive; color: var(--primary);">PROFIL</h1>
+            <h1 style="font-size: 32px; margin: 0; line-height: 1; font-weight: 400; font-family: 'Black Ops One', cursive; color: var(--primary);">Profil</h1>
         </div>
 
         <!-- Private Daten -->
@@ -198,8 +198,11 @@
                 </select>
             </div>
 
-             <div class="input-row">
-                <label>Trainingstage pro Woche</label>
+             <div class="input-row">                  <label>Trainings-Geräte</label>
+                  <textarea id="inp-equipment" disabled rows="2" style="background:var(--bg-body); border:1px solid #333; color:var(--text-mute); resize:none; padding:10px; border-radius:8px; font-family:inherit; width: 100%; box-sizing: border-box;"></textarea>
+              </div>
+
+               <div class="input-row">                <label>Trainingstage pro Woche</label>
                 <select id="inp-freq" disabled>
                     <option value="2">2x</option>
                     <option value="3">3x</option>
@@ -353,8 +356,9 @@
                 if(data.activity) document.getElementById('inp-activity').value = data.activity;
                 if(data.exp) document.getElementById('inp-exp').value = data.exp;
                 if(data.goal) document.getElementById('inp-goal').value = data.goal;
-                if(data.location) document.getElementById('inp-location').value = data.location;
-                if(data.freq) document.getElementById('inp-freq').value = data.freq;
+                if(data.location) document.getElementById('inp-location').value = data.location;                  if(data.equipment) {
+                      document.getElementById('inp-equipment').value = Array.isArray(data.equipment) ? data.equipment.join(', ') : data.equipment;
+                  }                if(data.freq) document.getElementById('inp-freq').value = data.freq;
                 if(data.split) document.getElementById('inp-split').value = data.split;
                 if(data.waterGoal) document.getElementById('inp-water').value = data.waterGoal;
             }
@@ -563,8 +567,7 @@
                     if (profile.activity_level) localData.activity = profile.activity_level;
                     if (profile.experience_level) localData.exp = profile.experience_level;
                     if (profile.goal) localData.goal = profile.goal;
-                    if (profile.training_location) localData.location = profile.training_location;
-                    if (profile.workouts_per_week) localData.freq = profile.workouts_per_week;
+                    if (profile.training_location) localData.location = profile.training_location;                      if (profile.equipment) localData.equipment = profile.equipment;                    if (profile.workouts_per_week) localData.freq = profile.workouts_per_week;
                     if (profile.training_split) localData.split = profile.training_split;
 
                     localStorage.setItem('kellerGymData', JSON.stringify(localData));
