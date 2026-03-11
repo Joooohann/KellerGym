@@ -26,12 +26,13 @@
         <style>
             /* Ermöglicht Scrollen bei Schritt 9 (Trainingsort) auf Handy */
             #ob-step-9.ob-content {
-                max-height: 100svh;
-                overflow-y: auto;
+                max-height: none; /* Scrollability removed */
+                overflow-y: visible; /* Ensure it does not scroll */
             }
             #ob-step-10.ob-content {
                 max-height: 100svh;
                 overflow-y: auto;
+                padding-bottom: 2cm; /* Added padding for button accessibility */
             }
         </style>
     <script>
