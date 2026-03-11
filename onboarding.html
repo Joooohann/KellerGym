@@ -238,24 +238,27 @@
 
             <!-- STEP 10: EQUIPMENT -->
             <div id="ob-step-10" class="ob-content">
-                <h1>Trainings-Geräte</h1>
-                <p class="subtitle">Welche Geräte stehen dir zur Verfügung?</p>
-                <div class="select-grid" id="equipment-grid">
-                    <div class="select-card" data-val="Kurzhanteln" onclick="toggleEquipment(this, 'Kurzhanteln')">Kurzhanteln</div>
-                    <div class="select-card" data-val="Langhantel" onclick="toggleEquipment(this, 'Langhantel')">Langhantel</div>
-                    <div class="select-card" data-val="Klimmzugstange" onclick="toggleEquipment(this, 'Klimmzugstange')">Klimmzugstange</div>
-                    <div class="select-card" data-val="Dip-Barren" onclick="toggleEquipment(this, 'Dip-Barren')">Dip-Barren</div>
-                    <div class="select-card" data-val="Latzugmaschine" onclick="toggleEquipment(this, 'Latzugmaschine')">Latzugmaschine</div>
-                    <div class="select-card" data-val="T-Bar Maschine" onclick="toggleEquipment(this, 'T-Bar Maschine')">T-Bar Maschine</div>
-                    <div class="select-card" data-val="Kabelzug" onclick="toggleEquipment(this, 'Kabelzug')">Kabelzug</div>
-                    <div class="select-card" data-val="Beinpresse Maschine" onclick="toggleEquipment(this, 'Beinpresse Maschine')">Beinpresse Maschine</div>
-                    <div class="select-card" data-val="Wadenmaschine" onclick="toggleEquipment(this, 'Wadenmaschine')">Wadenmaschine</div>
-                </div>
-                <div style="height: 4cm;"></div>
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
-                    <!-- Hier ist Button-10 für Equipment -->
-                    <button class="btn" id="btn-next-10" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                <div style="display: flex; flex-direction: column; height: 100vh; max-height: 100svh;">
+                    <div style="flex: 1 1 auto; overflow-y: auto; min-height: 0;">
+                        <h1>Trainings-Geräte</h1>
+                        <p class="subtitle">Welche Geräte stehen dir zur Verfügung?</p>
+                        <div class="select-grid" id="equipment-grid">
+                            <div class="select-card" data-val="Kurzhanteln" onclick="toggleEquipment(this, 'Kurzhanteln')">Kurzhanteln</div>
+                            <div class="select-card" data-val="Langhantel" onclick="toggleEquipment(this, 'Langhantel')">Langhantel</div>
+                            <div class="select-card" data-val="Klimmzugstange" onclick="toggleEquipment(this, 'Klimmzugstange')">Klimmzugstange</div>
+                            <div class="select-card" data-val="Dip-Barren" onclick="toggleEquipment(this, 'Dip-Barren')">Dip-Barren</div>
+                            <div class="select-card" data-val="Latzugmaschine" onclick="toggleEquipment(this, 'Latzugmaschine')">Latzugmaschine</div>
+                            <div class="select-card" data-val="T-Bar Maschine" onclick="toggleEquipment(this, 'T-Bar Maschine')">T-Bar Maschine</div>
+                            <div class="select-card" data-val="Kabelzug" onclick="toggleEquipment(this, 'Kabelzug')">Kabelzug</div>
+                            <div class="select-card" data-val="Beinpresse Maschine" onclick="toggleEquipment(this, 'Beinpresse Maschine')">Beinpresse Maschine</div>
+                            <div class="select-card" data-val="Wadenmaschine" onclick="toggleEquipment(this, 'Wadenmaschine')">Wadenmaschine</div>
+                        </div>
+                    </div>
+                    <div class="nav-buttons" style="flex-shrink: 0;">
+                        <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
+                        <!-- Hier ist Button-10 für Equipment -->
+                        <button class="btn" id="btn-next-10" onclick="nextOnboarding()" disabled>Weiter <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
                 </div>
             </div>
 
