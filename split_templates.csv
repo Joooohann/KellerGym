@@ -1,0 +1,54 @@
+split_name,days,day_index,day_name
+Brosplit,4,1,Brust-Tag
+Brosplit,4,2,Rücken-Tag
+Brosplit,4,3,Beine-Tag
+Brosplit,4,4,Schultern-Tag&Arme-Tag
+Brosplit,5,1,Brust-Tag
+Brosplit,5,2,Rücken-Tag
+Brosplit,5,3,Beine-Tag
+Brosplit,5,4,Schultern-Tag
+Brosplit,5,5,Arme-Tag
+Brosplit,6,1,Brust-Tag
+Brosplit,6,2,Rücken-Tag
+Brosplit,6,3,Beine-Tag
+Brosplit,6,4,Schultern-Tag
+Brosplit,6,5,Trizeps-Tag
+Brosplit,6,6,Bizeps-Tag
+Ganzkörper,2,1,Ganzkörper
+Ganzkörper,2,2,Ganzkörper
+Ganzkörper,3,1,Ganzkörper
+Ganzkörper,3,2,Ganzkörper
+Ganzkörper,3,3,Ganzkörper
+Push-Pull,2,1,Push Day
+Push-Pull,2,2,Pull Day
+Push-Pull,4,1,Push Day
+Push-Pull,4,2,Pull Day
+Push-Pull,4,3,Push Day
+Push-Pull,4,4,Pull Day
+Push-Pull,6,1,Push Day
+Push-Pull,6,2,Pull Day
+Push-Pull,6,3,Push Day
+Push-Pull,6,4,Pull Day
+Push-Pull,6,5,Push Day
+Push-Pull,6,6,Pull Day
+Push-Pull-Legs,3,1,Push Day
+Push-Pull-Legs,3,2,Pull Day
+Push-Pull-Legs,3,3,Leg Day
+Push-Pull-Legs,6,1,Push Day
+Push-Pull-Legs,6,2,Pull Day
+Push-Pull-Legs,6,3,Leg Day
+Push-Pull-Legs,6,4,Push Day
+Push-Pull-Legs,6,5,Pull Day
+Push-Pull-Legs,6,6,Leg Day
+Upper-Lower,2,1,Upper Day
+Upper-Lower,2,2,Lower Day
+Upper-Lower,4,1,Upper Day
+Upper-Lower,4,2,Lower Day
+Upper-Lower,4,3,Upper Day
+Upper-Lower,4,4,Lower Day
+Upper-Lower,6,1,Upper Day
+Upper-Lower,6,2,Lower Day
+Upper-Lower,6,3,Upper Day
+Upper-Lower,6,4,Lower Day
+Upper-Lower,6,5,Upper Day
+Upper-Lower,6,6,Lower Day
