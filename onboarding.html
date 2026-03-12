@@ -261,7 +261,7 @@
                     <div class="select-card" data-val="T-Bar Maschine" onclick="toggleEquipment(this, 'T-Bar Maschine')">T-Bar Maschine</div>
                     <div class="select-card" data-val="Kabelzug" onclick="toggleEquipment(this, 'Kabelzug')">Kabelzug</div>
                     <div class="select-card" data-val="Beinpresse Maschine" onclick="toggleEquipment(this, 'Beinpresse Maschine')">Beinpresse Maschine</div>
-                    <div class="select-card" data-val="Wadenmaschine" onclick="toggleEquipment(this, 'Wadenmaschine')">Wadenmaschine</div>
+                    <div class="select-card" data-val="Maschine" onclick="toggleEquipment(this, 'Maschine')">Maschine</div>
                 </div>
                 <div class="nav-buttons">
                     <button class="btn btn-secondary" onclick="prevOnboarding()">Zurück</button>
@@ -507,6 +507,34 @@
                         alert("Achtung: Trainingsplan konnte nicht gespeichert werden (" + planError.message + ").");
                     } else {
                         console.log("Trainingsplan erfolgreich gespeichert!");
+                        // Nach erfolgreichem Insert: ID des neuen Plans holen und plan_exercises generieren
+                        try {
+                            // Den zuletzt eingefügten aktiven Plan des Users holen (der gerade eingefügte)
+                            const { data: plans, error: fetchPlanError } = await supabase
+                                .from('workout_plans')
+                                .select('id')
+                                .eq('user_id', user.id)
+                                .eq('is_active', true)
+                                .order('created_at', { ascending: false })
+                                .limit(1);
+                                console.log("01_plan_exercises");
+                            if (!fetchPlanError && plans && plans.length > 0) {
+                                const planId = plans[0].id;
+                                // Funktion direkt von window aufrufen (da script.js als reguläres Script eingebunden ist)
+                                console.log("02_plan_exercises");
+                                if (window.generateAndInsertPlanExercises) {
+                                    await window.generateAndInsertPlanExercises(planId, obData);
+                                    console.log("03_plan_exercises");
+                                } else {
+                                    console.error('window.generateAndInsertPlanExercises nicht gefunden!');
+                                    console.log("04_plan_exercises");
+                                }
+                            } else {
+                                console.error('Plan-ID konnte nach Insert nicht ermittelt werden:', fetchPlanError);
+                            }
+                        } catch (err) {
+                            console.error('Fehler beim Generieren der plan_exercises:', err);
+                        }
                     }
                 } else {
                     console.warn("Kein Planname für workout_plans übergeben, Plan wird nicht gespeichert.");
@@ -518,8 +546,10 @@
             } catch (err) {
                 console.error("Ein unerwarteter Fehler ist aufgetreten:", err);
             } finally {
-                // In jedem Fall zum Dashboard navigieren
-                window.location.href = 'dashboard.html';
+                // 5 Sekunden warten, damit Debug-Ausgaben sichtbar bleiben
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 15000);
             }
         });
     </script>

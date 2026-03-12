@@ -339,6 +339,122 @@ function finishOnboarding(isTest = false) {
         }
     }
 }
+    // --- PLAN_EXERCISES GENERIERUNG & INSERT AUS SUPABASE ---
+    // Am Dateiende als ES6-Export bereitstellen, aber NICHT als export function deklarieren, damit window.* Funktionen global bleiben
+    async function generateAndInsertPlanExercises(planId, obData) {
+    const { supabase } = await import('./supabase-config.js');
+    // 1. Split-Tage bestimmen
+    const { data: splitTemplates, error: err1 } = await supabase
+        .from('split_templates')
+        .select('*')
+        .eq('split_name', obData.split)
+        .eq('days', obData.freq);
+    if (splitTemplates) {
+        console.log('splitTemplates:', splitTemplates.map(t => t.day_name), 'split_name:', obData.split, 'days:', obData.freq);
+    } else {
+        console.log('splitTemplates: null', 'split_name:', obData.split, 'days:', obData.freq);
+    }
+    if (err1 || !splitTemplates) { console.error('split_templates Fehler', err1); return; }
+
+    // 2. Split-Tag -> Muskelgruppen
+    const { data: splitDayMG, error: err2 } = await supabase
+        .from('split_day_musclegroups')
+        .select('*');
+    console.log('DEBUG splitDayMG:', splitDayMG);
+    if (err2 || !splitDayMG) { console.error('split_day_musclegroups Fehler', err2); return; }
+
+    // 3. Übungen
+    const { data: exercises, error: err3 } = await supabase
+        .from('exercises')
+        .select('*');
+    console.log('DEBUG exercises:', exercises, 'equipment:', obData.equipment);
+    if (err3 || !exercises) { console.error('exercises Fehler', err3); return; }
+
+        let planExercises = [];
+        // Wochentage aus obData.days (Reihenfolge wie im Plan)
+        const weekDays = obData.days || [];
+        // Index pro Wochentag (day) hochzählen
+        let dayIndexMap = {};
+        for (let i = 0; i < splitTemplates.length; i++) {
+            const day = splitTemplates[i];
+            const splitDayName = day.day_name;
+            // Wochentag zuordnen (z.B. Mo, Di, ...)
+            const weekDay = weekDays[i] || null;
+            if (!(weekDay in dayIndexMap)) dayIndexMap[weekDay] = 0;
+            // Muskelgruppen für diesen Tag
+            const mgRows = splitDayMG.filter(mg => mg.split_day_name === splitDayName);
+            if (mgRows.length === 0) {
+                console.warn('Keine Muskelgruppen für Tag', splitDayName, 'in splitDayMG gefunden!');
+            }
+            for (const mgRow of mgRows) {
+                const muscleGroup = mgRow.muscle_group;
+                const sets = Number(mgRow.sets);
+                // Debug: Welche Übungen gibt es für diese Muskelgruppe?
+                const allForMG = exercises.filter(ex => ex.primary_muscle === muscleGroup);
+                if (allForMG.length === 0) {
+                    console.warn('Keine Übungen für Muskelgruppe', muscleGroup, 'in exercises gefunden!');
+                } else {
+                    console.log('Alle Übungen für', muscleGroup, ':', allForMG.map(e => e.name + ' [' + e.equipment + ']'));
+                }
+                let matchingExercises = exercises.filter(ex => {
+                    if (ex.primary_muscle !== muscleGroup) return false;
+                    // Körpergewicht-Übungen immer erlauben
+                    if (!ex.equipment || ex.equipment === null || ex.equipment.toLowerCase().includes('körpergewicht')) return true;
+                    // Robusteren Vergleich: Kleinbuchstaben, Singular/Plural, Leerzeichen raus
+                    const eq = ex.equipment.toLowerCase().replace(/ /g, '');
+                    return obData.equipment.some(e => {
+                        const userEq = e.toLowerCase().replace(/ /g, '');
+                        return userEq === eq || userEq.startsWith(eq) || eq.startsWith(userEq);
+                    });
+                });
+                if (matchingExercises.length === 0) {
+                    console.warn('Keine passenden Übungen für', muscleGroup, 'an', splitDayName, 'mit Equipment', obData.equipment, '| Alle für MG:', allForMG.map(e => e.equipment));
+                    continue;
+                }
+                matchingExercises = matchingExercises.sort((a, b) => Number(a.order_index) - Number(b.order_index));
+                let selectedExercises = [];
+                let idx = 0;
+                for (let s = 0; s < sets; s++) {
+                    selectedExercises.push(matchingExercises[idx]);
+                    idx = (idx + 1) % matchingExercises.length;
+                }
+                for (const ex of selectedExercises) {
+                    planExercises.push({
+                        plan_id: planId,
+                        split_day: splitDayName,
+                        day: weekDay, // Wochentag (Mo, Di, ...)
+                        index: dayIndexMap[weekDay], // Reihenfolge innerhalb des Wochentags
+                        muscle_group: muscleGroup,
+                        exercise: ex.name,
+                        weight: ex.kg || null,
+                        sets_soll: ex.amount_sets || 3,
+                        reps_soll: ex.amount_reps || 10,
+                        rir_soll: 2,
+                        sets_ist: 0,
+                        reps_ist: 0,
+                        rir_ist: 0
+                    });
+                    dayIndexMap[weekDay]++;
+                }
+            }
+        }
+        console.log('DEBUG: planExercises to insert:', planExercises);
+        if (planExercises.length === 0) {
+            console.error('planExercises ist leer! Es wird nichts eingefügt.');
+            return;
+        }
+        const { error } = await supabase.from('plan_exercises').insert(planExercises);
+        if (error) {
+            console.error('Fehler beim Einfügen der plan_exercises:', error);
+        } else {
+            console.log('plan_exercises erfolgreich eingefügt:', planExercises.length);
+        }
+}
+
+// Am Dateiende exportieren (ES6)
+if (typeof window !== 'undefined') {
+    window.generateAndInsertPlanExercises = generateAndInsertPlanExercises;
+}
 
 
 function selectOption(key, value, element) {

@@ -1,54 +1,54 @@
 split_name,days,day_index,day_name
-Brosplit,4,1,Brust-Tag
-Brosplit,4,2,Rücken-Tag
-Brosplit,4,3,Beine-Tag
-Brosplit,4,4,Schultern-Tag&Arme-Tag
-Brosplit,5,1,Brust-Tag
-Brosplit,5,2,Rücken-Tag
-Brosplit,5,3,Beine-Tag
-Brosplit,5,4,Schultern-Tag
-Brosplit,5,5,Arme-Tag
-Brosplit,6,1,Brust-Tag
-Brosplit,6,2,Rücken-Tag
-Brosplit,6,3,Beine-Tag
-Brosplit,6,4,Schultern-Tag
-Brosplit,6,5,Trizeps-Tag
-Brosplit,6,6,Bizeps-Tag
-Ganzkörper,2,1,Ganzkörper
-Ganzkörper,2,2,Ganzkörper
-Ganzkörper,3,1,Ganzkörper
-Ganzkörper,3,2,Ganzkörper
-Ganzkörper,3,3,Ganzkörper
-Push-Pull,2,1,Push Day
-Push-Pull,2,2,Pull Day
-Push-Pull,4,1,Push Day
-Push-Pull,4,2,Pull Day
-Push-Pull,4,3,Push Day
-Push-Pull,4,4,Pull Day
-Push-Pull,6,1,Push Day
-Push-Pull,6,2,Pull Day
-Push-Pull,6,3,Push Day
-Push-Pull,6,4,Pull Day
-Push-Pull,6,5,Push Day
-Push-Pull,6,6,Pull Day
-Push-Pull-Legs,3,1,Push Day
-Push-Pull-Legs,3,2,Pull Day
-Push-Pull-Legs,3,3,Leg Day
-Push-Pull-Legs,6,1,Push Day
-Push-Pull-Legs,6,2,Pull Day
-Push-Pull-Legs,6,3,Leg Day
-Push-Pull-Legs,6,4,Push Day
-Push-Pull-Legs,6,5,Pull Day
-Push-Pull-Legs,6,6,Leg Day
-Upper-Lower,2,1,Upper Day
-Upper-Lower,2,2,Lower Day
-Upper-Lower,4,1,Upper Day
-Upper-Lower,4,2,Lower Day
-Upper-Lower,4,3,Upper Day
-Upper-Lower,4,4,Lower Day
-Upper-Lower,6,1,Upper Day
-Upper-Lower,6,2,Lower Day
-Upper-Lower,6,3,Upper Day
-Upper-Lower,6,4,Lower Day
-Upper-Lower,6,5,Upper Day
-Upper-Lower,6,6,Lower Day
+bro,4,1,Brust-Tag
+bro,4,2,Rücken-Tag
+bro,4,3,Beine-Tag
+bro,4,4,Schultern-Tag&Arme-Tag
+bro,5,1,Brust-Tag
+bro,5,2,Rücken-Tag
+bro,5,3,Beine-Tag
+bro,5,4,Schultern-Tag
+bro,5,5,Arme-Tag
+bro,6,1,Brust-Tag
+bro,6,2,Rücken-Tag
+bro,6,3,Beine-Tag
+bro,6,4,Schultern-Tag
+bro,6,5,Trizeps-Tag
+bro,6,6,Bizeps-Tag
+full,2,1,Ganzkörper
+full,2,2,Ganzkörper
+full,3,1,Ganzkörper
+full,3,2,Ganzkörper
+full,3,3,Ganzkörper
+pp,2,1,Push Day
+pp,2,2,Pull Day
+pp,4,1,Push Day
+pp,4,2,Pull Day
+pp,4,3,Push Day
+pp,4,4,Pull Day
+pp,6,1,Push Day
+pp,6,2,Pull Day
+pp,6,3,Push Day
+pp,6,4,Pull Day
+pp,6,5,Push Day
+pp,6,6,Pull Day
+ppl,3,1,Push Day
+ppl,3,2,Pull Day
+ppl,3,3,Leg Day
+ppl,6,1,Push Day
+ppl,6,2,Pull Day
+ppl,6,3,Leg Day
+ppl,6,4,Push Day
+ppl,6,5,Pull Day
+ppl,6,6,Leg Day
+ul,2,1,Upper Day
+ul,2,2,Lower Day
+ul,4,1,Upper Day
+ul,4,2,Lower Day
+ul,4,3,Upper Day
+ul,4,4,Lower Day
+ul,6,1,Upper Day
+ul,6,2,Lower Day
+ul,6,3,Upper Day
+ul,6,4,Lower Day
+ul,6,5,Upper Day
+ul,6,6,Lower Day

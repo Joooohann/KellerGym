@@ -1,19 +1,19 @@
 split_day_name,muscle_group,sets
-Push-Day,Brust,2
-Push-Day,Schulter,2
-Push-Day,Trizeps,3
+Push Day,Brust,2
+Push Day,Schulter,2
+Push Day,Trizeps,3
 
-Pull-Day,Rücken,2
-Pull-Day,Bizeps,3
-Pull-Day,Schulter,2
+Pull Day,Rücken,2
+Pull Day,Bizeps,3
+Pull Day,Schulter,2
 
-Upper-Body,Brust,2
-Upper-Body,Rücken,2
-Upper-Body,Schulter,2
-Upper-Body,Bizeps,1
-Upper-Body,Trizeps,1
+Upper Day,Brust,2
+Upper Day,Rücken,2
+Upper Day,Schulter,2
+Upper Day,Bizeps,1
+Upper Day,Trizeps,1
 
-Lower-Body,Beine,5
+Lower Day,Beine,5
 
 Ganzkörper,Rücken,2
 Ganzkörper,Brust,2
