@@ -438,6 +438,7 @@
                     const labelDiv = col.querySelector('div:last-child');
                     if (labelDiv) labelDiv.style.color = (idx === todayIndex || idx === selectedDayIndex) ? '#fff' : 'var(--text-mute)';
                 }
+                renderWorkout();
                 return;
             }
             // Erstaufbau: alle Icons korrekt setzen
@@ -452,7 +453,6 @@
                 col.onclick = () => {
                     selectedDayIndex = idx;
                     renderWeek();
-                    renderWorkout();
                 };
                 // Circle Icon
                 const circle = document.createElement('div');
@@ -831,29 +831,113 @@
         }
 
         function renderWorkout() {
-            const entry = SCHEDULE[selectedDayIndex];
+                        // Helper: Zeitformat
+                        function formatTime(mins) {
+                            const h = Math.floor(mins / 60);
+                            const m = mins % 60;
+                            return `${h}:${m.toString().padStart(2, '0')}h`;
+                        }
+            // Dynamically load workout for selected day from Supabase
+            (async () => {
+                const titleEl = document.getElementById('wo-title');
+                const descEl = document.getElementById('wo-desc');
+                const imgEl = document.getElementById('wo-img');
+                const headerEl = document.getElementById('wo-header');
+                // Header dynamisch setzen
+                if (selectedDayIndex === todayIndex) {
+                    headerEl.innerHTML = 'Heutiges <span style="color:var(--primary)">Training</span>';
+                } else {
+                    const dayName = FULL_DAYS[selectedDayIndex] || '';
+                    headerEl.innerHTML = 'Training am <span style="color:var(--primary)">' + dayName + '</span>';
+                }
+                const btnEl = document.getElementById('btn-start');
+                const arrowEl = document.getElementById('wo-arrow');
 
-            // Text Elements
-            const titleEl = document.getElementById('wo-title');
-            const descEl = document.getElementById('wo-desc');
-            const imgEl = document.getElementById('wo-img');
-            const headerEl = document.getElementById('wo-header');
-            const btnEl = document.getElementById('btn-start');
-            const arrowEl = document.getElementById('wo-arrow');
+                // Default/fallback values
+                let workoutTitle = 'Rest Day';
+                let workoutDesc = 'Regeneriere dich';
+                let workoutImg = 'img/rest.png';
+                let isRestDay = true;
 
-            // Set Content
-            titleEl.innerText = entry.title;
-            descEl.innerText = entry.desc;
-            imgEl.src = entry.img;
+                try {
+                    const supabase = (await import('./supabase-config.js')).supabase;
+                    let userId = null;
+                    if(window.obData && window.obData.user_id) {
+                        userId = window.obData.user_id;
+                    } else if(window.obData && window.obData.id) {
+                        userId = window.obData.id;
+                    } else if(localStorage.getItem('kellerGymData')) {
+                        const d = JSON.parse(localStorage.getItem('kellerGymData'));
+                        userId = d.user_id || d.id;
+                    }
+                    if(userId && selectedDayIndex >= 0) {
+                        // Get active plan
+                        const { data: plan } = await supabase
+                            .from('workout_plans')
+                            .select('id')
+                            .eq('user_id', userId)
+                            .eq('is_active', true)
+                            .maybeSingle();
+                        if(plan && plan.id) {
+                            // Get all exercises for this plan and day
+                            const dayName = DAYS[selectedDayIndex];
+                            const { data: exercises } = await supabase
+                                .from('plan_exercises')
+                                .select('split_day, exercise, sets_soll, reps_soll, weight, muscle_group')
+                                .eq('plan_id', plan.id)
+                                .eq('day', dayName);
+                            if(exercises && exercises.length > 0) {
+                                const splitDay = exercises[0].split_day || dayName;
+                                const numExercises = exercises.length;
+                                // Optional: Sätze/Wdh/Übung anzeigen, falls überall gleich
+                                let satzInfo = '';
+                                if (numExercises > 0) {
+                                    // Prüfe, ob alle Sätze/Wdh gleich sind
+                                    const allSets = exercises.map(e => e.sets_soll).filter(Boolean);
+                                    const allReps = exercises.map(e => e.reps_soll).filter(Boolean);
+                                    if (allSets.length === numExercises && allReps.length === numExercises) {
+                                        const uniqueSets = [...new Set(allSets)];
+                                        const uniqueReps = [...new Set(allReps)];
+                                        if (uniqueSets.length === 1 && uniqueReps.length === 1) {
+                                            satzInfo = `${uniqueSets[0]} Sätze x ${uniqueReps[0]} Wdh`;
+                                        }
+                                    }
+                                }
+                                // Trainingszeit berechnen: Summe aller Sätze * 3 Minuten
+                                const totalSets = exercises.reduce((sum, ex) => sum + (parseInt(ex.sets_soll) || 0), 0);
+                                const tTime = formatTime(totalSets * 3);
+                                workoutTitle = splitDay;
+                                workoutDesc = `${tTime}, ${numExercises} Übung${numExercises === 1 ? '' : 'en'}${satzInfo ? ' · ' + satzInfo : ''}`;
+                                // Pick image by splitDay (simple mapping)
+                                let imgMap = {
+                                    'Push': 'img/push.png',
+                                    'Pull': 'img/pull.png',
+                                    'Legs': 'img/lower_body.png',
+                                    'Ganzkörper': 'img/full_body.png',
+                                    'Oberkörper': 'img/upper_body.png',
+                                    'Unterkörper': 'img/lower_body.png',
+                                    'Rest Day': 'img/rest.png',
+                                };
+                                workoutImg = imgMap[splitDay] || 'img/lower_body.png';
+                                isRestDay = false;
+                            }
+                        }
+                    }
+                } catch(e) {
+                    // fallback to restday
+                }
 
-            // Arrow Logic: show if it's not a rest day
-            if(entry.type !== 'off') {
-                arrowEl.style.display = 'block';
-            } else {
-                arrowEl.style.display = 'none';
-            }
-
-            // Header Logic
+                // Set Content
+                titleEl.innerText = workoutTitle;
+                descEl.innerText = workoutDesc;
+                imgEl.src = workoutImg;
+                // Arrow Logic: show if not rest day
+                if(!isRestDay) {
+                    arrowEl.style.display = 'block';
+                } else {
+                    arrowEl.style.display = 'none';
+                }
+            })();
         }
     </script>
 
