@@ -909,16 +909,59 @@
                                 workoutTitle = splitDay;
                                 workoutDesc = `${tTime}, ${numExercises} Übung${numExercises === 1 ? '' : 'en'}${satzInfo ? ' · ' + satzInfo : ''}`;
                                 // Pick image by splitDay (simple mapping)
+                                // Bildlogik erweitert
                                 let imgMap = {
                                     'Push': 'img/push.png',
                                     'Pull': 'img/pull.png',
-                                    'Legs': 'img/lower_body.png',
+                                    'Legs': 'img/legs.png',
+                                    'Beine': 'img/legs.png',
                                     'Ganzkörper': 'img/full_body.png',
                                     'Oberkörper': 'img/upper_body.png',
                                     'Unterkörper': 'img/lower_body.png',
+                                    'Brust': 'img/chest.png',
+                                    'Rücken': 'img/back.png',
+                                    'Ruecken': 'img/back.png',
+                                    'Back': 'img/back.png',
+                                    'Schultern & Arme': 'img/shoulds_arms.png',
+                                    'Schultern': 'img/shoulders.png',
+                                    'Arme': 'img/arms.png',
+                                    'Bizeps': 'img/biceps_.png',
+                                    'Trizeps': 'img/triceps.png',
                                     'Rest Day': 'img/rest.png',
                                 };
-                                workoutImg = imgMap[splitDay] || 'img/lower_body.png';
+                                // Fallback: Regex für Splitnamen
+                                let lowerSplit = (splitDay||'').toLowerCase();
+                                if(imgMap[splitDay]) {
+                                    workoutImg = imgMap[splitDay];
+                                } else if(/upper/.test(lowerSplit)) {
+                                    workoutImg = 'img/upper_body.png';
+                                } else if(/lower/.test(lowerSplit)) {
+                                    workoutImg = 'img/lower_body.png';
+                                } else if(/brust|chest/.test(lowerSplit)) {
+                                    workoutImg = 'img/chest.png';
+                                } else if(/rück|rueck|back/.test(lowerSplit)) {
+                                    workoutImg = 'img/back.png';
+                                } else if(/bein|legs/.test(lowerSplit)) {
+                                    workoutImg = 'img/legs.png';
+                                } else if(/schulter.*arm|shoulds.*arms/.test(lowerSplit)) {
+                                    workoutImg = 'img/shoulds_arms.png';
+                                } else if(/schulter|shoulder/.test(lowerSplit)) {
+                                    workoutImg = 'img/shoulders.png';
+                                } else if(/arm|arms/.test(lowerSplit)) {
+                                    workoutImg = 'img/arms.png';
+                                } else if(/bizeps|biceps/.test(lowerSplit)) {
+                                    workoutImg = 'img/biceps_.png';
+                                } else if(/trizeps|triceps/.test(lowerSplit)) {
+                                    workoutImg = 'img/triceps.png';
+                                } else if(/ganzk|full/.test(lowerSplit)) {
+                                    workoutImg = 'img/full_body.png';
+                                } else if(/push/.test(lowerSplit)) {
+                                    workoutImg = 'img/push.png';
+                                } else if(/pull/.test(lowerSplit)) {
+                                    workoutImg = 'img/pull.png';
+                                } else {
+                                    workoutImg = 'img/full_body.png';
+                                }
                                 isRestDay = false;
                             }
                         }

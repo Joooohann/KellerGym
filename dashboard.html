@@ -860,6 +860,17 @@
                                     // Bildlogik
                                     if(/upper/i.test(tTitle)) tImg = 'img/upper_body.png';
                                     else if(/lower/i.test(tTitle)) tImg = 'img/lower_body.png';
+                                    else if(/brust/i.test(tTitle)) tImg = 'img/chest.png';
+                                    else if(/rück|rueck|back/i.test(tTitle)) tImg = 'img/back.png';
+                                    else if(/bein|legs/i.test(tTitle)) tImg = 'img/legs.png';
+                                    else if(/schulter.*arm|shoulds.*arms/i.test(tTitle)) tImg = 'img/shoulds_arms.png';
+                                    else if(/schulter|shoulder/i.test(tTitle)) tImg = 'img/shoulders.png';
+                                    else if(/arm|arms/i.test(tTitle)) tImg = 'img/arms.png';
+                                    else if(/bizeps|biceps/i.test(tTitle)) tImg = 'img/biceps_.png';
+                                    else if(/trizeps|triceps/i.test(tTitle)) tImg = 'img/triceps.png';
+                                    else if(/ganzk|full/i.test(tTitle)) tImg = 'img/full_body.png';
+                                    else if(/push/i.test(tTitle)) tImg = 'img/push.png';
+                                    else if(/pull/i.test(tTitle)) tImg = 'img/pull.png';
                                     else tImg = 'img/full_body.png';
                                 }
                             }
