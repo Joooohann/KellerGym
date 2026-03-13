@@ -284,10 +284,66 @@
         // Current Schedule (Array of Objects)
         let SCHEDULE = [];
 
+        // Global cache for training days to avoid flicker
+        window.trainingDays = null;
+
+        // Update icons in week grid after loading training days
+        function updateWeekIcons(trainingDays) {
+            const container = document.getElementById('week-grid');
+            const cols = container.querySelectorAll('.week-day-col');
+            DAYS.forEach((day, index) => {
+                const isWorkout = trainingDays.includes(day);
+                const circle = cols[index]?.querySelector('div');
+                if(circle && isWorkout) {
+                    circle.style.border = '2px solid var(--primary)';
+                    circle.style.background = 'rgba(0, 255, 204, 0.1)';
+                    circle.innerHTML = '<img src="img/biceps_2.png" style="width: 18px; height: 18px; object-fit: contain;">';
+                }
+            });
+        }
+
+        // Async: Load training days from Supabase and update week grid
+        async function loadTrainingDaysFromSupabase() {
+            try {
+                const supabase = (await import('./supabase-config.js')).supabase;
+                let userId = null;
+                if(window.obData && window.obData.user_id) {
+                    userId = window.obData.user_id;
+                } else if(window.obData && window.obData.id) {
+                    userId = window.obData.id;
+                } else if(localStorage.getItem('kellerGymData')) {
+                    const d = JSON.parse(localStorage.getItem('kellerGymData'));
+                    userId = d.user_id || d.id;
+                }
+                if(userId) {
+                    // Aktiven Plan holen
+                    const { data: plan } = await supabase
+                        .from('workout_plans')
+                        .select('id')
+                        .eq('user_id', userId)
+                        .eq('is_active', true)
+                        .maybeSingle();
+                    if(plan && plan.id) {
+                        // Alle Übungen für diesen Plan holen
+                        const { data: exercises } = await supabase
+                            .from('plan_exercises')
+                            .select('day')
+                            .eq('plan_id', plan.id);
+                        // Alle Trainingstage extrahieren
+                        const trainingDays = Array.from(new Set((exercises||[]).map(e => (e.day||'').trim())));
+                        window.trainingDays = trainingDays;
+                        updateWeekIcons(trainingDays);
+                    }
+                }
+            } catch(e) {}
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadSchedule();
             initWeek();
             renderScheduleEditList();
+            // Load training days from Supabase and update week grid after initial render
+            loadTrainingDaysFromSupabase();
 
             // Handle Start Button
             const startBtn = document.getElementById('btn-start');
@@ -366,28 +422,32 @@
         function renderWeek() {
             const container = document.getElementById('week-grid');
             if(!container) return;
+            // Wenn Grid schon existiert, nur Auswahl/Heute updaten
+            if (container.children.length === DAYS.length) {
+                for (let idx = 0; idx < DAYS.length; idx++) {
+                    const col = container.children[idx];
+                    col.classList.toggle('day-active', idx === todayIndex);
+                    col.classList.toggle('selected', idx === selectedDayIndex);
+                    // Label-Farbe
+                    const labelDiv = col.querySelector('div:last-child');
+                    if (labelDiv) labelDiv.style.color = (idx === todayIndex || idx === selectedDayIndex) ? '#fff' : 'var(--text-mute)';
+                }
+                return;
+            }
+            // Erstaufbau: alle Icons korrekt setzen
             container.innerHTML = '';
-            
             DAYS.forEach((label, idx) => {
                 const isToday = (idx === todayIndex);
                 const isSelected = (idx === selectedDayIndex);
-                // Determine workout status from CURRENT SCHEDULE
-                const isWorkout = (SCHEDULE[idx].type !== 'off');
-
-                // Create Column Structure
                 const col = document.createElement('div');
                 col.className = 'week-day-col';
-                
-                // Add active/selected classes
-                if (isToday) col.classList.add('day-active'); // Shimmer 
-                if (isSelected) col.classList.add('selected'); // Interaction state
-
+                if (isToday) col.classList.add('day-active');
+                if (isSelected) col.classList.add('selected');
                 col.onclick = () => {
                     selectedDayIndex = idx;
                     renderWeek();
                     renderWorkout();
                 };
-                
                 // Circle Icon
                 const circle = document.createElement('div');
                 circle.style.width = '30px';
@@ -396,29 +456,26 @@
                 circle.style.display = 'flex';
                 circle.style.alignItems = 'center';
                 circle.style.justifyContent = 'center';
-                
-                if(isWorkout) {
+                circle.style.border = '1px solid transparent';
+                circle.style.background = '#2a2d35';
+                // Standard: Couch
+                let isWorkout = false;
+                if (window.trainingDays) isWorkout = window.trainingDays.includes(DAYS[idx]);
+                if (isWorkout) {
                     circle.style.border = '2px solid var(--primary)';
                     circle.style.background = 'rgba(0, 255, 204, 0.1)';
-                    // Biceps Image
-                    circle.innerHTML = `<img src="img/biceps_2.png" style="width: 18px; height: 18px; object-fit: contain;">`;
+                    circle.innerHTML = '<img src="img/biceps_2.png" style="width: 18px; height: 18px; object-fit: contain;">';
                 } else {
-                    circle.style.border = '1px solid transparent';
-                    circle.style.background = '#2a2d35';
                     circle.innerHTML = '<i class="fa-solid fa-couch" style="color:#555; font-size:14px;"></i>';
                 }
-
                 // Label
                 const labelDiv = document.createElement('div');
                 labelDiv.innerText = label;
                 labelDiv.style.fontSize = '12px';
                 labelDiv.style.fontWeight = '600';
-                // Highlight text if today or selected
                 labelDiv.style.color = (isToday || isSelected) ? '#fff' : 'var(--text-mute)';
-
                 col.appendChild(circle);
                 col.appendChild(labelDiv);
-
                 container.appendChild(col);
             });
         }
@@ -787,84 +844,7 @@
             }
 
             // Header Logic
-            if(selectedDayIndex === todayIndex) {
-                headerEl.innerHTML = '<span style="color:var(--primary)">Heutiges Training</span>';
-
-                if(entry.type === 'off') {
-                    btnEl.style.display = 'inline-block';
-                    btnEl.disabled = true;
-                    btnEl.classList.add('disabled');
-                } else {
-                    btnEl.style.display = 'inline-block';
-                    btnEl.disabled = false;
-                    btnEl.classList.remove('disabled');
-                }
-            } else {
-                headerEl.innerHTML = 'Training am <span style="color:var(--primary)">' + FULL_DAYS[selectedDayIndex] + '</span>';
-                // Instead of hiding, we disable it
-                btnEl.style.display = 'inline-block';
-                btnEl.disabled = true;
-                btnEl.classList.add('disabled');
-            }
         }
-
-
-        function a() {
-
-            
-            // a
-                        // a
-                                    // a
-                                                // a
-                                                            // a
-                                                                        // a
-        }
-
-        // function renderWorkout() {
-            const entry = SCHEDULE[selectedDayIndex];
-
-            // Text Elements
-            const titleEl = document.getElementById('wo-title');
-            const descEl = document.getElementById('wo-desc');
-            const imgEl = document.getElementById('wo-img');
-            const headerEl = document.getElementById('wo-header');
-            const btnEl = document.getElementById('btn-start');
-            const arrowEl = document.getElementById('wo-arrow');
-
-            // Set Content
-            titleEl.innerText = entry.title;
-            descEl.innerText = entry.desc;
-            imgEl.src = entry.img;
-
-            // Arrow Logic: show if it's not a rest day
-            if(entry.type !== 'off') {
-                arrowEl.style.display = 'block';
-            } else {
-                arrowEl.style.display = 'none';
-            }
-
-            // Header Logic
-        //     if(selectedDayIndex === todayIndex) {
-        //         headerEl.innerHTML = '<span style="color:var(--primary)">Heutiges Training</span>';
-
-        //         if(entry.type === 'off') {
-        //             btnEl.style.display = 'inline-block';
-        //             btnEl.disabled = true;
-        //             btnEl.classList.add('disabled');
-        //         } else {
-        //             btnEl.style.display = 'inline-block';
-        //             btnEl.disabled = false;
-        //             btnEl.classList.remove('disabled');
-        //         }
-        //     } else {
-        //         headerEl.innerHTML = 'Training am <span style="color:var(--primary)">' + FULL_DAYS[selectedDayIndex] + '</span>';
-        //         // Instead of hiding, we disable it
-        //         btnEl.style.display = 'inline-block';
-        //         btnEl.disabled = true;
-        //         btnEl.classList.add('disabled');
-        //     }
-        // }
-
     </script>
 
 </body>
