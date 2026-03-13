@@ -36,14 +36,18 @@
             min-height: 28px;
             display: flex;
             align-items: center;
-            transition: opacity 0.35s;
+            transition: opacity 0.5s;
+            will-change: opacity;
+            pointer-events: auto;
             opacity: 1;
         }
         #daily-train-desc {
             min-height: 20px;
             display: flex;
             align-items: center;
-            transition: opacity 0.35s;
+            transition: opacity 0.5s;
+            will-change: opacity;
+            pointer-events: auto;
             opacity: 1;
         }
         
@@ -785,8 +789,14 @@
             if(dot2 && trainingState === 1) dot2.classList.add('active');
 
             // Sofort: Platzhalter anzeigen mit Fade-Out
-            if(title) title.style.opacity = 0;
-            if(desc) desc.style.opacity = 0;
+            if(title) {
+                title.style.opacity = 0;
+                title.style.pointerEvents = 'none';
+            }
+            if(desc) {
+                desc.style.opacity = 0;
+                desc.style.pointerEvents = 'none';
+            }
             if(img) img.style.opacity = 0;
 
             // Nachladen aus DB
@@ -865,10 +875,12 @@
                             if(title) {
                                 title.innerText = tTitle;
                                 title.style.opacity = 1;
+                                setTimeout(() => { title.style.pointerEvents = 'auto'; }, 500);
                             }
                             if(desc) {
                                 desc.innerText = tDesc;
                                 desc.style.opacity = 1;
+                                setTimeout(() => { desc.style.pointerEvents = 'auto'; }, 500);
                             }
                             if(img) {
                                 img.src = tImg;
