@@ -36,11 +36,15 @@
             min-height: 28px;
             display: flex;
             align-items: center;
+            transition: opacity 0.35s;
+            opacity: 1;
         }
         #daily-train-desc {
             min-height: 20px;
             display: flex;
             align-items: center;
+            transition: opacity 0.35s;
+            opacity: 1;
         }
         
         /* History Dots Grid */
@@ -91,6 +95,8 @@
             height: 110px; 
             width: auto; 
             object-fit: contain;
+            transition: opacity 0.35s;
+            opacity: 1;
         }
         
         @media (max-width: 600px) {
@@ -386,6 +392,7 @@
             document.getElementById('nd-2').classList.toggle('active', currentNutriMode === 1);
             document.getElementById('nd-3').classList.toggle('active', currentNutriMode === 2);
 
+            // Target Percentage
             // Target Percentage
             const percentage = Math.min(Math.max(mode.current / mode.max, 0), 1); // Clamp 0-1
             
@@ -777,10 +784,10 @@
             if(dot1 && trainingState === 0) dot1.classList.add('active');
             if(dot2 && trainingState === 1) dot2.classList.add('active');
 
-            // Sofort: Platzhalter anzeigen
-            if(title) title.innerText = tTitle;
-            if(desc) desc.innerText = tDesc;
-            if(img) img.src = tImg;
+            // Sofort: Platzhalter anzeigen mit Fade-Out
+            if(title) title.style.opacity = 0;
+            if(desc) desc.style.opacity = 0;
+            if(img) img.style.opacity = 0;
 
             // Nachladen aus DB
             try {
@@ -853,9 +860,21 @@
                             tImg = 'img/rest.png';
                         }
                         // Update UI
-                        if(title) title.innerText = tTitle;
-                        if(desc) desc.innerText = tDesc;
-                        if(img) img.src = tImg;
+                        // Nach kurzem Timeout Werte setzen und Fade-In
+                        setTimeout(() => {
+                            if(title) {
+                                title.innerText = tTitle;
+                                title.style.opacity = 1;
+                            }
+                            if(desc) {
+                                desc.innerText = tDesc;
+                                desc.style.opacity = 1;
+                            }
+                            if(img) {
+                                img.src = tImg;
+                                img.style.opacity = 1;
+                            }
+                        }, 200);
                     }
                 }
             } catch(e) { /* Fehler ignorieren, bleibt bei Rest Day */ }
