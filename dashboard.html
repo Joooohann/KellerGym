@@ -118,12 +118,12 @@
 
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <div id="daily-train-title" style="font-size: 22px; font-weight: 800; margin-bottom: 5px;">Lower Body</div>
-                        <div id="daily-train-desc" style="font-size: 15px; color: var(--text-mute);">1:10h, 6 Übungen</div>
+                        <div id="daily-train-title" style="font-size: 22px; font-weight: 800; margin-bottom: 5px;"> </div>
+                        <div id="daily-train-desc" style="font-size: 15px; color: var(--text-mute);"> </div>
                     </div>
                     
                     <!-- Rig Image -->
-                    <img src="img/lower_body.png" class="rig-image" id="training-img">
+                    <img src="img/loading.png" class="rig-image" id="training-img">
                 </div>
 
                 <!-- Dots (2 states) -->
@@ -470,23 +470,15 @@
             const container = document.getElementById('week-overview');
             if(!container) return;
             container.innerHTML = '';
-            
+
             // Get today's index (0=Sun, 1=Mon in JS, but we want 0=Mon)
             let todayObj = new Date();
             let todayDate = todayObj.getDay(); 
             let todayIndex = (todayDate === 0) ? 6 : todayDate - 1; // Normalize: Mon=0 ... Sun=6
-            
-            // Check workout days from storage or defaults
-            let workoutDays = ['Mo', 'Mi', 'Fr', 'So']; // Default
-            
-            if(window.obData && window.obData.days && window.obData.days.length > 0) {
-               workoutDays = window.obData.days;
-            }
 
+            // Sofort: alle Tage als Restday anzeigen
             DAYS.forEach((day, index) => {
                 const isToday = (index === todayIndex);
-                const isWorkout = workoutDays.includes(day);
-                
                 // Outer column
                 const col = document.createElement('div');
                 col.className = 'week-day-col';
@@ -494,7 +486,7 @@
                 col.style.flexDirection = 'column';
                 col.style.alignItems = 'center';
                 col.style.gap = '5px';
-                
+
                 col.style.border = '2px solid transparent'; // base border
                 col.style.borderRadius = '16px';
                 col.style.padding = '4px'; 
@@ -513,34 +505,74 @@
                 circle.style.display = 'flex';
                 circle.style.alignItems = 'center';
                 circle.style.justifyContent = 'center';
-                
-                if(isWorkout) {
-                    circle.style.border = '2px solid var(--primary)';
-                    circle.style.background = 'rgba(0, 255, 204, 0.1)';
-                    // Biceps Image
-                    circle.innerHTML = `<img src="img/biceps_2.png" style="width: 18px; height: 18px; object-fit: contain;">`;
-                } else {
-                    circle.style.border = '1px solid transparent';
-                    circle.style.background = '#2a2d35';
-                    circle.innerHTML = '<i class="fa-solid fa-couch" style="color:#555; font-size:14px;"></i>';
-                }
+
+                circle.style.border = '1px solid transparent';
+                circle.style.background = '#2a2d35';
+                // Couch-Icon (FontAwesome)
+                circle.innerHTML = '<i class="fa-solid fa-couch" style="color:#555; font-size:14px;"></i>';
 
                 // Label
                 const label = document.createElement('div');
                 label.style.fontSize = '12px';
                 label.style.fontWeight = '600';
                 label.innerText = day;
-                
+
                 if(isToday) {
                     label.style.color = 'var(--primary)';
                 } else {
                     label.style.color = 'var(--text-mute)';
                 }
-                
+
                 col.appendChild(circle);
                 col.appendChild(label);
                 container.appendChild(col);
             });
+
+            // Nachladen: Nur Icons aktualisieren
+            (async () => {
+                let workoutDays = [];
+                try {
+                    const supabase = (await import('./supabase-config.js')).supabase;
+                    let userId = null;
+                    if(window.obData && window.obData.user_id) {
+                        userId = window.obData.user_id;
+                    } else if(window.obData && window.obData.id) {
+                        userId = window.obData.id;
+                    } else if(localStorage.getItem('kellerGymData')) {
+                        const d = JSON.parse(localStorage.getItem('kellerGymData'));
+                        userId = d.user_id || d.id;
+                    }
+                    if(userId) {
+                        const { data: plans, error } = await supabase
+                            .from('workout_plans')
+                            .select('workout_days')
+                            .eq('user_id', userId)
+                            .eq('is_active', true)
+                            .maybeSingle();
+                        if(plans && plans.workout_days) {
+                            workoutDays = plans.workout_days.split(',').map(d => d.trim());
+                        }
+                    }
+                } catch(e) { console.error('Fehler beim Laden der Trainingstage aus workout_plans:', e); }
+
+                // Nur Icons aktualisieren
+                const cols = container.querySelectorAll('.week-day-col');
+                DAYS.forEach((day, index) => {
+                    const isWorkout = workoutDays.includes(day);
+                    const circle = cols[index]?.querySelector('div');
+                    if(circle) {
+                        if(isWorkout) {
+                            circle.style.border = '2px solid var(--primary)';
+                            circle.style.background = 'rgba(0, 255, 204, 0.1)';
+                            circle.innerHTML = `<img src="img/biceps_2.png" style="width: 18px; height: 18px; object-fit: contain;">`;
+                        } else {
+                            circle.style.border = '1px solid transparent';
+                            circle.style.background = '#2a2d35';
+                            circle.innerHTML = '<i class="fa-solid fa-couch" style="color:#555; font-size:14px;"></i>';
+                        }
+                    }
+                });
+            })();
         }
 
         function renderHistory() {
@@ -677,10 +709,29 @@
              }
         }
         
-        let trainingState = 0; // 0: Today (Lower), 1: Tomorrow (Off)
-        function toggleTrainingView() {
-            trainingState = (trainingState + 1) % 2; // Toggle between 0 and 1
-            
+
+        let trainingState = 0; // 0: Today, 1: Tomorrow
+        // Helper: Zeitformat
+        function formatTime(mins) {
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            return `${h}:${m.toString().padStart(2, '0')}h`;
+        }
+
+        // Setzt das Training-UI (wird auch initial aufgerufen)
+        async function setTrainingCard() {
+                // Tag bestimmen
+                let d = new Date();
+                let idx = d.getDay(); // 0=So, 1=Mo
+                let weekIdx = (idx === 0) ? 6 : idx - 1; // 0=Mo, 6=So
+                if(trainingState === 1) {
+                    weekIdx = (weekIdx + 1) % 7;
+                }
+                const weekDays = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+                const todayLabel = weekDays[weekIdx];
+                // DEBUG: Tag und Daten anzeigen
+                console.log('DEBUG: setTrainingCard()');
+                console.log('Heute (todayLabel):', todayLabel);
             const header = document.getElementById('training-header');
             const title = document.getElementById('daily-train-title');
             const desc = document.getElementById('daily-train-desc');
@@ -692,21 +743,107 @@
             if(dot1) dot1.classList.remove('active');
             if(dot2) dot2.classList.remove('active');
 
-            if(trainingState === 0) {
-                // Today: Lower Body
-                if(header) header.innerHTML = '<span style="color:var(--primary)">Heutiges Training</span>';
-                if(title) title.innerText = 'Lower Body';
-                if(desc) desc.innerText = '1:10h, 6 Übungen';
-                if(img) img.src = 'img/lower_body.png';
-                if(dot1) dot1.classList.add('active');
-            } else {
-                 // Tomorrow: Restday
-                if(header) header.innerHTML = '<span style="color:var(--primary)">Morgiges Training</span>';
-                if(title) title.innerText = 'Restday';
-                if(desc) desc.innerText = 'Regeneriere dich';
-                if(img) img.src = 'img/rest.png';
-                if(dot2) dot2.classList.add('active');
-            }
+            // Default: Rest Day
+            let tTitle = 'Rest Day';
+            let tDesc = 'Regeneriere dich';
+            let tImg = 'img/full_body.png';
+            let tTime = '0:00h';
+            let tCount = 0;
+
+            // (already declared above)
+
+            // Header setzen
+            if(header) header.innerHTML = `<span style="color:var(--primary)">${trainingState === 0 ? 'Heutiges Training' : 'Morgiges Training'}</span>`;
+            if(dot1 && trainingState === 0) dot1.classList.add('active');
+            if(dot2 && trainingState === 1) dot2.classList.add('active');
+
+            // Sofort: Rest Day anzeigen
+            if(title) title.innerText = tTitle;
+            if(desc) desc.innerText = `${tTime}, ${tCount} Übungen`;
+            if(img) img.src = tImg;
+
+            // Nachladen aus DB
+            try {
+                const supabase = (await import('./supabase-config.js')).supabase;
+                let userId = null;
+                if(window.obData && window.obData.user_id) {
+                    userId = window.obData.user_id;
+                } else if(window.obData && window.obData.id) {
+                    userId = window.obData.id;
+                } else if(localStorage.getItem('kellerGymData')) {
+                    const d = JSON.parse(localStorage.getItem('kellerGymData'));
+                    userId = d.user_id || d.id;
+                }
+                if(userId) {
+                    // Aktiven Plan holen (inkl. workout_days)
+                    const { data: plan, error: planErr } = await supabase
+                        .from('workout_plans')
+                        .select('id, workout_days')
+                        .eq('user_id', userId)
+                        .eq('is_active', true)
+                        .maybeSingle();
+                    if(plan && plan.id) {
+                        let workoutDays = [];
+                        if(plan.workout_days) {
+                            workoutDays = plan.workout_days.split(',').map(d => d.trim());
+                        }
+                        // Ist heute/morgen ein Trainingstag?
+                        console.log('Aktiver Plan workout_days:', workoutDays);
+                        if(workoutDays.includes(todayLabel)) {
+                            // Exercises für diesen Plan und Tag holen
+                            const { data: exRows, error: exErr } = await supabase
+                                .from('plan_exercises')
+                                .select('split_day, day, sets_soll')
+                                .eq('plan_id', plan.id);
+                            console.log('Alle geladenen plan_exercises:', exRows, 'Fehler:', exErr);
+                            if(exErr) {
+                                console.error('Fehler beim Laden der plan_exercises:', exErr);
+                            }
+                            if(exRows && exRows.length > 0) {
+                                const norm = s => (s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                                const todayRows = exRows.filter(r => {
+                                    const rDay = norm(r.day);
+                                    const tLabel = norm(todayLabel);
+                                    if (rDay === tLabel) {
+                                        return true;
+                                    } else {
+                                        // Debug: zeige alle Vergleiche
+                                        console.log('Vergleich plan_exercises:', {rDay, tLabel, origDay: r.day, todayLabel});
+                                        return false;
+                                    }
+                                });
+                                console.log('Alle plan_exercises für heute:', todayRows);
+                                if(todayRows.length > 0) {
+                                    tTitle = todayRows[0].split_day || 'Training';
+                                    tCount = todayRows.length;
+                                    // Zeit: Summe aller Sätze * 3 Minuten
+                                    let totalSets = todayRows.reduce((sum, ex) => sum + (parseInt(ex.sets_soll) || 0), 0);
+                                    tTime = formatTime(totalSets * 3);
+                                    tDesc = `${tTime}, ${tCount} Übungen`;
+                                    // Bildlogik
+                                    if(/upper/i.test(tTitle)) tImg = 'img/upper_body.png';
+                                    else if(/lower/i.test(tTitle)) tImg = 'img/lower_body.png';
+                                    else tImg = 'img/full_body.png';
+                                }
+                            }
+                        } else {
+                            // Kein Training heute
+                            tTitle = 'Rest Day';
+                            tDesc = 'Regeneriere dich';
+                            tImg = 'img/rest.png';
+                        }
+                        // Update UI
+                        if(title) title.innerText = tTitle;
+                        if(desc) desc.innerText = tDesc;
+                        if(img) img.src = tImg;
+                    }
+                }
+            } catch(e) { /* Fehler ignorieren, bleibt bei Rest Day */ }
+        }
+
+        function toggleTrainingView() {
+            trainingState = (trainingState + 1) % 2;
+            setTrainingCard();
         }
 
         function initQuote() {
@@ -778,25 +915,23 @@
             if (savedSettings) {
                 try {
                     const settings = JSON.parse(savedSettings);
-                    
                     // Sleep
                     if (settings.sleepTracking === false) {
                         const sleepSection = document.getElementById('section-sleep');
                         if (sleepSection) sleepSection.style.display = 'none';
                     }
-
                     // Scroll Padding (Always apply)
                     if(settings.scrollPad !== undefined) {
                         const screen = document.getElementById('screen-home');
                         if(screen) screen.style.setProperty('--dash-pad', settings.scrollPad + 'px');
                     }
-                    
                 } catch (e) {
                     console.error("Error parsing settings", e);
                 }
             }
-            
+
             // Render
+            setTrainingCard();
             renderWeek();
             renderNutrition();
             renderHistory();

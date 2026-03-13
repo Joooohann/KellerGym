@@ -6,7 +6,7 @@ order_index,name,primary_muscle,description,equipment,note,amount_sets,amount_re
 4,Kurzhantel Flys,Brust,,Kurzhanzeln,,3,10,10,,Schulter
 5,Dips,Brust,,Dip-Barren,,3,10,0,,Trizeps;Schulter
 6,Butterfly,Brust,,Maschine,,3,12,40,,Schulter
-7,Schrägbankdrücken,Brust,,Kurzhanteln,,3,10,26,,Schulter;Trizeps
+7,Kurzhantel Schrägbankdrücken,Brust,,Kurzhanteln,,3,10,26,,Schulter;Trizeps
 8,Liegestütze Breitgriff,Brust,,,,3,20,,,Trizeps
 9,Diamond Liegestütze,Brust,,,,3,20,,,Trizeps
 
@@ -19,7 +19,7 @@ order_index,name,primary_muscle,description,equipment,note,amount_sets,amount_re
 7,Klimmzüge Breitgriff,Rücken,,Klimmzugstange,,3,12,0,,Bizeps
 8,Kurzhantel Deadlift,Rücken,,Kurzhanteln,,3,12,15,,
 
-1,Schulterdrücken,Schulter,,Langhantel,,3,8,40,,Trizeps
+1,Langhantel Schulterdrücken,Schulter,,Langhantel,,3,8,40,,Trizeps
 2,Kurzhantel Schulterdrücken,Schulter,,Kurzhanteln,,3,10,22,,Trizeps
 3,Seitheben,Schulter,,Kurzhanteln,,4,12,10,,
 4,Face Pulls,Schulter,,Kabelzug,,3,12,25,,Rücken
