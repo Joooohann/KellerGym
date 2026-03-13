@@ -20,3 +20,12 @@ Ganzkörper,Brust,2
 Ganzkörper,Schulter,1
 Ganzkörper,Bizeps,2
 Ganzkörper,Trizeps,2
+
+Brust-Tag,Brust,5
+Rücken-Tag,Rücken,5
+Beine-Tag,Beine,5
+Schultern-Tag&Arme-Tag,Bizeps,5
+Schultern-Tag,Schulter,5
+Arme-Tag,Trizeps,5
+Bizeps-Tag,Bizeps,5
+Trizeps-Tag,Trizeps,5

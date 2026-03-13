@@ -20,6 +20,28 @@
             border-radius: 24px;
             /* No carbon stripe */
         }
+        .carbon-card {
+            min-height: 120px;
+            background-color: #15161A;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .carbon-card .rig-image {
+            min-height: 80px;
+            min-width: 80px;
+        }
+        #daily-train-title {
+            min-height: 28px;
+            display: flex;
+            align-items: center;
+        }
+        #daily-train-desc {
+            min-height: 20px;
+            display: flex;
+            align-items: center;
+        }
         
         /* History Dots Grid */
         .history-grid {
@@ -743,23 +765,21 @@
             if(dot1) dot1.classList.remove('active');
             if(dot2) dot2.classList.remove('active');
 
-            // Default: Rest Day
-            let tTitle = 'Rest Day';
-            let tDesc = 'Regeneriere dich';
-            let tImg = 'img/full_body.png';
-            let tTime = '0:00h';
+            // Platzhalter: Während des Ladens
+            let tTitle = ' ';
+            let tDesc = ' ';
+            let tImg = 'img/loading.png';
+            let tTime = '';
             let tCount = 0;
-
-            // (already declared above)
 
             // Header setzen
             if(header) header.innerHTML = `<span style="color:var(--primary)">${trainingState === 0 ? 'Heutiges Training' : 'Morgiges Training'}</span>`;
             if(dot1 && trainingState === 0) dot1.classList.add('active');
             if(dot2 && trainingState === 1) dot2.classList.add('active');
 
-            // Sofort: Rest Day anzeigen
+            // Sofort: Platzhalter anzeigen
             if(title) title.innerText = tTitle;
-            if(desc) desc.innerText = `${tTime}, ${tCount} Übungen`;
+            if(desc) desc.innerText = tDesc;
             if(img) img.src = tImg;
 
             // Nachladen aus DB
@@ -827,7 +847,7 @@
                                 }
                             }
                         } else {
-                            // Kein Training heute
+                            // Kein Training heute: Rest Day
                             tTitle = 'Rest Day';
                             tDesc = 'Regeneriere dich';
                             tImg = 'img/rest.png';
