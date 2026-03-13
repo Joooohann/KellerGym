@@ -294,10 +294,16 @@
             DAYS.forEach((day, index) => {
                 const isWorkout = trainingDays.includes(day);
                 const circle = cols[index]?.querySelector('div');
-                if(circle && isWorkout) {
-                    circle.style.border = '2px solid var(--primary)';
-                    circle.style.background = 'rgba(0, 255, 204, 0.1)';
-                    circle.innerHTML = '<img src="img/biceps_2.png" style="width: 18px; height: 18px; object-fit: contain;">';
+                if(circle) {
+                    if (isWorkout) {
+                        circle.style.border = '2px solid var(--primary)';
+                        circle.style.background = 'rgba(0, 255, 204, 0.1)';
+                        circle.innerHTML = '<img src="img/biceps_2.png" style="width: 18px; height: 18px; object-fit: contain;">';
+                    } else {
+                        circle.style.border = '1px solid transparent';
+                        circle.style.background = '#2a2d35';
+                        circle.innerHTML = '<i class="fa-solid fa-couch" style="color:#555; font-size:14px;"></i>';
+                    }
                 }
             });
         }
@@ -695,6 +701,10 @@
                         .update({ is_active: true })
                         .eq('id', plan.id);
                     await loadMyPlans();
+                    // Nach Planwechsel: Woche sofort aktualisieren
+                    window.trainingDays = null;
+                    await loadTrainingDaysFromSupabase();
+                    renderWeek();
                 };
 
                 card.appendChild(infoDiv);
