@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>KellerGym - Statistik</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+    <style>
+                /* Globale Utility-Klasse für SVG-Reveal von links */
+                .svg-reveal-left {
+                    mask-image: linear-gradient(90deg, #000 60%, transparent 100%);
+                    -webkit-mask-image: linear-gradient(90deg, #000 60%, transparent 100%);
+                    mask-size: 200% 100%;
+                    -webkit-mask-size: 200% 100%;
+                    mask-position: -100% 0;
+                    -webkit-mask-position: -100% 0;
+                    animation: svg-reveal-left-anim 1.1s cubic-bezier(0.4,0,0.2,1) 0.2s both;
+                }
+                @keyframes svg-reveal-left-anim {
+                    from {
+                        mask-position: -100% 0;
+                        -webkit-mask-position: -100% 0;
+                    }
+                    to {
+                        mask-position: 0 0;
+                        -webkit-mask-position: 0 0;
+                    }
+                }
+        :root {
+            --diagram-stroke: #006666; /* alt: #00ffd0 */
+            --diagram-space-top: 20px;
+            --diagram-space-bottom: 20px;
+        }
+        body {
+            background: var(--bg-body) radial-gradient(circle at 50% -10%, rgba(0, 128, 128, 0.4) 0%, rgba(8, 9, 12, 0) 80%) no-repeat;
+            background-attachment: fixed;
+            height: 100dvh;
+        }
+        #app-viewport { padding-bottom: 90px !important; }
+        .simple-card, .carbon-card {
+            background-color: #15161A;
+            border-radius: 24px;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.chart-anim-group').forEach(group => {
+                const segs = group.querySelectorAll('.chart-segment-anim');
+                const pts = group.querySelectorAll('.chart-pt-anim');
+                const steps = Math.max(segs.length, pts.length);
+                for (let i = 0; i < steps; i++) {
+                    setTimeout(() => {
+                        if (segs[i]) {
+                            segs[i].style.transition = 'opacity 0.35s cubic-bezier(0.4,0,0.2,1)';
+                            segs[i].style.opacity = 1;
+                        }
+                        if (pts[i]) {
+                            pts[i].style.transition = 'opacity 0.35s cubic-bezier(0.4,0,0.2,1)';
+                            pts[i].style.opacity = 1;
+                        }
+                    }, 350 + i * 120);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="app-viewport">
+        <div class="header-row" style="justify-content:center; margin-top:10px; margin-bottom: 25px;">
+            <h1 style="font-family: 'Black Ops One', cursive; color: var(--primary); font-size: 32px; margin:0; font-weight: 400;">Statistiken</h1>
+        </div>
+        <!--
+            DEV-HINWEIS: Diese Statistik-Ansicht ist aktuell nur ein Platzhalter.
+            Später sollen hier dynamisch alle Muskelgruppen und deren Übungen aus der Datenbank angezeigt werden.
+        -->
+        <div style="display:flex; justify-content:center; gap:18px; margin-bottom: 18px;">
+            <div style="color:var(--primary); font-weight:700; font-size:18px; border-bottom:3px solid var(--primary); padding-bottom:2px;">Training</div>
+            <div style="color:#888; font-weight:700; font-size:18px;">Ernährung</div>
+            <div style="color:#888; font-weight:700; font-size:18px;">Gewicht</div>
+        </div>
+        <div style="padding-bottom: 30px;">
+            <!-- Muskelgruppen Sektionen (Platzhalter) -->
+            <div style="margin-bottom: 28px;">
+                <div style="font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 10px; display:flex; align-items:center; gap:6px;">Rücken
+                    <svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle;"><polyline points="8,5 16,12 8,19" fill="none" stroke="#888" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+                    <div class="carbon-card" style="padding:18px 16px 12px 16px; background:#18191e;">
+                        <div style="font-size:17px; font-weight:700; color:#fff;">Kurzhantelrudern</div>
+                        <div style="font-size:13px; color:#aaa; margin-bottom:8px;">Letzte 7 Trainings</div>
+                        <div style="margin-top:var(--diagram-space-top); margin-bottom:var(--diagram-space-bottom);">
+                            <svg width="100%" height="38" viewBox="0 0 120 38">
+                                <g class="chart-anim-group">
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="5,33 25,28"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="25,28 45,32"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="45,32 65,18"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="65,18 85,25"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="85,25 105,12"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="105,12 115,20"/>
+                                    <circle class="chart-pt-anim" cx="5" cy="33" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="25" cy="28" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="45" cy="32" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="65" cy="18" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="85" cy="25" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="105" cy="12" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="115" cy="20" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                </g>
+                            </svg>
+                            <div style="height:1.5px; background:#5c5555; opacity:0.35; margin:6px 0 0 0;"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; color:#fff;">
+                            <span style="color:#aaa; font-size:13px;">16.76 <span style="font-size:12px; color:#888;">kg</span></span>
+                            <i class="fa-solid fa-chevron-right" style="color:#888; font-size:15px;"></i>
+                        </div>
+                    </div>
+                    <div class="carbon-card" style="padding:18px 16px 12px 16px; background:#18191e;">
+                        <div style="font-size:17px; font-weight:700; color:#fff;">Inverted Row</div>
+                        <div style="font-size:13px; color:#aaa; margin-bottom:8px;">Letzte 7 Trainings</div>
+                        <div style="margin-top:var(--diagram-space-top); margin-bottom:var(--diagram-space-bottom);">
+                            <svg width="100%" height="38" viewBox="0 0 120 38">
+                                <g class="chart-anim-group">
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="5,33 25,25"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="25,25 45,30"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="45,30 65,15"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="65,15 85,22"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="85,22 105,8"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="105,8 115,2"/>
+                                    <circle class="chart-pt-anim" cx="5" cy="33" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="25" cy="25" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="45" cy="30" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="65" cy="15" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="85" cy="22" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="105" cy="8" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="115" cy="2" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                </g>
+                            </svg>
+                            <div style="height:1.5px; background:#5c5555; opacity:0.35; margin:6px 0 0 0;"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; color:#fff;">
+                            <span style="color:#aaa; font-size:13px;">15 <span style="font-size:12px; color:#888;">reps</span></span>
+                            <i class="fa-solid fa-chevron-right" style="color:#888; font-size:15px;"></i>
+                        </div>
+                    </div>
+                    <div class="carbon-card" style="padding:18px 16px 12px 16px; background:#18191e;">
+                        <div style="font-size:17px; font-weight:700; color:#fff;">Hyperextensions</div>
+                        <div style="font-size:13px; color:#aaa; margin-bottom:8px;">Letzte 7 Trainings</div>
+                        <div style="margin-top:var(--diagram-space-top); margin-bottom:var(--diagram-space-bottom);">
+                            <svg width="100%" height="38" viewBox="0 0 120 38">
+                                <g class="chart-anim-group">
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="5,33 25,30"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="25,30 45,35"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="45,35 65,22"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="65,22 85,28"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="85,28 105,18"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="105,18 115,25"/>
+                                    <circle class="chart-pt-anim" cx="5" cy="33" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="25" cy="30" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="45" cy="35" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="65" cy="22" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="85" cy="28" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="105" cy="18" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="115" cy="25" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                </g>
+                            </svg>
+                            <div style="height:1.5px; background:#5c5555; opacity:0.35; margin:6px 0 0 0;"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; color:#fff;">
+                            <span style="color:#aaa; font-size:13px;">14 <span style="font-size:12px; color:#888;">reps</span></span>
+                            <i class="fa-solid fa-chevron-right" style="color:#888; font-size:15px;"></i>
+                        </div>
+                    </div>
+                    <div class="carbon-card" style="padding:18px 16px 12px 16px; background:#18191e;">
+                        <div style="font-size:17px; font-weight:700; color:#fff;">Überzüge am Kabel</div>
+                        <div style="font-size:13px; color:#aaa; margin-bottom:8px;">Letzte 7 Trainings</div>
+                        <div style="margin-top:var(--diagram-space-top); margin-bottom:var(--diagram-space-bottom);">
+                            <svg width="100%" height="38" viewBox="0 0 120 38">
+                                <g class="chart-anim-group">
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="5,33 25,27"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="25,27 45,32"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="45,32 65,25"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="65,25 85,20"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="85,20 105,30"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="105,30 115,18"/>
+                                    <circle class="chart-pt-anim" cx="5" cy="33" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="25" cy="27" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="45" cy="32" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="65" cy="25" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="85" cy="20" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="105" cy="30" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="115" cy="18" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                </g>
+                            </svg>
+                            <div style="height:1.5px; background:#5c5555; opacity:0.35; margin:6px 0 0 0;"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; color:#fff;">
+                            <span style="color:#aaa; font-size:13px;">61.80 <span style="font-size:12px; color:#888;">kg</span></span>
+                            <i class="fa-solid fa-chevron-right" style="color:#888; font-size:15px;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom: 28px;">
+                <div style="font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 10px; display:flex; align-items:center; gap:6px;">Brust
+                    <svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle;"><polyline points="8,5 16,12 8,19" fill="none" stroke="#888" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+                    <div class="carbon-card" style="padding:18px 16px 12px 16px; background:#18191e;">
+                        <div style="font-size:17px; font-weight:700; color:#fff;">Kurzhantelbankdrücken</div>
+                        <div style="font-size:13px; color:#aaa; margin-bottom:8px;">Letzte 7 Trainings</div>
+                        <div style="margin-top:var(--diagram-space-top); margin-bottom:var(--diagram-space-bottom);">
+                            <svg width="100%" height="38" viewBox="0 0 120 38">
+                                <g class="chart-anim-group">
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="5,33 25,28"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="25,28 45,35"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="45,35 65,22"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="65,22 85,30"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="85,30 105,18"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="105,18 115,25"/>
+                                    <circle class="chart-pt-anim" cx="5" cy="33" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="25" cy="28" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="45" cy="35" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="65" cy="22" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="85" cy="30" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="105" cy="18" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="115" cy="25" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                </g>
+                            </svg>
+                            <div style="height:1.5px; background:#5c5555; opacity:0.35; margin:6px 0 0 0;"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; color:#fff;">
+                            <span style="color:#aaa; font-size:13px;">17.25 <span style="font-size:12px; color:#888;">kg</span></span>
+                            <i class="fa-solid fa-chevron-right" style="color:#888; font-size:15px;"></i>
+                        </div>
+                    </div>
+                    <div class="carbon-card" style="padding:18px 16px 12px 16px; background:#18191e;">
+                        <div style="font-size:17px; font-weight:700; color:#fff;">Schrägbank-Flies</div>
+                        <div style="font-size:13px; color:#aaa; margin-bottom:8px;">Letzte 7 Trainings</div>
+                        <div style="margin-top:var(--diagram-space-top); margin-bottom:var(--diagram-space-bottom);">
+                            <svg width="100%" height="38" viewBox="0 0 120 38">
+                                <g class="chart-anim-group">
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="5,33 25,28"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="25,28 45,25"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="45,25 65,22"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="65,22 85,20"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="85,20 105,18"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="105,18 115,16"/>
+                                    <circle class="chart-pt-anim" cx="5" cy="33" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="25" cy="28" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="45" cy="25" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="65" cy="22" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="85" cy="20" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="105" cy="18" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="115" cy="16" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                </g>
+                            </svg>
+                            <div style="height:1.5px; background:#5c5555; opacity:0.35; margin:6px 0 0 0;"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; color:#fff;">
+                            <span style="color:#aaa; font-size:13px;">6.80 <span style="font-size:12px; color:#888;">kg</span></span>
+                            <i class="fa-solid fa-chevron-right" style="color:#888; font-size:15px;"></i>
+                        </div>
+                    </div>
+                    <div class="carbon-card" style="padding:18px 16px 12px 16px; background:#18191e;">
+                        <div style="font-size:17px; font-weight:700; color:#fff;">KurzhSchrägbankdrücken</div>
+                        <div style="font-size:13px; color:#aaa; margin-bottom:8px;">Letzte 7 Trainings</div>
+                        <div style="margin-top:var(--diagram-space-top); margin-bottom:var(--diagram-space-bottom);">
+                            <svg width="100%" height="38" viewBox="0 0 120 38">
+                                <g class="chart-anim-group">
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="5,33 25,32"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="25,32 45,30"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="45,30 65,28"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="65,28 85,25"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="85,25 105,22"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="105,22 115,20"/>
+                                    <circle class="chart-pt-anim" cx="5" cy="33" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="25" cy="32" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="45" cy="30" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="65" cy="28" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="85" cy="25" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="105" cy="22" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="115" cy="20" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                </g>
+                            </svg>
+                            <div style="height:1.5px; background:#5c5555; opacity:0.35; margin:6px 0 0 0;"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; color:#fff;">
+                            <span style="color:#aaa; font-size:13px;">15.00 <span style="font-size:12px; color:#888;">kg</span></span>
+                            <i class="fa-solid fa-chevron-right" style="color:#888; font-size:15px;"></i>
+                        </div>
+                    </div>
+                    <div class="carbon-card" style="padding:18px 16px 12px 16px; background:#18191e;">
+                        <div style="font-size:17px; font-weight:700; color:#fff;">Liegestütz</div>
+                        <div style="font-size:13px; color:#aaa; margin-bottom:8px;">Letzte 7 Trainings</div>
+                        <div style="margin-top:var(--diagram-space-top); margin-bottom:var(--diagram-space-bottom);">
+                            <svg width="100%" height="38" viewBox="0 0 120 38">
+                                <g class="chart-anim-group">
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="5,33 25,30"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="25,30 45,28"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="45,28 65,28"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="65,28 85,27"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="85,27 105,26"/>
+                                    <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="105,26 115,25"/>
+                                    <circle class="chart-pt-anim" cx="5" cy="33" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="25" cy="30" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="45" cy="28" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="65" cy="28" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="85" cy="27" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="105" cy="26" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                    <circle class="chart-pt-anim" cx="115" cy="25" r="3" fill="#18191e" stroke="var(--diagram-stroke)" stroke-width="2" style="opacity:0"/>
+                                </g>
+                            </svg>
+                            <div style="height:1.5px; background:#5c5555; opacity:0.35; margin:6px 0 0 0;"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; color:#fff;">
+                            <span style="color:#aaa; font-size:13px;">20 <span style="font-size:12px; color:#888;">reps</span></span>
+                            <i class="fa-solid fa-chevron-right" style="color:#888; font-size:15px;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-icon"><i class="fa-solid fa-house"></i></a>
+        <a href="workouts.html" class="nav-icon"><i class="fa-solid fa-dumbbell"></i></a>
+        <a href="nutrition.html" class="nav-icon"><i class="fa-solid fa-utensils"></i></a>
+        <a href="statistik.html" class="nav-icon active"><i class="fa-solid fa-chart-column"></i></a>
+    </div>
+</body>
+</html>
