@@ -139,7 +139,7 @@
         </div>
 
         <!-- Workout Card -->
-        <div class="carbon-card" onclick="viewWorkoutDetails()" style="cursor: pointer; padding: 20px; display:flex; flex-direction:column; position: relative;">
+        <div class="carbon-card" id="workout-card" style="cursor: pointer; padding: 20px; display:flex; flex-direction:column; position: relative;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <div id="wo-header" style="font-size:18px; font-weight:700; letter-spacing:0.5px;">Heutiges Training</div>
                 <i id="wo-arrow" class="fa-solid fa-chevron-right" style="color:var(--text-mute); font-size:16px; display:none;"></i>
@@ -351,31 +351,102 @@
             // Load training days from Supabase and update week grid after initial render
             loadTrainingDaysFromSupabase();
 
-            // Handle Start Button
+            // Handle Start Button (now async, checks for exercises)
             const startBtn = document.getElementById('btn-start');
             if(startBtn) {
-                startBtn.addEventListener('click', (e) => {
+                startBtn.addEventListener('click', async (e) => {
                     e.stopPropagation();
-                    const workout = SCHEDULE[selectedDayIndex];
-                    if(workout && workout.type !== 'off') {
-                        localStorage.setItem('activeWorkoutType', workout.type);
+                    let hasExercises = false;
+                    let splitDay = null;
+                    try {
+                        const supabase = (await import('./supabase-config.js')).supabase;
+                        let userId = null;
+                        if(window.obData && window.obData.user_id) {
+                            userId = window.obData.user_id;
+                        } else if(window.obData && window.obData.id) {
+                            userId = window.obData.id;
+                        } else if(localStorage.getItem('kellerGymData')) {
+                            const d = JSON.parse(localStorage.getItem('kellerGymData'));
+                            userId = d.user_id || d.id;
+                        }
+                        if(userId && selectedDayIndex >= 0) {
+                            const { data: plan } = await supabase
+                                .from('workout_plans')
+                                .select('id')
+                                .eq('user_id', userId)
+                                .eq('is_active', true)
+                                .maybeSingle();
+                            if(plan && plan.id) {
+                                const dayName = DAYS[selectedDayIndex];
+                                const { data: exercises } = await supabase
+                                    .from('plan_exercises')
+                                    .select('split_day')
+                                    .eq('plan_id', plan.id)
+                                    .eq('day', dayName);
+                                if(exercises && exercises.length > 0) {
+                                    hasExercises = true;
+                                    splitDay = exercises[0].split_day || dayName;
+                                }
+                            }
+                        }
+                    } catch(e) {}
+                    if(hasExercises) {
+                        localStorage.setItem('activeWorkoutType', splitDay);
                         localStorage.setItem('workoutSessionState', 'running');
+                        window.location.href = 'active_workout.html';
+                    }
+                });
+            }
+
+            // Make workout card clickable only if exercises exist for selected day
+            const workoutCard = document.getElementById('workout-card');
+            if(workoutCard) {
+                workoutCard.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    let hasExercises = false;
+                    let splitDay = null;
+                    try {
+                        const supabase = (await import('./supabase-config.js')).supabase;
+                        let userId = null;
+                        if(window.obData && window.obData.user_id) {
+                            userId = window.obData.user_id;
+                        } else if(window.obData && window.obData.id) {
+                            userId = window.obData.id;
+                        } else if(localStorage.getItem('kellerGymData')) {
+                            const d = JSON.parse(localStorage.getItem('kellerGymData'));
+                            userId = d.user_id || d.id;
+                        }
+                        if(userId && selectedDayIndex >= 0) {
+                            const { data: plan } = await supabase
+                                .from('workout_plans')
+                                .select('id')
+                                .eq('user_id', userId)
+                                .eq('is_active', true)
+                                .maybeSingle();
+                            if(plan && plan.id) {
+                                const dayName = DAYS[selectedDayIndex];
+                                const { data: exercises } = await supabase
+                                    .from('plan_exercises')
+                                    .select('split_day')
+                                    .eq('plan_id', plan.id)
+                                    .eq('day', dayName);
+                                if(exercises && exercises.length > 0) {
+                                    hasExercises = true;
+                                    splitDay = exercises[0].split_day || dayName;
+                                }
+                            }
+                        }
+                    } catch(e) {}
+                    if(hasExercises) {
+                        localStorage.setItem('activeWorkoutType', splitDay);
+                        localStorage.setItem('workoutSessionState', 'viewing');
                         window.location.href = 'active_workout.html';
                     }
                 });
             }
         });
 
-        function viewWorkoutDetails() {
-            const workout = SCHEDULE[selectedDayIndex];
-            if(workout && workout.type !== 'off') {
-                localStorage.setItem('activeWorkoutType', workout.type);
-                // If we access via card click, we are just viewing (unless we want to persist state logic differently)
-                // For now, reset to viewing so the user sees the 'Start' button
-                localStorage.setItem('workoutSessionState', 'viewing'); 
-                window.location.href = 'active_workout.html';
-            }
-        }
+        // viewWorkoutDetails is now handled inline in the DOMContentLoaded event for async Supabase check
 
         function loadSchedule() {
             try {
@@ -452,6 +523,8 @@
                 if (isSelected) col.classList.add('selected');
                 col.onclick = () => {
                     selectedDayIndex = idx;
+                    // Speichere den gewählten Tag für active_workout.html
+                    localStorage.setItem('activeWorkoutDayIndex', idx);
                     renderWeek();
                 };
                 // Circle Icon
@@ -843,6 +916,8 @@
                 const descEl = document.getElementById('wo-desc');
                 const imgEl = document.getElementById('wo-img');
                 const headerEl = document.getElementById('wo-header');
+                // Fix: exercises immer definiert
+                let exercises = [];
                 // Header dynamisch setzen
                 if (selectedDayIndex === todayIndex) {
                     headerEl.innerHTML = 'Heutiges <span style="color:var(--primary)">Training</span>';
@@ -979,6 +1054,59 @@
                     arrowEl.style.display = 'block';
                 } else {
                     arrowEl.style.display = 'none';
+                }
+
+                // --- Übungen-Liste unter dem Trainingstag ---
+                let detailsContainer = document.getElementById('wo-details');
+                if(!detailsContainer) {
+                    detailsContainer = document.createElement('div');
+                    detailsContainer.id = 'wo-details';
+                    detailsContainer.style.marginTop = '18px';
+                    detailsContainer.style.display = 'flex';
+                    detailsContainer.style.flexDirection = 'column';
+                    detailsContainer.style.gap = '10px';
+                    imgEl.parentNode.parentNode.insertAdjacentElement('afterend', detailsContainer);
+                }
+                detailsContainer.innerHTML = '';
+                if(!isRestDay && exercises && exercises.length > 0) {
+                    // Mapping Muskelgruppe zu Bild
+                    const muscleImg = {
+                        'Bizeps': 'img/biceps_.png',
+                        'Trizeps': 'img/triceps.png',
+                        'Rücken': 'img/back.png',
+                        'Ruecken': 'img/back.png',
+                        'Back': 'img/back.png',
+                        'Brust': 'img/chest.png',
+                        'Schulter': 'img/shoulder.png',
+                        'Shoulder': 'img/shoulder.png',
+                        'Beine': 'img/legs.png',
+                        'Legs': 'img/legs.png',
+                        'Bauch': 'img/abs.png',
+                        'Abs': 'img/abs.png',
+                    };
+                    exercises.forEach(ex => {
+                        const row = document.createElement('div');
+                        row.style.display = 'flex';
+                        row.style.alignItems = 'center';
+                        row.style.gap = '12px';
+                        row.style.background = 'rgba(255,255,255,0.01)';
+                        row.style.borderRadius = '10px';
+                        row.style.padding = '8px 10px';
+                        // Muskelgruppen-Bild
+                        let mImg = muscleImg[ex.muscle_group] || 'img/full_body.png';
+                        const img = document.createElement('img');
+                        img.src = mImg;
+                        img.alt = ex.muscle_group || '';
+                        img.style.width = '32px';
+                        img.style.height = '32px';
+                        img.style.objectFit = 'contain';
+                        // Übungsname, Sätze, Gewicht
+                        const info = document.createElement('div');
+                        info.innerHTML = `<div style="font-weight:700;font-size:15px;">${ex.exercise}</div><div style="font-size:13px;color:var(--text-mute);">${ex.sets_soll ? ex.sets_soll + ' Sätze' : ''}${ex.weight ? ' · ' + ex.weight + 'kg' : ''}</div>`;
+                        row.appendChild(img);
+                        row.appendChild(info);
+                        detailsContainer.appendChild(row);
+                    });
                 }
             })();
         }

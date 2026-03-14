@@ -368,165 +368,111 @@
     </div>
 
     <script>
-        // Mock Data for Exercises
-        const WORKOUT_CONTENT = {
-            'lower': [
-                { name: 'Squats', muscle: 'Beine', sets: 4, reps: '6-8', weight: '80', img: 'img/pullups.png' },
-                { name: 'Romanian Deadlifts', muscle: 'Beine', sets: 3, reps: '8-10', weight: '70', img: 'img/pullups.png' },
-                { name: 'Leg Press', muscle: 'Beine', sets: 3, reps: '10-12', weight: '120', img: 'img/pullups.png' },
-                { name: 'Leg Extensions', muscle: 'Beine', sets: 3, reps: '12-15', weight: '45', img: 'img/pullups.png' },
-                { name: 'Leg Curls', muscle: 'Beine', sets: 3, reps: '12-15', weight: '40', img: 'img/pullups.png' },
-                { name: 'Calf Raises', muscle: 'Waden', sets: 4, reps: '10-15', weight: '60', img: 'img/pullups.png' }
-            ],
-            'upper': [
-                { name: 'Bench Press', muscle: 'Brust', sets: 4, reps: '6-8', weight: '70', img: 'img/pullups.png' },
-                { name: 'Pull Ups', muscle: 'Rücken', sets: 3, reps: 'AMRAP', weight: '0', img: 'img/pullups.png' },
-                { name: 'Overhead Press', muscle: 'Schulter', sets: 3, reps: '8-10', weight: '40', img: 'img/pullups.png' },
-                { name: 'Barbell Rows', muscle: 'Rücken', sets: 3, reps: '8-10', weight: '60', img: 'img/pullups.png' },
-                { name: 'Incline DB Press', muscle: 'Brust', sets: 3, reps: '10-12', weight: '26', img: 'img/pullups.png' },
-                { name: 'Lateral Raises', muscle: 'Schulter', sets: 4, reps: '15-20', weight: '10', img: 'img/pullups.png' },
-                { name: 'Bicep Curls', muscle: 'Bizeps', sets: 3, reps: '12-15', weight: '12', img: 'img/pullups.png' }
-            ],
-            'full': [
-                { name: 'Squats', muscle: 'Beine', sets: 3, reps: '6-8', weight: '80', img: 'img/pullups.png' },
-                { name: 'Bench Press', muscle: 'Brust', sets: 3, reps: '6-8', weight: '70', img: 'img/pullups.png' },
-                { name: 'Deadlifts', muscle: 'Rücken', sets: 3, reps: '5', weight: '100', img: 'img/pullups.png' },
-                { name: 'Pull Ups', muscle: 'Rücken', sets: 3, reps: 'AMRAP', weight: '0', img: 'img/pullups.png' },
-                { name: 'Dips', muscle: 'Brust', sets: 3, reps: '10-12', weight: '0', img: 'img/pullups.png' },
-                { name: 'Face Pulls', muscle: 'Schulter', sets: 3, reps: '15-20', weight: '15', img: 'img/pullups.png' }
-            ]
-        };
-        
-        const WORKOUT_TITLES = {
-            'lower': 'Lower Body',
-            'upper': 'Upper Body',
-            'full': 'Ganzkörper'
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Get workout type from localStorage
-            const activeType = localStorage.getItem('activeWorkoutType') || 'lower';
-            
-            // Set Title
-            const title = WORKOUT_TITLES[activeType] || 'Training';
-            document.getElementById('workout-title').innerText = title;
-
-            // --- Controls Logic ---
-            const sessionState = localStorage.getItem('workoutSessionState') || 'viewing';
-            const controlsContainer = document.getElementById('controls-container');
-            const isPaused = (localStorage.getItem('workoutIsPaused') === 'true');
-
-            if(sessionState === 'running') {
-                // Pause Button
-                const pauseBtn = document.createElement('button');
-                pauseBtn.className = 'btn-control';
-                pauseBtn.innerHTML = isPaused ? '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-pause"></i>';
-                pauseBtn.style.backgroundColor = '#333'; 
-                pauseBtn.style.border = '1px solid #555';
-                pauseBtn.style.width = '60px'; // Square-ish
-                pauseBtn.style.fontSize = '18px';
-                
-                pauseBtn.onclick = () => {
-                    const paused = (localStorage.getItem('workoutIsPaused') === 'true');
-                    if(paused) {
-                        localStorage.setItem('workoutIsPaused', 'false');
-                        pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-                    } else {
-                        localStorage.setItem('workoutIsPaused', 'true');
-                        pauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-                    }
-                };
-
-                // Finish Button
-                const finishBtn = document.createElement('button');
-                finishBtn.className = 'btn-control';
-                finishBtn.innerText = 'Beenden';
-                finishBtn.style.backgroundColor = 'rgba(211, 47, 47, 0.2)';
-                finishBtn.style.color = '#ff6666';
-                finishBtn.style.border = '1px solid #d32f2f';
-                finishBtn.style.flex = '1';
-                
-                finishBtn.onclick = () => {
-                    if(confirm('Training wirklich beenden?')) {
-                        localStorage.removeItem('workoutSessionState');
-                        localStorage.removeItem('workoutIsPaused');
-                        window.location.href = 'workouts.html';
-                    }
-                };
-
-                controlsContainer.appendChild(pauseBtn);
-                controlsContainer.appendChild(finishBtn);
-
+        // --- Dynamische Datenbankabfrage für aktives Workout ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            const supabase = (await import('./supabase-config.js')).supabase;
+            // Tag bestimmen (wie in workouts.html)
+            const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+            const FULL_DAYS = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+            let selectedDayIndex = localStorage.getItem('activeWorkoutDayIndex');
+            if(selectedDayIndex === null) {
+                // Fallback: heute
+                const d = new Date();
+                let idx = d.getDay();
+                selectedDayIndex = (idx === 0) ? 6 : idx - 1;
             } else {
-                // Start Button
-                const startBtn = document.createElement('button');
-                startBtn.className = 'btn-control';
-                startBtn.innerText = 'Starten';
-                startBtn.style.backgroundColor = 'var(--primary)';
-                startBtn.style.color = '#000'; // Contrast text
-                startBtn.style.width = '100%';
-                
-                startBtn.onclick = () => {
-                    localStorage.setItem('workoutSessionState', 'running');
-                    window.location.reload();
-                };
-                controlsContainer.appendChild(startBtn);
+                selectedDayIndex = parseInt(selectedDayIndex);
             }
-
-            // Render List
-            const list = WORKOUT_CONTENT[activeType] || [];
-            const container = document.getElementById('exercise-list');
-            
-            list.forEach((ex, index) => {
-                const card = document.createElement('div');
-                card.className = 'exercise-card';
-                
-                // Clicking the card opens details
-                card.onclick = () => {
-                    openExerciseOverlay(ex);
-                };
-
-                // Simulate first two exercises as completed
-                if(index < 2) {
-                    card.classList.add('completed');
+            const dayName = DAYS[selectedDayIndex];
+            // User-ID holen
+            let userId = null;
+            if(window.obData && window.obData.user_id) {
+                userId = window.obData.user_id;
+            } else if(window.obData && window.obData.id) {
+                userId = window.obData.id;
+            } else if(localStorage.getItem('kellerGymData')) {
+                const d = JSON.parse(localStorage.getItem('kellerGymData'));
+                userId = d.user_id || d.id;
+            }
+            let splitName = dayName;
+            let exercises = [];
+            if(userId) {
+                // Aktiven Plan holen
+                const { data: plan } = await supabase
+                    .from('workout_plans')
+                    .select('id')
+                    .eq('user_id', userId)
+                    .eq('is_active', true)
+                    .maybeSingle();
+                if(plan && plan.id) {
+                    // Übungen für diesen Tag holen
+                    const { data: exRows } = await supabase
+                        .from('plan_exercises')
+                        .select('split_day, exercise, sets_soll, reps_soll, weight, muscle_group')
+                        .eq('plan_id', plan.id)
+                        .eq('day', dayName);
+                    if(exRows && exRows.length > 0) {
+                        splitName = exRows[0].split_day || dayName;
+                        exercises = exRows;
+                    }
                 }
-
-                // Use placeholder image for all as requested
-                const imgSrc = 'img/pullups.png';
-                
-                // Defaults
-                const muscle = ex.muscle || 'Muskelgruppe';
-                const weight = ex.weight ? ex.weight + ' kg' : '-';
-
-                card.innerHTML = `
-                    <div class="ex-image-container">
-                        <img src="${imgSrc}" alt="${ex.name}">
-                    </div>
-                
-                    <div class="ex-info">
-                        <div class="ex-muscle-label">${muscle}</div>
-                        <div class="ex-name">${ex.name}</div>
-                        
-                        <div class="ex-stats-row">
-                            <div class="ex-stat-item">
-                                <img src="img/satz400.png" alt="Sätze" style="width: 14px; height: 14px; object-fit: contain;">
-                                <span>${ex.sets} Sätze</span>
-                            </div>
-                            <div class="ex-stat-item">
-                                <i class="fa-solid fa-dumbbell ex-stat-icon" style="color: #e67e22;"></i>
-                                <span>${weight}</span>
+            }
+            // Überschrift setzen
+            document.getElementById('workout-title').innerText = splitName;
+            // Übungen rendern
+            const container = document.getElementById('exercise-list');
+            container.innerHTML = '';
+            // Mapping Muskelgruppe zu Bild
+            const muscleImg = {
+                'Bizeps': 'img/biceps_.png',
+                'Trizeps': 'img/triceps.png',
+                'Rücken': 'img/back.png',
+                'Ruecken': 'img/back.png',
+                'Back': 'img/back.png',
+                'Brust': 'img/chest.png',
+                'Schulter': 'img/shoulders.png',
+                'Shoulder': 'img/shoulders.png',
+                'Beine': 'img/legs.png',
+                'Legs': 'img/legs.png',
+                'Bauch': 'img/abs.png',
+                'Abs': 'img/abs.png',
+            };
+            if(exercises.length > 0) {
+                exercises.forEach(ex => {
+                    const card = document.createElement('div');
+                    card.className = 'exercise-card';
+                    // Muskelgruppen-Bild
+                    let mImg = muscleImg[ex.muscle_group] || 'img/full_body.png';
+                    card.innerHTML = `
+                        <div class="ex-image-container">
+                            <img src="${mImg}" alt="${ex.muscle_group||''}">
+                        </div>
+                        <div class="ex-info">
+                            <div class="ex-muscle-label">${ex.muscle_group||''}</div>
+                            <div class="ex-name">${ex.exercise}</div>
+                            <div class="ex-stats-row">
+                                <div class="ex-stat-item">
+                                    <img src="img/satz400.png" alt="Sätze" style="width: 14px; height: 14px; object-fit: contain;">
+                                    <span>${ex.sets_soll||''} Sätze</span>
+                                </div>
+                                <div class="ex-stat-item">
+                                    <i class="fa-solid fa-dumbbell ex-stat-icon" style="color: #e67e22;"></i>
+                                    <span>${ex.weight||'0'} kg</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Swap Button -->
-                    <div class="swap-btn" onclick="openExerciseSwap(event, '${ex.name}')">
-                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
+                        <div class="swap-btn" onclick="openExerciseSwap(event, '${ex.exercise}')">
+                            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } else {
+                // Kein Training heute
+                container.innerHTML = '<div style="color:#888; text-align:center; padding:30px 0;">Kein Training für diesen Tag gefunden.</div>';
+            }
         });
+
         
         function openExerciseSwap(e, exerciseName) {
             e.stopPropagation(); // Prevent opening the overlay

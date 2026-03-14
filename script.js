@@ -375,14 +375,17 @@ function finishOnboarding(isTest = false) {
         const weekDays = obData.days || [];
         // Index pro Wochentag (day) hochzählen
         let dayIndexMap = {};
+        // Hilfsfunktion für tolerant Matching von Bein-Tagen
+        function normalizeSplitName(name) {
+            return (name||'').toLowerCase().replace(/[^a-zäöüß]/gi, '').replace('ä','a').replace('ö','o').replace('ü','u');
+        }
         for (let i = 0; i < splitTemplates.length; i++) {
             const day = splitTemplates[i];
             const splitDayName = day.day_name;
-            // Wochentag zuordnen (z.B. Mo, Di, ...)
             const weekDay = weekDays[i] || null;
             if (!(weekDay in dayIndexMap)) dayIndexMap[weekDay] = 0;
-            // Muskelgruppen für diesen Tag
-            const mgRows = splitDayMG.filter(mg => mg.split_day_name === splitDayName);
+            // Tolerantes Matching: Bein-Tage zusammenfassen
+            let mgRows = splitDayMG.filter(mg => mg.split_day_name === splitDayName);
             if (mgRows.length === 0) {
                 console.warn('Keine Muskelgruppen für Tag', splitDayName, 'in splitDayMG gefunden!');
             }
@@ -400,7 +403,6 @@ function finishOnboarding(isTest = false) {
                     if (ex.primary_muscle !== muscleGroup) return false;
                     // Körpergewicht-Übungen immer erlauben
                     if (!ex.equipment || ex.equipment === null || ex.equipment.toLowerCase().includes('körpergewicht')) return true;
-                    // Robusteren Vergleich: Kleinbuchstaben, Singular/Plural, Leerzeichen raus
                     const eq = ex.equipment.toLowerCase().replace(/ /g, '');
                     return obData.equipment.some(e => {
                         const userEq = e.toLowerCase().replace(/ /g, '');
