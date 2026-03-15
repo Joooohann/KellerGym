@@ -400,7 +400,259 @@
                 </div>
             </div>
         </div>
-        <div class="statistik-tab-content" style="display:none; min-height:180px; text-align:center; color:#aaa; font-size:18px; padding:40px 0 60px 0;">Noch keine Daten für Ernährung.</div>
+        <div class="statistik-tab-content" id="nutrition-tab-content" style="display:none; min-height:340px; text-align:center; color:#aaa; font-size:18px; padding:40px 0 60px 0; justify-content:center; align-items:center; flex-direction:column;">
+            <div id="nutrition-chart-container" style="display:flex; justify-content:center;">
+                <div id="nutrition-card" style="max-width: 520px; margin: 0 auto; background: #18191e; border-radius: 18px; padding: 18px 8px 18px 18px; box-shadow: 0 2px 16px #0002; position:relative; width:100%; cursor:pointer;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                        <button id="nutr-prev-week" style="background:none; border:none; color:#aaa; font-size:1.5rem; cursor:pointer; padding:0 10px;">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <div id="nutr-week-label" style="font-size:1.1rem; font-weight:700; color:#fff;">Woche 9.3 - 15.3</div>
+                        <button id="nutr-next-week" style="background:none; border:none; color:#aaa; font-size:1.5rem; cursor:pointer; padding:0 10px;">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div id="nutr-category-label" style="font-size:1.1rem; font-weight:700; color:var(--primary,#1de9b6); margin-bottom:2px; cursor:pointer; user-select:none;">Kalorien</div>
+                    <div style="position:relative; height:210px; margin-bottom:10px;">
+                        <svg id="nutr-bar-chart" width="100%" height="210" viewBox="0 0 470 210"></svg>
+                    </div>
+                    <!-- Wochentage werden jetzt im SVG direkt unter den Balken angezeigt -->
+                    <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
+                        <span class="nutr-dot" data-idx="0" style="width:7px; height:7px; border-radius:50%; background:#444; display:inline-block;"></span>
+                        <span class="nutr-dot" data-idx="1" style="width:7px; height:7px; border-radius:50%; background:#444; display:inline-block;"></span>
+                        <span class="nutr-dot" data-idx="2" style="width:7px; height:7px; border-radius:50%; background:#444; display:inline-block;"></span>
+                        <span class="nutr-dot" data-idx="3" style="width:7px; height:7px; border-radius:50%; background:#444; display:inline-block;"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <script>
+            // --- Ernährung Chart Logik ---
+            const nutrCategories = [
+                { name: 'Kalorien', color: 'var(--primary)', goal: 2200, unit: 'kcal' },
+                { name: 'Kohlenhydrate', color: 'var(--accent-blue)', goal: 250, unit: 'g' },
+                { name: 'Eiweiß', color: 'var(--primary)', goal: 140, unit: 'g' },
+                { name: 'Fette', color: '#e67e22', goal: 70, unit: 'g' }
+            ];
+            let nutrCurrentCat = 0;
+            let nutrCurrentWeek = 0; // 0 = aktuelle Woche, -1 = letzte Woche, ...
+            function getNutrWeekLabel(offset=0) {
+                // Dummy: aktuelle Woche berechnen (Mo-So)
+                const now = new Date();
+                const day = now.getDay()||7; // 1=Mo, 7=So
+                const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day + 1 + offset*7);
+                const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
+                const fmt = d => d.getDate() + '.' + (d.getMonth()+1);
+                return `Woche ${fmt(monday)} - ${fmt(sunday)}`;
+            }
+            function getNutrDummyData(catIdx) {
+                // Dummy: Zufallsdaten, aber immer gleich für gleiche Woche/Kategorie
+                const base = [2100, 2300, 1800, 2200, 2000, 2500, 1900];
+                const carb = [200, 260, 180, 240, 210, 300, 190];
+                const prot = [120, 135, 110, 140, 125, 150, 130];
+                const fat = [60, 80, 55, 70, 65, 90, 60];
+                return [base, carb, prot, fat][catIdx];
+            }
+            function renderNutrChart() {
+    const cat = nutrCategories[nutrCurrentCat];
+    document.getElementById('nutr-category-label').textContent = cat.name;
+    document.getElementById('nutr-category-label').style.color = cat.color;
+    const svg = document.getElementById('nutr-bar-chart');
+    // Clear SVG
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    // Grid group
+    const grid = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    grid.setAttribute('id', 'nutr-chart-grid');
+    // Horizontal grid lines
+    const hGridY = [30, 70, 110, 150, 180];
+    const hGridOp = [0.5, 0.35, 0.3, 0.35, 0.5];
+    hGridY.forEach((y, i) => {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', '30');
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', '440');
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', '#333');
+        line.setAttribute('stroke-width', '1');
+        line.setAttribute('opacity', hGridOp[i]);
+        grid.appendChild(line);
+    });
+    // Vertical grid lines
+    const vGridX = [50, 108, 166, 224, 282, 340, 398, 440];
+    const vGridOp = [0.3, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3];
+    vGridX.forEach((x, i) => {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x);
+        line.setAttribute('y1', '30');
+        line.setAttribute('x2', x);
+        line.setAttribute('y2', '180');
+        line.setAttribute('stroke', '#333');
+        line.setAttribute('stroke-width', '1');
+        line.setAttribute('opacity', vGridOp[i]);
+        grid.appendChild(line);
+    });
+    svg.appendChild(grid);
+    // Ziel-Linie
+    const yGoal = 30 + 150 * (1 - Math.min(cat.goal/Math.max(...getNutrDummyData(nutrCurrentCat)),1));
+    const goalText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    goalText.setAttribute('id', 'nutr-goal-label');
+    goalText.setAttribute('x', '2');
+    goalText.setAttribute('y', (yGoal+4));
+    goalText.setAttribute('fill', '#e74c3c');
+    goalText.setAttribute('font-size', '13');
+    goalText.setAttribute('font-family', 'sans-serif');
+    goalText.setAttribute('text-anchor', 'start');
+    goalText.textContent = 'Ziel';
+    svg.appendChild(goalText);
+    const goalLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    goalLine.setAttribute('id', 'nutr-goal-line');
+    goalLine.setAttribute('x1', '30');
+    goalLine.setAttribute('x2', '440');
+    goalLine.setAttribute('y1', yGoal);
+    goalLine.setAttribute('y2', yGoal);
+    goalLine.setAttribute('stroke', '#e74c3c');
+    goalLine.setAttribute('stroke-width', '2');
+    svg.appendChild(goalLine);
+    // Balken
+    const data = getNutrDummyData(nutrCurrentCat);
+    const maxVal = Math.max(cat.goal, ...data);
+    const days = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+    // Store bar animation targets for JS animation
+    const barTargets = [];
+    const labelTargets = [];
+    for(let i=0;i<7;i++){
+        const val = data[i];
+        const h = 150 * (val/maxVal);
+        const y = 180-h;
+        const x = 50 + i*58;
+        // Balken (rect)
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('id', `nutr-bar-${i}`);
+        rect.setAttribute('x', x-16);
+        rect.setAttribute('y', 180);
+        rect.setAttribute('width', 32);
+        rect.setAttribute('height', 0);
+        rect.setAttribute('rx', 6);
+        rect.setAttribute('fill', cat.color);
+        rect.setAttribute('opacity', 0.85);
+        svg.appendChild(rect);
+        barTargets.push({rect, y, h, delay: 80*i});
+        // Value label (text)
+        const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        txt.setAttribute('x', x);
+        txt.setAttribute('y', y-8);
+        txt.setAttribute('text-anchor', 'middle');
+        txt.setAttribute('font-size', '13');
+        txt.setAttribute('fill', '#aaa');
+        txt.setAttribute('opacity', '0');
+        txt.textContent = val;
+        svg.appendChild(txt);
+        labelTargets.push({txt, delay: 80*i+500});
+    }
+    // Animate bars and labels via JS
+    function animateBars() {
+        const start = performance.now();
+        function animate(now) {
+            let elapsed = now - start;
+            let allDone = true;
+            // Bars
+            for (const {rect, y, h, delay} of barTargets) {
+                const t = Math.max(0, Math.min(1, (elapsed-delay)/700));
+                if (t < 1) allDone = false;
+                // Ease
+                const ease = t<0?0:(t>1?1:(t<0.5?2*t*t:1-2*(1-t)*(1-t)));
+                const curH = h * ease;
+                rect.setAttribute('height', curH);
+                rect.setAttribute('y', 180-curH);
+            }
+            // Labels
+            for (const {txt, delay} of labelTargets) {
+                const t = Math.max(0, Math.min(1, (elapsed-delay)/300));
+                if (t < 1) allDone = false;
+                txt.setAttribute('opacity', t);
+            }
+            if (!allDone) requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+    }
+    animateBars();
+    // Wochentage unter die Balken
+    for(let i=0;i<7;i++){
+        const x = 50 + i*58;
+        const dayTxt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        dayTxt.setAttribute('x', x);
+        dayTxt.setAttribute('y', 202);
+        dayTxt.setAttribute('text-anchor', 'middle');
+        dayTxt.setAttribute('font-size', '15');
+        dayTxt.setAttribute('fill', '#aaa');
+        dayTxt.textContent = days[i];
+        svg.appendChild(dayTxt);
+    }
+    // Achsen
+    const axisX = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    axisX.setAttribute('x1', '30');
+    axisX.setAttribute('y1', '180');
+    axisX.setAttribute('x2', '440');
+    axisX.setAttribute('y2', '180');
+    axisX.setAttribute('stroke', '#888');
+    axisX.setAttribute('stroke-width', '2');
+    svg.appendChild(axisX);
+    const axisY = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    axisY.setAttribute('x1', '30');
+    axisY.setAttribute('y1', '30');
+    axisY.setAttribute('x2', '30');
+    axisY.setAttribute('y2', '180');
+    axisY.setAttribute('stroke', '#888');
+    axisY.setAttribute('stroke-width', '2');
+    svg.appendChild(axisY);
+            }
+            function updateNutrDots() {
+                document.querySelectorAll('.nutr-dot').forEach((dot,i)=>{
+                    dot.style.background = (i===nutrCurrentCat) ? 'var(--primary,#1de9b6)' : '#444';
+                });
+            }
+            document.addEventListener('DOMContentLoaded',()=>{
+                // Ernährung Tab Logik
+                const tabs = document.querySelectorAll('.statistik-tab');
+                const nutrTab = document.getElementById('nutrition-tab-content');
+                tabs[1].addEventListener('click',()=>{
+                    nutrTab.style.display = '';
+                    renderNutrChart();
+                    updateNutrDots();
+                });
+                // Kategorie-Umschalter: Klick auf das ganze Kästchen
+                document.getElementById('nutrition-card').addEventListener('click', (e) => {
+                    // Nur umschalten, wenn nicht auf Pfeile oder Punkte geklickt wurde
+                    if (
+                        e.target.closest('#nutr-prev-week') ||
+                        e.target.closest('#nutr-next-week') ||
+                        e.target.classList.contains('nutr-dot')
+                    ) return;
+                    nutrCurrentCat = (nutrCurrentCat+1)%nutrCategories.length;
+                    renderNutrChart();
+                    updateNutrDots();
+                });
+                // Punkte-Umschalter
+                document.querySelectorAll('.nutr-dot').forEach((dot,i)=>{
+                    dot.addEventListener('click',()=>{
+                        nutrCurrentCat = i;
+                        renderNutrChart();
+                        updateNutrDots();
+                    });
+                });
+                // Wochen-Navigation (Dummy)
+                document.getElementById('nutr-prev-week').addEventListener('click',()=>{
+                    nutrCurrentWeek--;
+                    document.getElementById('nutr-week-label').textContent = getNutrWeekLabel(nutrCurrentWeek);
+                });
+                document.getElementById('nutr-next-week').addEventListener('click',()=>{
+                    nutrCurrentWeek++;
+                    document.getElementById('nutr-week-label').textContent = getNutrWeekLabel(nutrCurrentWeek);
+                });
+                // Initial Woche
+                document.getElementById('nutr-week-label').textContent = getNutrWeekLabel();
+            });
+            </script>
         <!-- Removed duplicate placeholder for Gewicht; only chart/placeholder area below is used -->
         <div class="statistik-tab-content" id="weight-tab-content" style="display:none; min-height:340px; text-align:center; color:#aaa; font-size:18px; padding:40px 0 60px 0; justify-content:center; align-items:center; flex-direction:column;">
             <div id="weight-chart-container" style="display:none;">
