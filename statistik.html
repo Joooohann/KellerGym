@@ -195,10 +195,10 @@
                         </div>
                     </div>
                     <div class="carbon-card" style="padding:18px 16px 12px 16px; background:#18191e;">
-                        <div style="font-size:17px; font-weight:700; color:#fff;">Inverted Row</div>
+                        <div style="font-size:17px; font-weight:700; color:#fff;">Inverted Roww</div>
                         <div style="font-size:13px; color:#aaa; margin-bottom:8px;">Letzte 7 Trainings</div>
                         <div style="margin-top:var(--diagram-space-top); margin-bottom:var(--diagram-space-bottom);">
-                            <svg width="100%" height="38" viewBox="0 0 120 38">
+                            <svg width="100%" height="38" viewBox="0 0 120 38" style="position:relative; z-index:2;">
                                 <g class="chart-anim-group">
                                     <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="5,33 25,25"/>
                                     <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="25,25 45,30"/>
@@ -226,7 +226,7 @@
                         <div style="font-size:17px; font-weight:700; color:#fff;">Hyperextensions</div>
                         <div style="font-size:13px; color:#aaa; margin-bottom:8px;">Letzte 7 Trainings</div>
                         <div style="margin-top:var(--diagram-space-top); margin-bottom:var(--diagram-space-bottom);">
-                            <svg width="100%" height="38" viewBox="0 0 120 38">
+                            <svg width="100%" height="38" viewBox="0 0 120 38" style="position:relative; z-index:2;">
                                 <g class="chart-anim-group">
                                     <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="5,33 25,30"/>
                                     <polyline class="chart-segment-anim" style="opacity:0" fill="none" stroke="var(--diagram-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="25,30 45,35"/>
@@ -401,7 +401,161 @@
             </div>
         </div>
         <div class="statistik-tab-content" style="display:none; min-height:180px; text-align:center; color:#aaa; font-size:18px; padding:40px 0 60px 0;">Noch keine Daten für Ernährung.</div>
-        <div class="statistik-tab-content" style="display:none; min-height:180px; text-align:center; color:#aaa; font-size:18px; padding:40px 0 60px 0;">Noch keine Daten für Gewicht.</div>
+        <!-- Removed duplicate placeholder for Gewicht; only chart/placeholder area below is used -->
+        <div class="statistik-tab-content" id="weight-tab-content" style="display:none; min-height:340px; text-align:center; color:#aaa; font-size:18px; padding:40px 0 60px 0; justify-content:center; align-items:center; flex-direction:column;">
+            <div id="weight-chart-container" style="display:none;">
+                <div style="max-width: 540px; margin: 0 auto; background: #18191e; border-radius: 18px; padding: 18px 8px 18px 18px; box-shadow: 0 2px 16px #0002; position:relative;">
+                    <div style="font-size: 1.15rem; font-weight: 700; color: #fff; text-align:center; margin-bottom: 0px;">Gewicht</div>
+                    <svg id="weight-chart-svg" width="100%" height="380" viewBox="0 0 480 380" style="display:block; margin:0 auto; margin-top:-8px;">
+                        <!-- Grid background -->
+                        <g id="weight-chart-grid">
+                            <!-- Horizontal grid lines -->
+                            <line x1="35" y1="30" x2="470" y2="30" stroke="#333" stroke-width="1" opacity="0.5"/>
+                            <line x1="35" y1="98" x2="470" y2="98" stroke="#333" stroke-width="1" opacity="0.4"/>
+                            <line x1="35" y1="158" x2="470" y2="158" stroke="#333" stroke-width="1" opacity="0.4"/>
+                            <line x1="35" y1="218" x2="470" y2="218" stroke="#333" stroke-width="1" opacity="0.4"/>
+                            <line x1="35" y1="278" x2="470" y2="278" stroke="#333" stroke-width="1" opacity="0.4"/>
+                            <line x1="35" y1="350" x2="470" y2="350" stroke="#333" stroke-width="1" opacity="0.5"/>
+                            <!-- Vertical grid lines -->
+                            <line x1="55" y1="30" x2="55" y2="350" stroke="#333" stroke-width="1" opacity="0.3"/>
+                            <line x1="135" y1="30" x2="135" y2="350" stroke="#333" stroke-width="1" opacity="0.2"/>
+                            <line x1="215" y1="30" x2="215" y2="350" stroke="#333" stroke-width="1" opacity="0.2"/>
+                            <line x1="295" y1="30" x2="295" y2="350" stroke="#333" stroke-width="1" opacity="0.2"/>
+                            <line x1="375" y1="30" x2="375" y2="350" stroke="#333" stroke-width="1" opacity="0.2"/>
+                            <line x1="435" y1="30" x2="435" y2="350" stroke="#333" stroke-width="1" opacity="0.2"/>
+                            <line x1="465" y1="30" x2="465" y2="350" stroke="#333" stroke-width="1" opacity="0.3"/>
+                        </g>
+                        <!-- Y-Axis (kg) with numbers -->
+                        <g style="font-size:13px; font-family:sans-serif; fill:#aaa;">
+                            <text x="28" y="38" text-anchor="end">80</text>
+                            <text x="28" y="98" text-anchor="end">78</text>
+                            <text x="28" y="158" text-anchor="end">76</text>
+                            <text x="28" y="218" text-anchor="end">74</text>
+                            <text x="28" y="278" text-anchor="end">72</text>
+                        </g>
+                        <!-- Y-Axis label -->
+                        <text x="-30" y="190" text-anchor="middle" transform="rotate(-90 -30,190)" style="font-size:13px; fill:#aaa;">kg</text>
+                        <!-- Y-Axis line -->
+                        <line x1="35" y1="30" x2="35" y2="350" stroke="#444" stroke-width="2"/>
+                        <!-- X-Axis line -->
+                        <line x1="35" y1="350" x2="470" y2="350" stroke="#444" stroke-width="2"/>
+                        <!-- X-Axis (days) -->
+                        <g style="font-size:12px; font-family:sans-serif; fill:#aaa;">
+                            <text x="55" y="370" text-anchor="middle">1</text>
+                            <text x="135" y="370" text-anchor="middle">5</text>
+                            <text x="215" y="370" text-anchor="middle">10</text>
+                            <text x="295" y="370" text-anchor="middle">15</text>
+                            <text x="375" y="370" text-anchor="middle">20</text>
+                            <text x="435" y="370" text-anchor="middle">25</text>
+                            <text x="465" y="370" text-anchor="middle">30</text>
+                        </g>
+                        <!-- X-Axis label -->
+                        <text x="255" y="395" text-anchor="middle" font-size="15" fill="#aaa">Tage</text>
+                        <!-- Y-Axis label -->
+                        <text x="16" y="190" text-anchor="middle" font-size="18" fill="#aaa" transform="rotate(-90 16 190)">kg</text>
+                        <!-- Chart line and points (animated) -->
+                        <g class="chart-anim-group">
+                            <polyline id="weight-chart-polyline" class="chart-segment-anim" style="opacity:0; stroke-dasharray: 2000; stroke-dashoffset: 2000; transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)" fill="none" stroke="var(--diagram-stroke,#1de9b6)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                            <g id="weight-chart-points"></g>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+            <div id="weight-placeholder">Noch keine Daten für Gewicht.</div>
+        </div>
+        <script>
+        // --- Weight Chart Data & Animation ---
+        function generateWeightData() {
+            // Simulate 30 days of weight, starting at 74.5kg, slow increase, some noise
+            let data = [];
+            let w = 74.5;
+            for(let i=0; i<30; ++i) {
+                w += 0.07 + (Math.random()-0.5)*0.18; // slow up, some noise
+                if(i===7||i===15||i===22) w -= 0.3; // small dips
+                if(i===12||i===25) w += 0.4; // small spikes
+                data.push(Math.round(w*100)/100);
+            }
+            return data;
+        }
+
+        function renderWeightChart() {
+            const data = generateWeightData();
+            // SVG dimensions
+            const w = 480, h = 380, left = 35, right = 10, top = 30, bottom = 30;
+            const chartW = w-left-right, chartH = h-top-bottom;
+            // Y scale: 72-80kg
+            const minY = 72, maxY = 80;
+            // X scale: 30 days
+            const n = data.length;
+            const xStep = chartW/(n-1);
+            // Build points
+            let points = data.map((val,i)=>{
+                const x = left + i*xStep;
+                const y = top + (maxY-val)/(maxY-minY)*chartH;
+                return [x,y];
+            });
+            // Polyline points string
+            const polyStr = points.map(p=>p.join(",")).join(" ");
+            // Set polyline
+            const poly = document.getElementById('weight-chart-polyline');
+            if(poly) {
+                poly.setAttribute('points', polyStr);
+                // Animate line: reset dashoffset
+                poly.style.transition = 'none';
+                poly.style.strokeDasharray = poly.getTotalLength();
+                poly.style.strokeDashoffset = poly.getTotalLength();
+                setTimeout(()=>{
+                    poly.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)';
+                    poly.style.strokeDashoffset = 0;
+                }, 50);
+            }
+            // Remove points (no circles)
+            const ptsG = document.getElementById('weight-chart-points');
+            if(ptsG) {
+                ptsG.innerHTML = '';
+            }
+        }
+
+        // Play animation when switching to Gewicht tab
+        function playWeightChartAnimation() {
+            // Animate polyline and points like other charts
+            const poly = document.getElementById('weight-chart-polyline');
+            // No points to animate, only animate the polyline
+            if(poly) {
+                poly.style.opacity = 1;
+                // The line animation is handled by stroke-dashoffset in renderWeightChart
+            }
+        }
+
+        // Show/hide weight chart only in Gewicht tab
+        document.addEventListener('DOMContentLoaded', ()=>{
+            const tabs = document.querySelectorAll('.statistik-tab');
+            const weightTab = document.getElementById('weight-tab-content');
+            const weightChart = document.getElementById('weight-chart-container');
+            const weightPlaceholder = document.getElementById('weight-placeholder');
+            function showWeightChart(active) {
+                if(weightTab && weightChart && weightPlaceholder) {
+                    if(active) {
+                        weightChart.style.display = '';
+                        weightPlaceholder.style.display = 'none';
+                        renderWeightChart();
+                        setTimeout(playWeightChartAnimation, 200);
+                    } else {
+                        weightChart.style.display = 'none';
+                        weightPlaceholder.style.display = '';
+                    }
+                }
+            }
+            tabs.forEach((tab, idx) => {
+                tab.addEventListener('click', ()=>{
+                    // Gewicht tab is idx 2 (0=Training,1=Ernährung,2=Gewicht)
+                    showWeightChart(idx===2);
+                });
+            });
+            // Initial state
+            showWeightChart(document.querySelector('.statistik-tab.active')?.textContent?.includes('Gewicht'));
+        });
+        </script>
     </div>
     <div class="bottom-nav">
         <a href="dashboard.html" class="nav-icon"><i class="fa-solid fa-house"></i></a>

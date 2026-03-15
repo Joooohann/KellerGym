@@ -353,6 +353,26 @@
 
             // Handle Start Button (now async, checks for exercises)
             const startBtn = document.getElementById('btn-start');
+            function updateStartBtnState() {
+                if (!startBtn) return;
+                // Only enable if selected day is today AND not a rest day (from rendered workout)
+                const workoutDesc = document.getElementById('wo-desc');
+                const isRestDay = workoutDesc && workoutDesc.innerText && workoutDesc.innerText.toLowerCase().includes('regeneriere');
+                if (selectedDayIndex === todayIndex && !isRestDay) {
+                    startBtn.disabled = false;
+                    startBtn.classList.remove('disabled');
+                } else {
+                    startBtn.disabled = true;
+                    startBtn.classList.add('disabled');
+                }
+            }
+            // Update button state on week/day change
+            const origRenderWeek = renderWeek;
+            renderWeek = function() {
+                origRenderWeek.apply(this, arguments);
+                updateStartBtnState();
+            };
+            updateStartBtnState();
             if(startBtn) {
                 startBtn.addEventListener('click', async (e) => {
                     e.stopPropagation();
