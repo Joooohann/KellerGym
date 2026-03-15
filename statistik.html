@@ -402,11 +402,11 @@
         </div>
         <div class="statistik-tab-content" style="display:none; min-height:180px; text-align:center; color:#aaa; font-size:18px; padding:40px 0 60px 0;">Noch keine Daten für Ernährung.</div>
         <!-- Removed duplicate placeholder for Gewicht; only chart/placeholder area below is used -->
-        <div class="statistik-tab-content" id="weight-tab-content" style="display:none; min-height:340px; text-align:center; color:#aaa; font-size:18px; padding:40px 0 60px 0; justify-content:center; align-items:center; flex-direction:column;">
+        <div class="statistik-tab-content" id="weight-tab-content" style="display:none; min-height:0; text-align:center; color:#aaa; font-size:18px; padding:16px 0 20px 0; justify-content:center; align-items:center; flex-direction:column;">
             <div id="weight-chart-container" style="display:none;">
-                <div style="max-width: 540px; margin: 0 auto; background: #18191e; border-radius: 18px; padding: 18px 8px 18px 18px; box-shadow: 0 2px 16px #0002; position:relative;">
-                    <div style="font-size: 1.15rem; font-weight: 700; color: #fff; text-align:center; margin-bottom: 0px;">Gewicht</div>
-                    <svg id="weight-chart-svg" width="100%" height="380" viewBox="0 0 480 380" style="display:block; margin:0 auto; margin-top:-8px;">
+                <div style="max-width: 540px; margin: 0 auto; background: #18191e; border-radius: 18px; padding: 8px 4px 8px 8px; box-shadow: 0 2px 16px #0002; position:relative;">
+                    <div style="font-size: 1.15rem; font-weight: 700; color: #fff; text-align:center; margin-bottom: 2px;">Gewicht</div>
+                    <svg id="weight-chart-svg" width="100%" height="320" viewBox="0 0 480 320" style="display:block; margin:0 auto; margin-top:0; margin-bottom:0;">
                         <!-- Grid background -->
                         <g id="weight-chart-grid">
                             <!-- Horizontal grid lines -->
@@ -457,6 +457,7 @@
                         <g class="chart-anim-group">
                             <polyline id="weight-chart-polyline" class="chart-segment-anim" style="opacity:0; stroke-dasharray: 2000; stroke-dashoffset: 2000; transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)" fill="none" stroke="var(--diagram-stroke,#1de9b6)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
                             <g id="weight-chart-points"></g>
+                            <g id="weight-chart-overlay"></g>
                         </g>
                     </svg>
                 </div>
@@ -479,7 +480,9 @@
         }
 
         function renderWeightChart() {
+            // Generate and store data globally for interactivity
             const data = generateWeightData();
+            window._weightChartData = data;
             // SVG dimensions
             const w = 480, h = 380, left = 35, right = 10, top = 30, bottom = 30;
             const chartW = w-left-right, chartH = h-top-bottom;
@@ -514,6 +517,79 @@
             if(ptsG) {
                 ptsG.innerHTML = '';
             }
+
+            // Add or update interactive overlay elements
+            let overlay = document.getElementById('weight-chart-overlay');
+            if (overlay) {
+                overlay.innerHTML = `
+                    <line id="weight-chart-cursor" x1="0" y1="30" x2="0" y2="350" stroke="#fff" stroke-width="2" opacity="0.7" style="display:none;"/>
+                    <rect id="weight-chart-label-bg" x="0" y="0" width="54" height="26" rx="7" fill="#18191e" stroke="#1de9b6" stroke-width="1.2" style="display:none;"/>
+                    <text id="weight-chart-label" x="0" y="0" font-size="15" fill="#fff" text-anchor="middle" alignment-baseline="middle" style="display:none;">0</text>
+                `;
+            }
+        // --- Interactivity for weight chart ---
+        function enableWeightChartInteractivity() {
+            const svg = document.getElementById('weight-chart-svg');
+            const poly = document.getElementById('weight-chart-polyline');
+            const overlay = document.getElementById('weight-chart-overlay');
+            if (!svg || !poly || !overlay) return;
+            // Chart dimensions and scales (must match renderWeightChart)
+            const w = 480, h = 380, left = 35, right = 10, top = 30, bottom = 30;
+            const chartW = w-left-right, chartH = h-top-bottom;
+            const minY = 72, maxY = 80;
+            const n = 30;
+            const xStep = chartW/(n-1);
+            // Use the same data as the chart
+            const data = window._weightChartData || [];
+            // Touch/mouse event handler
+            function handleMove(evt) {
+                let clientX;
+                if (evt.touches && evt.touches.length) {
+                    clientX = evt.touches[0].clientX;
+                } else {
+                    clientX = evt.clientX;
+                }
+                const rect = svg.getBoundingClientRect();
+                let x = clientX - rect.left;
+                // Clamp to chart area
+                x = Math.max(left, Math.min(w-right, x));
+                // Find nearest data index
+                const idx = Math.round((x-left)/xStep);
+                const dataX = left + idx*xStep;
+                const dataY = top + (maxY-data[idx])/(maxY-minY)*chartH;
+                // Update vertical line
+                const cursor = document.getElementById('weight-chart-cursor');
+                cursor.setAttribute('x1', dataX);
+                cursor.setAttribute('x2', dataX);
+                cursor.style.display = '';
+                // Update label
+                const label = document.getElementById('weight-chart-label');
+                const labelBg = document.getElementById('weight-chart-label-bg');
+                label.textContent = data[idx].toFixed(2) + ' kg';
+                let labelX = dataX;
+                let labelY = dataY - 18;
+                if (labelY < 20) labelY = dataY + 28;
+                label.setAttribute('x', labelX);
+                label.setAttribute('y', labelY);
+                label.style.display = '';
+                // Label background
+                labelBg.setAttribute('x', labelX-27);
+                labelBg.setAttribute('y', labelY-13);
+                labelBg.style.display = '';
+            }
+            function handleLeave() {
+                document.getElementById('weight-chart-cursor').style.display = 'none';
+                document.getElementById('weight-chart-label').style.display = 'none';
+                document.getElementById('weight-chart-label-bg').style.display = 'none';
+            }
+            svg.addEventListener('touchstart', handleMove);
+            svg.addEventListener('touchmove', handleMove);
+            svg.addEventListener('touchend', handleLeave);
+            svg.addEventListener('mousedown', handleMove);
+            svg.addEventListener('mousemove', handleMove); // always show on mouse move
+            svg.addEventListener('mouseleave', handleLeave);
+            svg.addEventListener('mouseup', handleLeave);
+        }
         }
 
         // Play animation when switching to Gewicht tab
@@ -539,7 +615,10 @@
                         weightChart.style.display = '';
                         weightPlaceholder.style.display = 'none';
                         renderWeightChart();
-                        setTimeout(playWeightChartAnimation, 200);
+                        setTimeout(()=>{
+                            playWeightChartAnimation();
+                            enableWeightChartInteractivity();
+                        }, 200);
                     } else {
                         weightChart.style.display = 'none';
                         weightPlaceholder.style.display = '';
