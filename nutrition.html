@@ -377,11 +377,45 @@
 
     <script>
         const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+        // Trainings-Tage aus Supabase laden wie in workouts.html
+        async function loadTrainingDaysFromSupabase() {
+            try {
+                const supabase = (await import('./supabase-config.js')).supabase;
+                let userId = null;
+                if(window.obData && window.obData.user_id) {
+                    userId = window.obData.user_id;
+                } else if(window.obData && window.obData.id) {
+                    userId = window.obData.id;
+                } else if(localStorage.getItem('kellerGymData')) {
+                    const d = JSON.parse(localStorage.getItem('kellerGymData'));
+                    userId = d.user_id || d.id;
+                }
+                if(userId) {
+                    // Aktiven Plan holen
+                    const { data: plan } = await supabase
+                        .from('workout_plans')
+                        .select('id')
+                        .eq('user_id', userId)
+                        .eq('is_active', true)
+                        .maybeSingle();
+                    if(plan && plan.id) {
+                        // Alle Übungen für diesen Plan holen
+                        const { data: exercises } = await supabase
+                            .from('plan_exercises')
+                            .select('day')
+                            .eq('plan_id', plan.id);
+                        // Alle Trainingstage extrahieren
+                        const trainingDays = Array.from(new Set((exercises||[]).map(e => (e.day||'').trim())));
+                        window.trainingDays = trainingDays;
+                    }
+                }
+            } catch(e) {}
+        }
         let todayIndex = 0;
         let selectedDayIndex = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
-            initWeek();
+            loadTrainingDaysFromSupabase().then(initWeek);
         });
 
         function initWeek() {
@@ -435,23 +469,41 @@
             }
         }
 
+        // Trainingsplan-Logik wie in workouts.html
+        function getTrainingDaysFromPlan() {
+            if (window.trainingDays && Array.isArray(window.trainingDays)) {
+                return DAYS.map(day => window.trainingDays.includes(day));
+            }
+            try {
+                const stored = localStorage.getItem('kellerGymPlan');
+                let plan = null;
+                if(stored) {
+                    plan = JSON.parse(stored);
+                } else {
+                    plan = ['lower', 'upper', 'off', 'lower', 'full', 'off', 'off'];
+                }
+                return plan.map((type, idx) => type !== 'off');
+            } catch(e) {
+                return [true, true, false, true, true, false, false];
+            }
+        }
+
         function renderWeek() {
             const container = document.getElementById('week-grid');
             if(!container) return;
             container.innerHTML = '';
 
+            const trainingDays = getTrainingDaysFromPlan();
+
             DAYS.forEach((label, idx) => {
-                // We'll just leave isToday based on the actual today.
                 const isToday = (idx === todayIndex);
                 const isSelected = (idx === selectedDayIndex);
+                const isWorkout = trainingDays[idx];
 
                 const col = document.createElement('div');
                 col.className = 'week-day-col';
-
-                // Add active/selected classes visually from style.css likely applies to week-day-col
                 if (isToday) col.classList.add('day-active');
                 if (isSelected) col.classList.add('selected');
-
                 col.onclick = () => {
                     const diff = idx - selectedDayIndex;
                     activeDateObj.setDate(activeDateObj.getDate() + diff);
@@ -466,24 +518,9 @@
                 circle.style.display = 'flex';
                 circle.style.alignItems = 'center';
                 circle.style.justifyContent = 'center';
-                
-                // From workouts.html week style logic matching the screenshot
-                let isWorkout = true; // Placeholder, assuming mostly workouts
-                try {
-                    const stored = localStorage.getItem('kellerGymPlan');
-                    if(stored) {
-                        const plan = JSON.parse(stored);
-                        isWorkout = plan[idx] !== 'off';
-                    } else {
-                        const DEFAULT_PLAN = ['lower', 'upper', 'off', 'lower', 'full', 'off', 'off'];
-                        isWorkout = DEFAULT_PLAN[idx] !== 'off';
-                    }
-                } catch(e) {}
-                
                 if(isWorkout) {
                     circle.style.border = '2px solid var(--primary)';
                     circle.style.background = 'rgba(0, 255, 204, 0.1)';
-                    // Biceps Image
                     circle.innerHTML = `<img src="img/biceps_2.png" style="width: 18px; height: 18px; object-fit: contain;">`;
                 } else {
                     circle.style.border = '1px solid transparent';
@@ -500,7 +537,6 @@
 
                 col.appendChild(circle);
                 col.appendChild(labelDiv);
-
                 container.appendChild(col);
             });
         }
